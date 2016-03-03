@@ -1,0 +1,168 @@
+@scroll-class:            scroll-box;
+@scroll-border-radius:    max(@scroll-x-height, @scroll-y-width); // Rounded caps.
+
+@scroll-bar-weight:       6px;
+@scroll-bar-hover-weight: (@scroll-bar-weight * 1.5);
+@scroll-bar-offset:       4px;
+@scroll-bar-min-size:     30px;
+@scroll-bar-max-size:     100%;
+
+@scroll-y-width:          @scroll-bar-weight;
+@scroll-y-hover-width:    @scroll-bar-hover-weight;
+@scroll-y-top:            @scroll-bar-offset;
+@scroll-y-bottom:         @scroll-bar-offset;
+@scroll-y-right:          @scroll-bar-offset;
+@scroll-y-min-height:     @scroll-bar-min-size;
+@scroll-y-max-height:     @scroll-bar-max-size;
+
+@scroll-x-height:         @scroll-bar-weight;
+@scroll-x-hover-height:   @scroll-bar-hover-weight;
+@scroll-x-left:           @scroll-bar-offset;
+@scroll-x-right:          @scroll-bar-offset;
+@scroll-x-bottom:         @scroll-bar-offset;
+@scroll-x-min-width:      @scroll-bar-min-size;
+@scroll-x-max-width:      @scroll-bar-max-size;
+
+@scroll-cursor-handle:    default;
+@scroll-cursor-track:     default;
+
+.@{scroll-class} {
+  position: relative;
+
+  // Used if fallback to native system scrolling should occur.
+  &-native {
+    &.@{scroll-class}-y.show-scroll-y > .@{scroll-class}-viewport {
+      overflow-y: auto;
+    }
+    &.@{scroll-class}-x.show-scroll-x > .@{scroll-class}-viewport {
+      overflow-x: auto;
+    }
+  }
+  &:not(.@{scroll-class}-native) {
+    &.@{scroll-class}-y.show-scroll-y > .@{scroll-class}-track-y {
+      visibility: visible;
+    }
+    &.@{scroll-class}-x.show-scroll-x > .@{scroll-class}-track-x {
+      visibility: visible;
+    }
+
+    // Both non-native scrollbars are visible and they are inside
+    // scrollable are, we should prevent their intersection in the
+    // shared corner.
+    &.@{scroll-class}-x.show-scroll-x.@{scroll-class}-y.show-scroll-y:not(.@{scroll-class}-outset) {
+      > .@{scroll-class}-track-y {
+        margin-bottom: (2 * @scroll-y-bottom + @scroll-x-height);
+      }
+      > .@{scroll-class}-track-x {
+        margin-right: (2 * @scroll-x-right + @scroll-y-width);
+      }
+    }
+  }
+  &-handle,
+  &-track {
+    position: absolute;
+    border-radius: @scroll-border-radius;
+    transition: .2s ease-in-out;
+  }
+  &-handle {
+    transition-property: background;
+    cursor: @scroll-cursor-handle;
+
+    &-y {
+      width: 100%;
+      min-height: @scroll-y-min-height;
+      max-height: @scroll-y-max-height;
+      top: 0;
+    }
+    &-x {
+      height: 100%;
+      min-width: @scroll-x-min-width;
+      max-width: @scroll-x-max-width;
+      left: 0;
+    }
+  }
+  &-track {
+    display: none; // Scroll not used by default.
+    visibility: hidden;
+    z-index: 20;
+    transition-property: background, width, height, opacity;
+    overflow: hidden;
+    cursor: @scroll-cursor-track;
+
+    &-y {
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: @scroll-y-width;
+      margin: @scroll-y-top @scroll-y-right @scroll-y-bottom 0;
+
+      &:hover,
+      &.dragged {
+        width: @scroll-y-hover-width;
+      }
+      .@{scroll-class}-outset > & {
+        left: 100%;
+        margin-left: @scroll-y-right;
+      }
+    }
+    &-x {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: @scroll-x-height;
+      margin: 0 @scroll-x-right @scroll-x-bottom @scroll-x-left;
+
+      &:hover,
+      &.dragged {
+        height: @scroll-x-hover-height;
+      }
+      .@{scroll-class}-outset > & {
+        top: 100%;
+        margin-top: @scroll-x-bottom;
+      }
+    }
+  }
+  &-track.dragged {
+    opacity: 1;
+  }
+}
+
+// By default scrollable area to looks like a plain container.
+.enable-@{scroll-class} {
+  > .@{scroll-class}-viewport {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    padding: inherit;
+    border-radius: inherit;
+  }
+  > .@{scroll-class}-track {
+    display: block;
+  }
+}
+
+.scroll-color(
+  @handle-bg:       rgba(0,0,0,.3);
+  @track-bg:        transparent;
+  @hover-handle-bg: #7d7d7d;
+  @hover-track-bg:  rgba(0,0,0,.15);
+) {
+  &-track {
+    background: @track-bg;
+
+    &:hover,
+    &.dragged {
+      background: @hover-track-bg;
+
+      > .@{scroll-class}-handle {
+        background: @hover-handle-bg;
+      }
+    }
+  }
+  &-handle {
+    background: @handle-bg;
+  }
+}

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "package": "webpack --p",
-    "package-site": "webpack --d --config webpack.site.config.js",
+    "package-site": "webpack --p --config webpack.site.config.js",
     "start": "webpack-dev-server --progress --d --config webpack.site.config.js --content-base target/out/ --port=8080"
   },
   "devDependencies": {

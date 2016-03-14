@@ -125,10 +125,17 @@
   &-track.dragged {
     opacity: 1;
   }
+
+  // Apply default coloring.
+  .scroll-box-color();
 }
 
-// By default scrollable area to looks like a plain container.
-.enable-@{scroll-class} {
+// By default scroll box looks like a plain container.
+.@{scroll-class}-enable {
+  .scroll-box-enable();
+}
+
+.scroll-box-enable() {
   > .@{scroll-class}-viewport {
     position: absolute;
     top: 0;
@@ -144,7 +151,7 @@
   }
 }
 
-.scroll-color(
+.scroll-box-color(
   @handle-bg:       rgba(0,0,0,.3);
   @track-bg:        transparent;
   @hover-handle-bg: #7d7d7d;

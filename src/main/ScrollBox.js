@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import React from 'react';
 import {GenericScrollBox} from './GenericScrollBox';
 
 /**
@@ -11,13 +11,10 @@ import {GenericScrollBox} from './GenericScrollBox';
  * @property {Array.<React.Element>} children Arbitrary set of children rendered inside scroll area.
  * @property {Function} [props.onViewportScroll]
  */
-export class ScrollBox extends Component {
-
-  render() {
-    return (
-      <GenericScrollBox {...this.props}>
-        <div className="scroll-viewport">{this.props.children}</div>
-      </GenericScrollBox>
-    );
-  }
+export function ScrollBox(props) {
+  return (
+    <GenericScrollBox {...props}>
+      <div className="scroll-box-viewport">{props.children}</div>
+    </GenericScrollBox>
+  );
 }

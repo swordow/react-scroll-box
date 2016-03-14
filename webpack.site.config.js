@@ -6,19 +6,15 @@ var HtmlWebpackPlugin = require('html-webpack-plugin'),
 module.exports = {
   devtool: 'inline-source-map',
   entry: {
-    index: './src/test/index.js'
+    index: './src/site/index.js'
   },
   output: {
-    path: './target/out'
+    path: './target/out',
+    filename: '[name].js'
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    }),
     new HtmlWebpackPlugin({
-      template: './src/test/index.html',
+      template: './src/site/index.html',
       minify: {collapseWhitespace: true}
     }),
     new ExtractTextPlugin('[name].css')

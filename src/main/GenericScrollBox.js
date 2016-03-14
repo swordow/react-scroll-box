@@ -1,16 +1,16 @@
-import {Children, Component, PropTypes} from 'react';
+import React, {PropTypes} from 'react';
 import {findDOMNode} from 'react-dom';
 import classNames from 'classnames';
 
 export const
-  SCROLL_AXIS_X  = 'x',
-  SCROLL_AXIS_Y  = 'y',
+  SCROLL_AXIS_X = 'x',
+  SCROLL_AXIS_Y = 'y',
   SCROLL_AXIS_XY = 'xy';
 
 export const
   FAST_TRACK_PAGING = 'paging',
-  FAST_TRACK_SKIP   = 'skip',
-  FAST_TRACK_NONE   = null;
+  FAST_TRACK_REWIND = 'rewind',
+  FAST_TRACK_NONE = null;
 
 // Default easing function.
 function easeCircOut(percentage, elapsedTime, min, max, duration) {
@@ -35,7 +35,7 @@ function haxAxis(axes, axis) {
  * @property {SCROLL_AXIS_X|SCROLL_AXIS_Y|SCROLL_AXIS_XY} [props.axes = SCROLL_AXIS_XY] Scroll axes
  *           that are allowed. If scroll axis is not allowed, corresponding scroll offset would
  *           be constantly equal to 0.
- * @property {FAST_TRACK_PAGING|FAST_TRACK_SKIP|FAST_TRACK_NONE} [props.fastTrack = FAST_TRACK_SKIP]
+ * @property {FAST_TRACK_PAGING|FAST_TRACK_REWIND|FAST_TRACK_NONE} [props.fastTrack = FAST_TRACK_SKIP]
  *           Expected behavior when user clicks on scroll track.
  * @property {Number} [props.fastTrackDuration = 500] Fast track animation duration.
  * @property {Boolean} [props.disabled = false] Disable control.
@@ -55,11 +55,11 @@ function haxAxis(axes, axis) {
  * @property {React.Element} children Single element that is used as viewport with `.scroll-viewport`
  *           class specified.
  */
-export class GenericScrollBox extends Component {
+export class GenericScrollBox extends React.Component {
 
   static propTypes = {
     axes: PropTypes.oneOf([SCROLL_AXIS_X, SCROLL_AXIS_Y, SCROLL_AXIS_XY]),
-    fastTrack: PropTypes.oneOf([FAST_TRACK_PAGING, FAST_TRACK_SKIP, FAST_TRACK_NONE]),
+    fastTrack: PropTypes.oneOf([FAST_TRACK_PAGING, FAST_TRACK_REWIND, FAST_TRACK_NONE]),
     fastTrackDuration: PropTypes.number,
     disabled: PropTypes.bool,
     captureKeyboard: PropTypes.bool,
@@ -72,7 +72,7 @@ export class GenericScrollBox extends Component {
   };
   static defaultProps = {
     axes: SCROLL_AXIS_XY,
-    fastTrack: FAST_TRACK_SKIP,
+    fastTrack: FAST_TRACK_REWIND,
     fastTrackDuration: 500,
     disabled: false,
     captureKeyboard: true,
@@ -82,7 +82,7 @@ export class GenericScrollBox extends Component {
     stepY: 30,
     easing: easeCircOut,
     onViewportScroll: (genericScroll) => {},
-    className: 'scroll enable-scroll'
+    className: 'scroll-box scroll-box-enable'
   };
 
   // Handle elements.
@@ -290,7 +290,7 @@ export class GenericScrollBox extends Component {
    */
   forceSync() {
     let {handleX, handleY} = this;
-    if (!handleX) {
+    if (handleX == null) {
       return; // Component was unmounted.
     }
 
@@ -322,8 +322,8 @@ export class GenericScrollBox extends Component {
     this.x = Math.max(0, Math.min(Math.round(this.x), scrollMaxX));
     this.y = Math.max(0, Math.min(Math.round(this.y), scrollMaxY));
 
-    el.classList.toggle('show-scroll-x', scrollMaxX);
-    el.classList.toggle('show-scroll-y', scrollMaxY);
+    el.classList.toggle('show-scroll-x', scrollMaxX > 0);
+    el.classList.toggle('show-scroll-y', scrollMaxY > 0);
 
     let {x, y, scrollY, scrollX, previousX, previousY, animationDuration} = this;
 
@@ -360,7 +360,7 @@ export class GenericScrollBox extends Component {
       }
 
       // Viewport did not change its scroll parameters, so invocation of `onViewportScroll` and
-      // further altering geometry of handles and tracks are not required.
+      // further altering geometry of handles and tracks is not required.
       return;
     }
 
@@ -398,17 +398,16 @@ export class GenericScrollBox extends Component {
         dx = e.deltaX * haxAxis(axes, SCROLL_AXIS_X),
         dy = e.deltaY * haxAxis(axes, SCROLL_AXIS_Y);
 
-    // By default, Google Chrome changes scrolling orientation
-    // if shift key is pressed, so propagate this behavior to
-    // other browsers as well.
+    if (dx + dy == 0) {
+      return; // Nothing to scroll.
+    }
+    // By default, Google Chrome changes scrolling orientation if shift key is pressed,
+    // so propagate this behavior to other browsers as well.
     if (e.shiftKey && !window.chrome) {
       [dx, dy] = [dy, dx];
     }
-    if (dx + dy) {
-      // Prevent page scrolling only if there is something to scroll.
-      e.preventDefault();
-      this.scrollBy(dx, dy);
-    }
+    e.preventDefault();
+    this.scrollBy(dx, dy);
   };
 
   onKeyDown = e => {
@@ -478,7 +477,7 @@ export class GenericScrollBox extends Component {
         offsetY = e.pageY - this.handleY.offsetTop;
 
     let onDrag = e => {
-      if (!this.handleX) {
+      if (this.handleX == null) {
         onDragEnd(); // Component was unmounted.
       }
       if (axis == SCROLL_AXIS_X) {
@@ -520,6 +519,7 @@ export class GenericScrollBox extends Component {
         pointerY = e.pageY - window.scrollY - this.getTrackY().getBoundingClientRect().top;
 
     switch (this.props.fastTrack) {
+
       case FAST_TRACK_PAGING:
         if (axis == SCROLL_AXIS_X) {
           x = this.x + (1 - 2 * (pointerX < this.handleX.offsetLeft)) * clientWidth;
@@ -527,13 +527,15 @@ export class GenericScrollBox extends Component {
           y = this.y + (1 - 2 * (pointerY < this.handleY.offsetTop)) * clientHeight;
         }
         break;
-      case FAST_TRACK_SKIP:
+
+      case FAST_TRACK_REWIND:
         if (axis == SCROLL_AXIS_X) {
           x = pointerX / this.getTrackX().clientWidth * scrollWidth - clientWidth / 2;
         } else {
           y = pointerY / this.getTrackY().clientHeight * scrollHeight - clientHeight / 2;
         }
         break;
+
       default: return;
     }
     this.fastTracking = true;
@@ -551,7 +553,7 @@ export class GenericScrollBox extends Component {
   componentDidMount() {
     let requestForceSync = () => {
       if (this.handleX) {
-        requestAnimationFrame(requestForceSync);
+        setTimeout(requestForceSync, 1000 / 30);
         this.forceSync();
       }
     };
@@ -566,10 +568,10 @@ export class GenericScrollBox extends Component {
     let {disabled, axes, native, outset, className, children, style} = this.props;
     let computedClassName = classNames(className, {
       'disabled': disabled,
-      'scroll-x': haxAxis(axes, SCROLL_AXIS_X),
-      'scroll-y': haxAxis(axes, SCROLL_AXIS_Y),
-      'scroll-native': native,
-      'scroll-outset': outset
+      'scroll-box-x': haxAxis(axes, SCROLL_AXIS_X),
+      'scroll-box-y': haxAxis(axes, SCROLL_AXIS_Y),
+      'scroll-box-native': native,
+      'scroll-box-outset': outset
     });
     return (
       <div style={style}
@@ -577,19 +579,19 @@ export class GenericScrollBox extends Component {
            onWheel={this.onWheel}
            onKeyDown={this.onKeyDown}
            tabIndex="-1">
-        <div className="scroll-track scroll-track-x"
+        <div className="scroll-box-track scroll-box-track-x"
              onMouseDown={this.onFastTrackX}>
           <div ref={this.onRenderHandleX}
                onMouseDown={this.onDragStartX}
-               className="scroll-handle scroll-handle-x"/>
+               className="scroll-box-handle scroll-box-handle-x"/>
         </div>
-        <div className="scroll-track scroll-track-y"
+        <div className="scroll-box-track scroll-box-track-y"
              onMouseDown={this.onFastTrackY}>
           <div ref={this.onRenderHandleY}
                onMouseDown={this.onDragStartY}
-               className="scroll-handle scroll-handle-y"/>
+               className="scroll-box-handle scroll-box-handle-y"/>
         </div>
-        {Children.only(children)}
+        {React.Children.only(children)}
       </div>
     );
   }

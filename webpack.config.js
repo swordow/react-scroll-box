@@ -1,26 +1,22 @@
-var webpack = require('webpack');
-
-var HtmlWebpackPlugin = require('html-webpack-plugin'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  devtool: 'inline-source-map',
   entry: {
-    index: './src/test/index.js'
+    index: './src/main/index.js'
   },
   output: {
-    path: './target/out'
+    path: './target/out',
+    filename: '[name].js',
+    library: 'ScrollBox',
+    libraryTarget: 'umd'
   },
+  externals: [
+    {
+      'react': 'React',
+      'react-dom': 'ReactDOM'
+    }
+  ],
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify('production')
-      }
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/test/index.html',
-      minify: {collapseWhitespace: true}
-    }),
     new ExtractTextPlugin('[name].css')
   ],
   module: {

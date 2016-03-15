@@ -7,13 +7,12 @@ module.exports = {
   output: {
     path: './target/out',
     filename: '[name].js',
-    library: 'ScrollBox',
-    libraryTarget: 'umd'
+    libraryTarget: 'commonjs'
   },
   externals: [
     {
-      'react': 'React',
-      'react-dom': 'ReactDOM'
+      'react': true,
+      'react-dom': true
     }
   ],
   plugins: [

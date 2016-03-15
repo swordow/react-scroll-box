@@ -1,24 +1,39 @@
 import React, {PropTypes} from 'react';
 import {findDOMNode} from 'react-dom';
-import classNames from 'classnames';
 
-export const
-  SCROLL_AXIS_X = 'x',
-  SCROLL_AXIS_Y = 'y',
-  SCROLL_AXIS_XY = 'xy';
+const
+  SCROLL_CLASS = 'scroll-box',
+  ENABLE_CLASS = 'scroll-box-enable',
+  TRACK_CLASS = 'scroll-box-track',
+  TRACK_X_CLASS = 'scroll-box-track-x',
+  TRACK_Y_CLASS = 'scroll-box-track-y',
+  HANDLE_CLASS = 'scroll-box-handle',
+  HANDLE_X_CLASS = 'scroll-box-handle-x',
+  HANDLE_Y_CLASS = 'scroll-box-handle-y',
+  SCROLL_X_CLASS = 'scroll-box-x',
+  SCROLL_Y_CLASS = 'scroll-box-y',
+  SHOW_SCROLL_X_CLASS = 'show-scroll-x',
+  SHOW_SCROLL_Y_CLASS = 'show-scroll-y',
+  NATIVE_SCROLL_CLASS = 'scroll-box-native',
+  OUTSET_SCROLL_CLASS = 'scroll-box-outset',
+  DISABLED_CLASS = 'disabled',
+  DRAGGED_CLASS = 'dragged';
 
-export const
-  FAST_TRACK_PAGING = 'paging',
-  FAST_TRACK_REWIND = 'rewind',
-  FAST_TRACK_NONE = null;
+export const ScrollAxes = Object.freeze({
+  X: 'x',
+  Y: 'y',
+  XY: 'xy'
+});
+
+export const FastTrack = Object.freeze({
+  PAGING: 'paging',
+  REWIND: 'rewind',
+  NONE: null
+});
 
 // Default easing function.
 function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
-}
-
-function haxAxis(axes, axis) {
-  return axes.indexOf(axis) > -1;
 }
 
 /**
@@ -32,10 +47,10 @@ function haxAxis(axes, axis) {
  * in your component styles.
  *
  * @property {React.Props} props Tag attributes.
- * @property {SCROLL_AXIS_X|SCROLL_AXIS_Y|SCROLL_AXIS_XY} [props.axes = SCROLL_AXIS_XY] Scroll axes
+ * @property {ScrollAxes.X|ScrollAxes.Y|ScrollAxes.XY} [props.axes = ScrollAxes.XY] Scroll axes
  *           that are allowed. If scroll axis is not allowed, corresponding scroll offset would
  *           be constantly equal to 0.
- * @property {FAST_TRACK_PAGING|FAST_TRACK_REWIND|FAST_TRACK_NONE} [props.fastTrack = FAST_TRACK_SKIP]
+ * @property {FastTrack.PAGING|FastTrack.REWIND|FastTrack.NONE} [props.fastTrack = FastTrack.REWIND]
  *           Expected behavior when user clicks on scroll track.
  * @property {Number} [props.fastTrackDuration = 500] Fast track animation duration.
  * @property {Boolean} [props.disabled = false] Disable control.
@@ -58,8 +73,8 @@ function haxAxis(axes, axis) {
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
-    axes: PropTypes.oneOf([SCROLL_AXIS_X, SCROLL_AXIS_Y, SCROLL_AXIS_XY]),
-    fastTrack: PropTypes.oneOf([FAST_TRACK_PAGING, FAST_TRACK_REWIND, FAST_TRACK_NONE]),
+    axes: PropTypes.oneOf([ScrollAxes.X, ScrollAxes.Y, ScrollAxes.XY]),
+    fastTrack: PropTypes.oneOf([FastTrack.PAGING, FastTrack.REWIND, FastTrack.NONE]),
     fastTrackDuration: PropTypes.number,
     disabled: PropTypes.bool,
     captureKeyboard: PropTypes.bool,
@@ -71,8 +86,8 @@ export class GenericScrollBox extends React.Component {
     onViewportScroll: PropTypes.func
   };
   static defaultProps = {
-    axes: SCROLL_AXIS_XY,
-    fastTrack: FAST_TRACK_REWIND,
+    axes: ScrollAxes.XY,
+    fastTrack: FastTrack.REWIND,
     fastTrackDuration: 500,
     disabled: false,
     captureKeyboard: true,
@@ -81,8 +96,8 @@ export class GenericScrollBox extends React.Component {
     stepX: 30,
     stepY: 30,
     easing: easeCircOut,
-    onViewportScroll: (genericScroll) => {},
-    className: 'scroll-box scroll-box-enable'
+    onViewportScroll: scroll => {},
+    className: ENABLE_CLASS
   };
 
   // Handle elements.
@@ -316,14 +331,14 @@ export class GenericScrollBox extends React.Component {
     viewport.style.height = height;
 
     let {clientWidth, clientHeight, scrollWidth, scrollHeight} = viewport,
-        scrollMaxX = axes.includes(SCROLL_AXIS_X) * Math.max(0, scrollWidth - clientWidth),
-        scrollMaxY = axes.includes(SCROLL_AXIS_Y) * Math.max(0, scrollHeight - clientHeight);
+        scrollMaxX = axes.includes(ScrollAxes.X) * Math.max(0, scrollWidth - clientWidth),
+        scrollMaxY = axes.includes(ScrollAxes.Y) * Math.max(0, scrollHeight - clientHeight);
 
     this.x = Math.max(0, Math.min(Math.round(this.x), scrollMaxX));
     this.y = Math.max(0, Math.min(Math.round(this.y), scrollMaxY));
 
-    el.classList.toggle('show-scroll-x', scrollMaxX > 0);
-    el.classList.toggle('show-scroll-y', scrollMaxY > 0);
+    el.classList.toggle(SHOW_SCROLL_X_CLASS, scrollMaxX > 0);
+    el.classList.toggle(SHOW_SCROLL_Y_CLASS, scrollMaxY > 0);
 
     let {x, y, scrollY, scrollX, previousX, previousY, animationDuration} = this;
 
@@ -395,8 +410,8 @@ export class GenericScrollBox extends React.Component {
       return;
     }
     let {axes} = this.props,
-        dx = e.deltaX * haxAxis(axes, SCROLL_AXIS_X),
-        dy = e.deltaY * haxAxis(axes, SCROLL_AXIS_Y);
+        dx = e.deltaX * (axes.indexOf(ScrollAxes.X) >= 0),
+        dy = e.deltaY * (axes.indexOf(ScrollAxes.Y) >= 0);
 
     if (dx + dy == 0) {
       return; // Nothing to scroll.
@@ -465,7 +480,7 @@ export class GenericScrollBox extends React.Component {
     e.stopPropagation();
 
     let draggedTrack;
-    if (axis == SCROLL_AXIS_X) {
+    if (axis == ScrollAxes.X) {
       this.draggedHandle = this.handleX;
       draggedTrack = this.getTrackX();
     } else {
@@ -480,7 +495,7 @@ export class GenericScrollBox extends React.Component {
       if (this.handleX == null) {
         onDragEnd(); // Component was unmounted.
       }
-      if (axis == SCROLL_AXIS_X) {
+      if (axis == ScrollAxes.X) {
         var x = this.scrollMaxX * (e.pageX - offsetX) / this.trackMaxX;
       } else {
         var y = this.scrollMaxY * (e.pageY - offsetY) / this.trackMaxY;
@@ -495,19 +510,19 @@ export class GenericScrollBox extends React.Component {
       window.removeEventListener('blur', onDragEnd);
       if (this.handleX) {
         // Check component is mounted.
-        draggedTrack.classList.remove('dragged');
+        draggedTrack.classList.remove(DRAGGED_CLASS);
       }
     };
 
     window.addEventListener('mousemove', onDrag);
     window.addEventListener('mouseup', onDragEnd);
     window.addEventListener('blur', onDragEnd);
-    draggedTrack.classList.add('dragged');
+    draggedTrack.classList.add(DRAGGED_CLASS);
   };
 
-  onDragStartX = e => this.onDragStart(e, SCROLL_AXIS_X);
+  onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
 
-  onDragStartY = e => this.onDragStart(e, SCROLL_AXIS_Y);
+  onDragStartY = e => this.onDragStart(e, ScrollAxes.Y);
 
   onFastTrack(e, axis) {
     if (this.props.disabled) {
@@ -520,16 +535,16 @@ export class GenericScrollBox extends React.Component {
 
     switch (this.props.fastTrack) {
 
-      case FAST_TRACK_PAGING:
-        if (axis == SCROLL_AXIS_X) {
+      case FastTrack.PAGING:
+        if (axis == ScrollAxes.X) {
           x = this.x + (1 - 2 * (pointerX < this.handleX.offsetLeft)) * clientWidth;
         } else {
           y = this.y + (1 - 2 * (pointerY < this.handleY.offsetTop)) * clientHeight;
         }
         break;
 
-      case FAST_TRACK_REWIND:
-        if (axis == SCROLL_AXIS_X) {
+      case FastTrack.REWIND:
+        if (axis == ScrollAxes.X) {
           x = pointerX / this.getTrackX().clientWidth * scrollWidth - clientWidth / 2;
         } else {
           y = pointerY / this.getTrackY().clientHeight * scrollHeight - clientHeight / 2;
@@ -542,9 +557,9 @@ export class GenericScrollBox extends React.Component {
     this.scrollTo(x, y, this.props.fastTrackDuration);
   };
 
-  onFastTrackX = e => this.onFastTrack(e, SCROLL_AXIS_X);
+  onFastTrackX = e => this.onFastTrack(e, ScrollAxes.X);
 
-  onFastTrackY = e => this.onFastTrack(e, SCROLL_AXIS_Y);
+  onFastTrackY = e => this.onFastTrack(e, ScrollAxes.Y);
 
   onRenderHandleX = ref => this.handleX = ref;
 
@@ -553,7 +568,7 @@ export class GenericScrollBox extends React.Component {
   componentDidMount() {
     let requestForceSync = () => {
       if (this.handleX) {
-        setTimeout(requestForceSync, 1000 / 30);
+        requestAnimationFrame(requestForceSync);
         this.forceSync();
       }
     };
@@ -566,30 +581,39 @@ export class GenericScrollBox extends React.Component {
 
   render() {
     let {disabled, axes, native, outset, className, children, style} = this.props;
-    let computedClassName = classNames(className, {
-      'disabled': disabled,
-      'scroll-box-x': haxAxis(axes, SCROLL_AXIS_X),
-      'scroll-box-y': haxAxis(axes, SCROLL_AXIS_Y),
-      'scroll-box-native': native,
-      'scroll-box-outset': outset
-    });
+    let classNames = [className, SCROLL_CLASS];
+    if (disabled) {
+      classNames.push(DISABLED_CLASS);
+    }
+    if (native) {
+      classNames.push(NATIVE_SCROLL_CLASS);
+    }
+    if (outset) {
+      classNames.push(OUTSET_SCROLL_CLASS);
+    }
+    if (axes.indexOf(ScrollAxes.X) >= 0) {
+      classNames.push(SCROLL_X_CLASS);
+    }
+    if (axes.indexOf(ScrollAxes.Y) >= 0) {
+      classNames.push(SCROLL_Y_CLASS);
+    }
     return (
       <div style={style}
-           className={computedClassName}
+           className={classNames.join(' ')}
            onWheel={this.onWheel}
            onKeyDown={this.onKeyDown}
            tabIndex="-1">
-        <div className="scroll-box-track scroll-box-track-x"
+        <div className={TRACK_CLASS + ' ' + TRACK_X_CLASS}
              onMouseDown={this.onFastTrackX}>
           <div ref={this.onRenderHandleX}
                onMouseDown={this.onDragStartX}
-               className="scroll-box-handle scroll-box-handle-x"/>
+               className={HANDLE_CLASS + ' ' + HANDLE_X_CLASS}/>
         </div>
-        <div className="scroll-box-track scroll-box-track-y"
+        <div className={TRACK_CLASS + ' ' + TRACK_Y_CLASS}
              onMouseDown={this.onFastTrackY}>
           <div ref={this.onRenderHandleY}
                onMouseDown={this.onDragStartY}
-               className="scroll-box-handle scroll-box-handle-y"/>
+               className={HANDLE_CLASS + ' ' + HANDLE_Y_CLASS}/>
         </div>
         {React.Children.only(children)}
       </div>

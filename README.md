@@ -27,7 +27,7 @@ import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-b
 
 ## <a name="scroll-box"></a>`ScrollBox`
 
-Pure component that renders its children inside scrollable area.
+Pure component that renders its children inside scrollable `div`.
 
 By default, scroll container has no height specified, so it would collapse and become invisible.
 

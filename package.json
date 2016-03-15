@@ -1,8 +1,9 @@
 {
   "name": "react-scroll-box",
   "version": "0.0.2",
-  "author": "Savva Mikhalevski @smikhalevski",
+  "author": "Savva Mikhalevski",
   "description": "Powerful, cross-browser and cross-platform React ScrollBox component",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/smikhalevski/react-scroll-box.git"
@@ -12,6 +13,14 @@
   "files": [
     "src/",
     "target/"
+  ],
+  "keywords": [
+    "react",
+    "scroll",
+    "component",
+    "scrollbox",
+    "textarea",
+    "scrollbar"
   ],
   "scripts": {
     "package": "webpack --p",

@@ -1,6 +1,6 @@
 {
   "name": "react-scroll-box",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Savva Mikhalevski @smikhalevski",
   "description": "Powerful, cross-browser and cross-platform React ScrollBox component",
   "repository": {

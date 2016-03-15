@@ -1,6 +1,18 @@
 {
   "name": "react-scroll-box",
   "version": "0.0.1",
+  "author": "Savva Mikhalevski @smikhalevski",
+  "description": "Powerful, cross-browser and cross-platform React ScrollBox component",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smikhalevski/react-scroll-box.git"
+  },
+  "homepage": "https://github.com/smikhalevski/react-scroll-box",
+  "main": "target/out/index.js",
+  "files": [
+    "src/",
+    "target/"
+  ],
   "scripts": {
     "package": "webpack --p",
     "package-site": "webpack --p --config webpack.site.config.js",
@@ -15,13 +27,11 @@
     "css-loader": "",
     "html-webpack-plugin": "1.6.1",
     "extract-text-webpack-plugin": "0.8.2",
-
     "babel-core": "6.3.26",
     "babel-preset-es2015": "",
     "babel-preset-react": "",
     "babel-preset-stage-0": "",
     "babel-plugin-transform-runtime": "",
-
     "less": ""
   },
   "dependencies": {

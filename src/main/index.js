@@ -1,4 +1,4 @@
-//import './scroll-box.less';
+import './scroll-box.less';
 
 export {ScrollBox} from './ScrollBox';
 export {

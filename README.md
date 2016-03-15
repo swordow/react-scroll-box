@@ -4,7 +4,7 @@
 
 ## <a name="scroll-box"></a>`ScrollBox`
 
-Pure component that renders its children inside scrollable area. The only difference from `GenericScrollBox` is that default viewport element is used, so you can spcify arbitrary amount of child nodes.
+Pure component that renders its children inside scrollable area.
 
 ```javascript
 <ScrollBox style={{height: '100px'}}>
@@ -13,6 +13,8 @@ Pure component that renders its children inside scrollable area. The only differ
 ```
 
 ## <a name="generic-scroll-box"></a>`GenericScrollBox`
+
+The only difference from `ScrollBox` is that only one child element can be provided and that element is considered to be a scrolled viewport.
 
 ```javascript
 <GenericScrollBox style={{height: '100px'}}>
@@ -52,11 +54,11 @@ Display scrollbars outside of scrollable area. On mobile devices when native scr
 
 Use native scroll bars. By default, this flag is set to `true` on mobile platforms and `false` on desktops but you can change it manually.
 
-#### <a name="step-x"></a><code><i>{Number}</i> [stepX]</code>
+#### <a name="step-x"></a><code><i>{Number}</i> [stepX = 30]</code>
 
 Horizontal scroll step for keyboard scrolling in pixels.
 
-#### <a name="step-y"></a><code><i>{Number}</i> [stepY]</code>
+#### <a name="step-y"></a><code><i>{Number}</i> [stepY = 30]</code>
 
 Vertical scroll step for keyboard scrolling in pixels.
 

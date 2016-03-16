@@ -4,7 +4,7 @@ Cross-browser and cross-platform scrollable container implementation with no ext
 
 Implementation considers your browser supports [`window.requestAnimationFrame`](http://caniuse.com/#search=requestAnimationFrame) and [`HTMLElement.classList`](http://caniuse.com/#search=classList).
 
-[Live Demo](http://smikhalevski.github.io/react-scroll-box/)
+[Live Demo](http://smikhalevski.github.io/react-scroll-box/) ([Source Code](https://github.com/smikhalevski/react-scroll-box/blob/master/src/demo/index.js))
 
 
 ## Contents

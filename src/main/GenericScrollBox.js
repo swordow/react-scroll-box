@@ -19,12 +19,13 @@ const
   CLASS_OUTSET = 'scroll-box_outset',
   CLASS_DISABLED = 'scroll-box_disabled',
   CLASS_TRACK_HOVER = 'scroll-box__track_hover',
-  CLASS_TRACK_DRAGGED = 'scroll-box__track_dragged';
+  CLASS_TRACK_DRAGGED = 'scroll-box__track_dragged',
 
-const
   EVENT_MOUSE_MOVE = 'mousemove',
   EVENT_MOUSE_UP = 'mouseup',
-  EVENT_BLUR = 'blur';
+  EVENT_BLUR = 'blur',
+
+  ACTION_BUTTON = 1;
 
 export const ScrollAxes = Object.freeze({
   X: 'x',
@@ -379,7 +380,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   onDragStart(e, axis) {
-    if (this.props.disabled) {
+    if (this.props.disabled || e.buttons !== ACTION_BUTTON) {
       return;
     }
     e.preventDefault();
@@ -398,8 +399,8 @@ export class GenericScrollBox extends React.Component {
           OFFSET_Y = e.clientY - this.handleY.offsetTop;
 
     let onDrag = e => {
-      if (this.handleX == null) {
-        onDragEnd(); // Component was unmounted.
+      if (e.buttons !== ACTION_BUTTON || this.handleX == null) {
+        onDragEnd(); // Component was unmounted or mouse was released.
       }
       if (axis == ScrollAxes.X) {
         var x = this.scrollMaxX * (e.clientX - OFFSET_X) / this.trackMaxX;
@@ -431,7 +432,7 @@ export class GenericScrollBox extends React.Component {
   onDragStartY = e => this.onDragStart(e, ScrollAxes.Y);
 
   onFastTrack(e, axis) {
-    if (this.props.disabled) {
+    if (this.props.disabled || e.buttons !== ACTION_BUTTON) {
       return;
     }
     let x, y;
@@ -483,8 +484,12 @@ export class GenericScrollBox extends React.Component {
   
   onCursorApproachingTrack = e => {
     const {native} = this.props;
-    if (native || this.isDraggingHandle() || this.props.hoverProximity <= 0) {
-      return; // Do not track cursor proximity for native scroll bar.
+
+    // Do not track cursor proximity for native scroll bar, when handle is being dragged,
+    // when selection is in progress or when another handle is being dragged (even on another
+    // scroll box instance).
+    if (native || e.buttons === ACTION_BUTTON) {
+      return;
     }
     // Update track hover status only if it is actually visible.
     if (this.scrollMaxX > 0) {

@@ -47,7 +47,7 @@ function Site() {
       <p>Custom viewport, <kbd>textarea</kbd></p>
       <GenericScrollBox style={SCROLL_BOX_STYLE}
                         captureKeyboard={false}>
-        <textarea class="scroll-box-viewport" style={{overflow: 'hidden', resize: 'none'}} defaultValue={PLACEHOLDER}/>
+        <textarea className="scroll-box__viewport" style={{overflow: 'hidden', resize: 'none'}} defaultValue={PLACEHOLDER}/>
       </GenericScrollBox>
     </div>
   );

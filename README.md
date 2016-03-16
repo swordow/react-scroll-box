@@ -1,4 +1,4 @@
-# React ScrollBox Component
+# React Scroll Box Component
 
 Cross-browser and cross-platform scrollable container implementation with no external dependencies but React.
 
@@ -8,6 +8,9 @@ Cross-browser and cross-platform scrollable container implementation with no ext
 
 1. [`ScrollBox`](#scroll-box)
 2. [`GenericScrollBox`](#generic-scroll-box)
+  1. [Parameters](#parameters)
+  2. [Methods](#methods)
+  3. [Media Queries](#media-queries)
 3. [`ScrollAxes`](#scroll-axes)
 4. [`FastTrack`](#fast-track)
 
@@ -83,7 +86,7 @@ Easing function to animate scrolling.
 
 #### <a name="generic-scroll-box-class-name"></a>`{String} [className = "permit-scroll"]`
 
-Space-separated style class names. By default, 
+Space-separated style class names.
 
 #### <a name="generic-scroll-box-on-viewport-scroll"></a>`{Function} [onViewportScroll ({GenericScrollBox} target)]`
 
@@ -154,6 +157,19 @@ If non-numeric value is provided as `x` or `y` then corresponding position of sc
 Specify how long the scrolling should run with `duration` in milliseconds.
 
 Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+
+### Media Queries
+
+If you are using same markup for different platforms, sometimes it is useful to unwind scrollable elements and allow user to scroll them with page scrolling. Do achive this behavior use followin 
+
+1. Remove `"permit-scroll"` from `className` parameter.
+2. Add media query restrictions and use `.scroll-box-permit-scroll()` LESS mixin.
+
+```less
+@media (min-width: 960px) {
+  .scroll-box-permit-scroll();
+}
+```
 
 ## <a name="scroll-axes"></a>`ScrollAxes`
 

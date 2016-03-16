@@ -168,7 +168,9 @@ If you are using same markup for different platforms, sometimes it is useful to 
 ```less
 @media (min-width: 960px) {
   // Now scroll box would unwrap its content if browser viewport is less than 960px in width.
-  .scroll-box-wrap();
+  .scroll-box {
+    .scroll-box-wrap();
+  }
 }
 ```
 

@@ -36,7 +36,7 @@ You can prevent scrolling via calling `event.preventDefault()` for keboard or mo
 
 ```jsx
 <GenericScrollBox style={{height: '100px'}}>
-  <textarea className="scroll-box-viewport">
+  <textarea className="scroll-box__viewport">
     I can even scroll a textarea element!
   </textarea>
 </GenericScrollBox>

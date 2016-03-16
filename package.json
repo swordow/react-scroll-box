@@ -1,6 +1,6 @@
 {
   "name": "react-scroll-box",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Savva Mikhalevski",
   "description": "Powerful, cross-browser and cross-platform React ScrollBox component",
   "license": "MIT",
@@ -11,8 +11,8 @@
   "homepage": "https://github.com/smikhalevski/react-scroll-box",
   "main": "target/out/index.js",
   "files": [
-    "src/",
-    "target/",
+    "src/main/",
+    "target/out/",
     ".babelrc"
   ],
   "keywords": [

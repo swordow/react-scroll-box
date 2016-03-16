@@ -1,10 +1,25 @@
 # React ScrollBox Component
 
+Cross-browser and cross-platform scrollable container implementation with no external dependencies but React.
+
 [Live Demo](http://smikhalevski.github.io/react-scroll-box/)
+
+## Contents
+
+1. [**`ScrollBox`**](#scroll-box)
+2. [**`GenericScrollBox`**](#generic-scroll-box)
+  1. [`addEventListener`](#add-event-listener)
+  2. [`removeEventListener`](#remove-event-listener)
+  3. [`dispatchEvent`](#dispatch-event)
+  4. [`transaction`](#transaction)
 
 ## <a name="scroll-box"></a>`ScrollBox`
 
 Pure component that renders its children inside scrollable area.
+
+By default, scroll container has no height specified, so it would collapse and become invisible.
+
+Delegates properties to [`GenericScrollBox`](#generic-scroll-box). Accepts arbitrary number of children and renders them inside default viewport.
 
 ```javascript
 <ScrollBox style={{height: '100px'}}>
@@ -14,7 +29,9 @@ Pure component that renders its children inside scrollable area.
 
 ## <a name="generic-scroll-box"></a>`GenericScrollBox`
 
-The only difference from `ScrollBox` is that only one child element can be provided and that element is considered to be a scrolled viewport.
+Generic scrollable area that uses provided child element as a viewport, changing its `scrollTop` and `scrollLeft` DOM attributes. By default, scrollable area does not have any height specified, you need to define it manually in your component styles.
+
+You can prevent scrolling via calling `event.preventDefault()` for keboard or mousewheel events.
 
 ```javascript
 <GenericScrollBox style={{height: '100px'}}>
@@ -24,47 +41,47 @@ The only difference from `ScrollBox` is that only one child element can be provi
 </GenericScrollBox>
 ```
 
-### Props
+### Parameters
 
-#### <a name="axes"></a><code><i>{"x"|"y"|"xy"}</i> [axes = "xy"]</code>
+#### <a name="generic-scroll-box-axes"></a><code>{<a href="#scroll-axes">ScrollAxes</a>} [axes = ScrollAxes.XY]</code>
 
-Scroll axes that are allowed. If scroll axis is not allowed, corresponding scroll offset would be constantly equal to 0.
+Scroll axes that are allowed to be affected. If scroll axis is not allowed to be changed, corresponding scroll offset would be constantly equal to 0.
 
-#### <a name="fast-track"></a><code><i>{"paging"|"rewind"|null}</i> [fastTrack = "rewind"]</code>
+#### <a name="generic-scroll-box-fast-track"></a><code>{<a href="#fast-track">FastTrack</a>} [fastTrack = FastTrack.REWIND]</code>
 
 Expected behavior when user clicks on scroll track.
 
-#### <a name="fast-track-duration"></a><code><i>{Number}</i> [fastTrackDuration = 500]</code>
+#### <a name="generic-scroll-box-fast-track-duration"></a>`{Number} [fastTrackDuration = 500]`
 
-Fast track animation duration.
+Fast track animation duration in milliseconds.
 
-#### <a name="disabled"></a><code><i>{Boolean}</i> [disabled = false]</code>
+#### <a name="generic-scroll-box-disabled"></a>`{Boolean} [disabled = false]`
 
-Disable control.
+Disable scroll box control.
 
-#### <a name="capture-keyboard"></a><code><i>{Boolean}</i> [captureKeyboard = true]</code>
+#### <a name="generic-scroll-box-capture-keyboard"></a>`{Boolean} [captureKeyboard = true]`
 
-Use keyboard for scrolling.
+Use keyboard for scrolling when scroll box is focused. Arrow keys, `Home`, `End`, `Page Up`, `Page Down` are captured. You can also use `Shift` key along with `Page Up`, `Page Down` to scroll in horizontal axis.
 
-#### <a name="outset"></a><code><i>{Boolean}</i> [outset = false]</code>
+#### <a name="generic-scroll-box-outset"></a>`{Boolean} [outset = false]`
 
 Display scrollbars outside of scrollable area. On mobile devices when native scrollbar is used `outset` property has no effect because scrollbars do not crop any space from viewport.
 
-#### <a name="native"></a><code><i>{Boolean}</i> [native]</code>
+#### <a name="generic-scroll-box-native"></a>`{Boolean} [native]`
 
 Use native scroll bars. By default, this flag is set to `true` on mobile platforms and `false` on desktops but you can change it manually.
 
-#### <a name="step-x"></a><code><i>{Number}</i> [stepX = 30]</code>
+#### <a name="generic-scroll-box-step-x"></a>`{Number} [stepX = 30]`
 
 Horizontal scroll step for keyboard scrolling in pixels.
 
-#### <a name="step-y"></a><code><i>{Number}</i> [stepY = 30]</code>
+#### <a name="generic-scroll-box-step-y"></a>`{Number} [stepY = 30]`
 
 Vertical scroll step for keyboard scrolling in pixels.
 
-#### <a name="easing"></a><code><i>{Function}</i> [easing]</code>
+#### <a name="generic-scroll-box-easing"></a>`{Function} [easing]`
 
-Easing function for animated scrolling. See jQuery easings for more info.
+Easing function to animate scrolling. 
 
 ```javascript
 function easeCircOut(percentage, elapsedTime, min, max, duration) {
@@ -72,76 +89,108 @@ function easeCircOut(percentage, elapsedTime, min, max, duration) {
 }
 ```
 
-#### <a name="class-name"></a><code><i>{String|Object}</i> [className]</code>
+#### <a name="generic-scroll-box-class-name"></a>`{String} [className = "permit-scroll"]`
 
-List of style CSS class names concatenated with [`classnames`](https://github.com/JedWatson/classnames).
+Space-separated style class names. By default, 
 
-#### <a name="on-viewport-scroll"></a><code><i>{Function}</i> [onViewportScroll]</code>
+#### <a name="generic-scroll-box-on-viewport-scroll"></a>`{Function} [onViewportScroll({GenericScrollBox} target)]`
 
-Callback that is invoked when scrolling occurs.
+Callback that is invoked when any scrolling occurs. Repetedly called during animation, handle dragging and fast tracking.
 
-### Instance Methods
+### Methods
 
-#### <a name="get-target-x"></a><code><i>{Number}</i> getTargetX ()</code>
+#### <a name="generic-scroll-box-get-target-x"></a>`{Number} getTargetX()`
 
-Horizontal scroll position in pixels that was last requested.
+Horizontal scroll position in pixels that was last requested via [`scrollTo`](#generic-scroll-box-scroll-to) or [`scrollBy`](generic-scroll-box-scroll-by).
 
-#### <a name="get-target-y"></a><code><i>{Number}</i> getTargetY ()</code>
+#### <a name="generic-scroll-box-get-target-y"></a>`{Number} getTargetY()`
 
-Vertical scroll position in pixels that was last requested.
+Vertical scroll position in pixels that was last requested via [`scrollTo`](#generic-scroll-box-scroll-to) or [`scrollBy`](generic-scroll-box-scroll-by).
 
-#### <a name="get-scroll-x"></a><code><i>{Number}</i> getScrollX ()</code>
+#### <a name="generic-scroll-box-get-scroll-x"></a>`{Number} getScrollX()`
 
 Actual horizontal scroll position that user observes.
 
-#### <a name="get-scroll-y"></a><code><i>{Number}</i> getScrollY ()</code>
+#### <a name="generic-scroll-box-get-scroll-y"></a>`{Number} getScrollY()`
 
 Actual vertical scroll position that user observes.
 
-#### <a name="get-dragged-handle"></a><code><i>{HTMLElement}</i> getDraggedHandle ()</code>
+#### <a name="generic-scroll-box-get-dragged-handle"></a>`{?HTMLElement} getDraggedHandle()`
 
-Handle that is being dragged by user.
+Handle that is being dragged by user or `null` if no handle is being dragged at the moment of invocation.
 
-#### <a name="is-dragging-handle"></a><code><i>{Boolean}</i> isDraggingHandle ()</code>
+#### <a name="generic-scroll-box-is-dragging-handle"></a>`{Boolean} isDraggingHandle()`
 
-Is handle being dragged.
+Returns `true` if user is dragging handle, `false` otherwise. Useful to destinguish scrolling cause in `onViewportScroll` callback.
 
-#### <a name="is-fast-tracking"></a><code><i>{Boolean}</i> isFastTracking ()</code>
+#### <a name="generic-scroll-box-is-fast-tracking"></a>`{Boolean} isFastTracking()`
 
-Is user fast tracking scroll box.
+Returns `true` if fast tracking is in progress, `false` otherwise. Useful to destinguish scrolling cause in `onViewportScroll` callback.
 
-#### <a name="get-viewport"></a><code><i>{HTMLElement}</i> getViewport ()</code>
+#### <a name="generic-scroll-box-get-viewport"></a>`{HTMLElement} getViewport()`
 
 Get element provided as viewport.
 
-#### <a name="get-track-x"></a><code><i>{HTMLElement}</i> getTrackX ()</code>
+#### <a name="generic-scroll-box-get-track-x"></a>`{HTMLElement} getTrackX()`
 
-Get horizontal track.
+Get horizontal track element.
 
-#### <a name="get-track-y"></a><code><i>{HTMLElement}</i> getTrackY ()</code>
+#### <a name="generic-scroll-box-get-track-y"></a>`{HTMLElement} getTrackY()`
 
-Get vertical track.
+Get vertical track element.
 
-#### <a name="scroll-by"></a><code><i>{void}</i> scrollBy (dx, dy, [duration = 0], [quiet = false])</code>
+#### <a name="generic-scroll-box-scroll-by"></a>`{void} scrollBy(dx, dy, [duration = 0], [quiet = false])`
 
-Scroll area by the given amount of pixels.
-
-Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content.
-
-If non-numeric value is provided then corresponding position of scroll bar coordinate is not changed.
-
-Specify how long the scrolling should run with `duration` (msec).
-
-Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
-
-#### <a name="scroll-to"></a><code><i>{void}</i> scrollTo (x, y, [duration = 0], [quiet = false])</code>
-
-Scroll area by the given amount of pixels.
+Scroll by the given amount of pixels.
 
 Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content.
 
-If non-numeric value is provided then corresponding position of scroll bar coordinate is not changed.
+If non-numeric value is provided as `dx` or `dy` then corresponding position of scroll bar coordinate is not changed.
 
-Specify how long the scrolling should run with `duration` (msec).
+Specify how long the scrolling should run with `duration` in milliseconds.
 
 Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+
+#### <a name="generic-scroll-box-scroll-to"></a>`{void} scrollTo(x, y, [duration = 0], [quiet = false])`
+
+Scroll content to a particular place in pixels.
+
+Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content.
+
+If non-numeric value is provided as `x` or `y` then corresponding position of scroll bar coordinate is not changed.
+
+Specify how long the scrolling should run with `duration` in milliseconds.
+
+Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+
+## <a name="scroll-axes"></a>`ScrollAxes`
+
+Enum of combinations af axes that can be scrolled.
+
+### `ScrollAxes.X = "x"`
+
+Allow horizontal scrolling only.
+
+### `ScrollAxes.X = "y"`
+
+Allow vertical scrolling only.
+
+### `ScrollAxes.X = "xy"`
+
+Allow both vertical and horizontal scrolling.
+
+## <a name="fast-track"></a>`FastTrack`
+
+Enum of fast track behaviors.
+
+### `FastTrack.PAGING = "paging"`
+
+When user clicks on scrolling track, content is scrolled by one page in corresponding direction.
+
+### `FastTrack.REWIND = "rewind"`
+
+When user clicks on scrolling track, content is scrolled directly to the corresponding position.
+
+### `FastTrack.NONE = null`
+
+Prevent fast tracking.

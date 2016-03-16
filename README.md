@@ -1,4 +1,4 @@
-# React Scroll Box Component
+# React Scroll Box Component v0.0.6
 
 Cross-browser and cross-platform scrollable container implementation with no external dependencies but React.
 

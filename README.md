@@ -84,7 +84,7 @@ Vertical scroll step for keyboard scrolling in pixels.
 
 Easing function to animate scrolling.
 
-#### <a name="generic-scroll-box-class-name"></a>`{String} [className = "permit-scroll"]`
+#### <a name="generic-scroll-box-class-name"></a>`{String} [className = "wrapped"]`
 
 Space-separated style class names.
 

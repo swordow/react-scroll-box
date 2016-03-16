@@ -9,14 +9,21 @@ Implementation considers your browser supports [`window.requestAnimationFrame`](
 
 ## Contents
 
-1. [`ScrollBox`](#scroll-box)
-2. [`GenericScrollBox`](#generic-scroll-box)
+1. [How to import](#how-to-import)
+2. [`ScrollBox`](#scroll-box)
+3. [`GenericScrollBox`](#generic-scroll-box)
   1. [Parameters](#parameters)
   2. [Methods](#methods)
   3. [Media Queries](#media-queries)
-3. [`ScrollAxes`](#scroll-axes)
-4. [`FastTrack`](#fast-track)
+4. [`ScrollAxes`](#scroll-axes)
+5. [`FastTrack`](#fast-track)
 
+
+## How to import
+
+```javascript
+import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box';
+```
 
 ## <a name="scroll-box"></a>`ScrollBox`
 

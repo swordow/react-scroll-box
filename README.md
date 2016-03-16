@@ -160,7 +160,7 @@ Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requeste
 
 ### Media Queries
 
-If you are using same markup for different platforms, sometimes it is useful to unwind scrollable elements and allow user to scroll them with page scrolling. Do achive this behavior use followin 
+If you are using same markup for different platforms, sometimes it is useful to unwind scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
 
 1. Remove `"permit-scroll"` from `className` parameter.
 2. Add media query restrictions and use `.scroll-box-permit-scroll()` LESS mixin.

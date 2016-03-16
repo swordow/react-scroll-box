@@ -483,7 +483,7 @@ export class GenericScrollBox extends React.Component {
   
   onCursorApproachingTrack = e => {
     const {native} = this.props;
-    if (native || this.props.hoverProximity <= 0) {
+    if (native || this.isDraggingHandle() || this.props.hoverProximity <= 0) {
       return; // Do not track cursor proximity for native scroll bar.
     }
     // Update track hover status only if it is actually visible.

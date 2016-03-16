@@ -2,7 +2,7 @@
 @scroll-bar-border-radius: @scroll-bar-hover-weight; // Rounded caps.
 
 @scroll-bar-weight:       6px; // Height of width for horizontal or vertical scroll bar respectively.
-@scroll-bar-hover-weight: (@scroll-bar-weight * 2);
+@scroll-bar-hover-weight: (@scroll-bar-weight * 1.7);
 @scroll-bar-offset:       4px; // Distance from scroll box container border to scroll bar.
 @scroll-bar-min-size:     30px;
 @scroll-bar-max-size:     100%;
@@ -110,7 +110,6 @@
       margin: @scroll-bar-y-top @scroll-bar-y-right @scroll-bar-y-bottom 0;
 
       &.@{scroll-box}__track {
-        &:hover,
         &_hover,
         &_dragged {
           width: @scroll-bar-y-hover-width;
@@ -129,7 +128,6 @@
       margin: 0 @scroll-bar-x-right @scroll-bar-x-bottom @scroll-bar-x-left;
 
       &.@{scroll-box}__track {
-        &:hover,
         &_hover,
         &_dragged {
           height: @scroll-bar-x-hover-height;
@@ -174,7 +172,6 @@
   > .@{scroll-box}__track {
     background: @track-bg;
 
-    &:hover,
     &_hover,
     &_dragged {
       background: @hover-track-bg;

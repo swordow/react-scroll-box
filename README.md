@@ -84,7 +84,11 @@ Vertical scroll step for keyboard scrolling in pixels.
 
 Easing function to animate scrolling.
 
-#### <a name="generic-scroll-box-class-name"></a>`{String} [className = "wrapped"]`
+#### <a name="generic-scroll-box-style"></a>`{Object} [style]`
+
+Style to apply to `.scroll-box` element.
+
+#### <a name="generic-scroll-box-class-name"></a>`{String} [className = "scroll-box_wrapped"]`
 
 Space-separated style class names.
 
@@ -162,7 +166,7 @@ Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requeste
 
 If you are using same markup for different platforms, sometimes it is useful to unwrap scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
 
-1. Remove `wrapped` from `className` parameter.
+1. Remove class `.scroll-box_wrapped` from `className` parameter.
 2. Add media query restrictions and use `.scroll-box-wrap()` LESS mixin.
 
 ```less

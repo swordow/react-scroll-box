@@ -160,14 +160,15 @@ Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requeste
 
 ### Media Queries
 
-If you are using same markup for different platforms, sometimes it is useful to unwind scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
+If you are using same markup for different platforms, sometimes it is useful to unwrap scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
 
-1. Remove `"permit-scroll"` from `className` parameter.
-2. Add media query restrictions and use `.scroll-box-permit-scroll()` LESS mixin.
+1. Remove `wrapped` from `className` parameter.
+2. Add media query restrictions and use `.scroll-box-wrap()` LESS mixin.
 
 ```less
 @media (min-width: 960px) {
-  .scroll-box-permit-scroll();
+  // Now scroll box would unwrap its content if browser viewport is less than 960px in width.
+  .scroll-box-wrap();
 }
 ```
 

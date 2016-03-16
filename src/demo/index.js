@@ -19,36 +19,36 @@ function Site() {
       <p>Basic text content</p>
       <ScrollBox style={SCROLL_BOX_STYLE}>{PLACEHOLDER}</ScrollBox>
 
-      <p>Relative content sizing</p>
-      <ScrollBox style={SCROLL_BOX_STYLE}>
-        <div style={{height: '100%', background: 'yellow'}}>Height 100%</div>
-        <div style={{height: '50%', width: '150%', background: 'red'}}>Height 50%, width 150%</div>
-      </ScrollBox>
 
-      <p>Outset scrollbars</p>
-      <ScrollBox style={SCROLL_BOX_STYLE}
-                 outset>
-        <div style={{width: '500px'}}>{PLACEHOLDER}</div>
-      </ScrollBox>
 
-      <p>Native scrollbars</p>
-      <ScrollBox style={SCROLL_BOX_STYLE}
-                 native>
-        <div style={{width: '500px'}}>{PLACEHOLDER}</div>
-      </ScrollBox>
+      {/*<p>Relative content sizing</p>
+       <ScrollBox style={SCROLL_BOX_STYLE}>
+       <div style={{height: '100%', background: 'yellow'}}>Height 100%</div>
+       <div style={{height: '50%', width: '150%', background: 'red'}}>Height 50%, width 150%</div>
+       </ScrollBox><p>Outset scrollbars</p>
+       <ScrollBox style={SCROLL_BOX_STYLE}
+       outset>
+       <div style={{width: '500px'}}>{PLACEHOLDER}</div>
+       </ScrollBox>
 
-      <p>Native outset scrollbars</p>
-      <ScrollBox style={SCROLL_BOX_STYLE}
-                 native
-                 outset>
-        <div style={{width: '500px'}}>{PLACEHOLDER}</div>
-      </ScrollBox>
+       <p>Native scrollbars</p>
+       <ScrollBox style={SCROLL_BOX_STYLE}
+       native>
+       <div style={{width: '500px'}}>{PLACEHOLDER}</div>
+       </ScrollBox>
 
-      <p>Custom viewport, <kbd>textarea</kbd></p>
-      <GenericScrollBox style={SCROLL_BOX_STYLE}
-                        captureKeyboard={false}>
-        <textarea className="scroll-box__viewport" style={{overflow: 'hidden', resize: 'none'}} defaultValue={PLACEHOLDER}/>
-      </GenericScrollBox>
+       <p>Native outset scrollbars</p>
+       <ScrollBox style={SCROLL_BOX_STYLE}
+       native
+       outset>
+       <div style={{width: '500px'}}>{PLACEHOLDER}</div>
+       </ScrollBox>
+
+       <p>Custom viewport, <kbd>textarea</kbd></p>
+       <GenericScrollBox style={SCROLL_BOX_STYLE}
+       captureKeyboard={false}>
+       <textarea className="scroll-box__viewport" style={{overflow: 'hidden', resize: 'none'}} defaultValue={PLACEHOLDER}/>
+       </GenericScrollBox>*/}
     </div>
   );
 }

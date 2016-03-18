@@ -25,7 +25,12 @@ const
   EVENT_MOUSE_UP = 'mouseup',
   EVENT_BLUR = 'blur',
 
-  ACTION_BUTTON = 1;
+  ACTION_BUTTON = 1,
+
+  // Maximum amount of pixels allowed as mouse wheel delta.
+  // Required to normalize mouse wheel speed across devices.
+  // Usually varies from 100 - 1500px.
+  MAX_WHEEL_SPEED = 600;
 
 export const ScrollAxes = Object.freeze({
   X: 'x',
@@ -317,15 +322,16 @@ export class GenericScrollBox extends React.Component {
     if (this.props.disabled || e.isDefaultPrevented()) {
       return;
     }
-    let dx = e.deltaX * this.hasAxis(ScrollAxes.X),
-        dy = e.deltaY * this.hasAxis(ScrollAxes.Y);
+    let {stepX, stepY} = this.props,
+        dx = Math.min(e.deltaX, MAX_WHEEL_SPEED) / 100 * stepX * this.hasAxis(ScrollAxes.X),
+        dy = Math.min(e.deltaY, MAX_WHEEL_SPEED) / 100 * stepY * this.hasAxis(ScrollAxes.Y);
 
     if (dx + dy == 0) {
       return; // Nothing to scroll.
     }
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
-    if (e.shiftKey && !window.chrome) {
+    if (e.shiftKey && dx == 0) {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();

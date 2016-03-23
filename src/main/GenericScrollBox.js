@@ -49,6 +49,16 @@ function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
 }
 
+// IE10+ has `classList.toggle` bu lacks second argument support,
+// so use this function to avoid excessive polyfill.
+function toggleClass(el, className, force) {
+  if (force) {
+    el.classList.add(className);
+  } else {
+    el.classList.remove(className);
+  }
+}
+
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
@@ -243,8 +253,8 @@ export class GenericScrollBox extends React.Component {
     this.targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
     this.targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
 
-    el.classList.toggle(CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 0);
-    el.classList.toggle(CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 0);
+    toggleClass(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 0);
+    toggleClass(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 0);
 
     const {targetX, targetY, scrollY, scrollX, previousX, previousY, _duration} = this;
     let x = targetX,
@@ -483,7 +493,7 @@ export class GenericScrollBox extends React.Component {
           {hoverProximity} = this.props,
           {width, left, top, height} = track.getBoundingClientRect();
 
-    track.classList.toggle(CLASS_TRACK_HOVER,
+    toggleClass(track, CLASS_TRACK_HOVER,
       clientY - height - top < hoverProximity && top - clientY < hoverProximity &&
       clientX - width - left < hoverProximity && left - clientX < hoverProximity);
   }

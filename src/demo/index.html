@@ -11,28 +11,13 @@
   <meta http-equiv="Pragma" content="no-cache"/>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/styles/default.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/highlight.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
-
-  {% if (o.htmlWebpackPlugin.files.favicon) { %}
-  <link rel="icon" href="{%=o.htmlWebpackPlugin.files.favicon%}" type="image/x-icon"/>
-  <link rel="shortcut icon" href="{%=o.htmlWebpackPlugin.files.favicon%}" type="image/x-icon"/>
-  {% } %}
   {% for (var key in o.htmlWebpackPlugin.files.css) { %}
   <link type="text/css" href="{%=o.htmlWebpackPlugin.files.css[key] %}" rel="stylesheet"/>
   {% } %}
   <title>React Scroll Box Component</title>
 </head>
 <body>
-<section class="jumbotron text-xs-center">
-  <div class="container">
-    <h1 class="jumbotron-heading">React Scroll Box Component</h1>
-    <p class="lead text-muted">Powerful, cross-browser and cross-platform React scroll box component</p>
-  </div>
-</section>
-<div class="album text-muted" id="demo">
-</div>
+<section id="demo"></section>
 {% for (var key in o.htmlWebpackPlugin.files.chunks) { %}
 <script src="{%=o.htmlWebpackPlugin.files.chunks[key].entry %}"></script>
 {% } %}

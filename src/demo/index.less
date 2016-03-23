@@ -1,4 +1,6 @@
-@import "../main/index";
+@import "../main/scroll-box";
+
+@example-grid-padding: 30px;
 
 html,
 body {
@@ -11,4 +13,19 @@ body {
 
 #site {
   padding: 50px;
+}
+
+.scroll-box-example {
+
+  .scroll-box {
+    height: 200px;
+    background: #f4f4f4;
+  }
+
+  .card {
+    width: calc((100% - ((@example-grid-padding * 3))) / 3);
+    display: inline-block;
+    vertical-align: top;
+    margin: (@example-grid-padding / 2);
+  }
 }

@@ -1,10 +1,8 @@
-# React Scroll Box Component v0.0.7
+# React Scroll Box Component v0.0.8
 
 Cross-browser and cross-platform scrollable container implementation with no external dependencies but React.
 
-Implementation considers your browser supports [`window.requestAnimationFrame`](http://caniuse.com/#search=requestAnimationFrame) and [`HTMLElement.classList`](http://caniuse.com/#search=classList).
-
-Without polyfills supports FF, Chrome, Safari, iOS Safari, Opera and IE10+.
+Supports FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
 [Live Demo](http://smikhalevski.github.io/react-scroll-box/) ([Source Code](https://github.com/smikhalevski/react-scroll-box/blob/master/src/demo/index.js))
 

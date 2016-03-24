@@ -20,8 +20,8 @@ class Demo extends Component {
     outset: false
   };
 
-  onNativeChange = e => {
-    this.setState({native: e.target.checked});
+  onNativeChange = native => {
+    this.setState({native});
   };
 
   onOutsetChange = e => {
@@ -32,12 +32,12 @@ class Demo extends Component {
     this.setState({captureKeyboard: e.target.checked});
   };
 
-  onScrollingAxesChange = e => {
-    this.setState({axes: e.target.value});
+  onScrollingAxesChange = axes => {
+    this.setState({axes});
   };
 
-  onFastTrackChange = e => {
-    this.setState({fastTrack: e.target.value});
+  onFastTrackChange = fastTrack => {
+    this.setState({fastTrack});
   };
 
   onHoverProximityChange = e => {
@@ -50,13 +50,29 @@ class Demo extends Component {
   };
 
   render() {
+    let {native, ...props} = this.state;
+    if (native !== null) {
+      props.native = native;
+    }
+
     return (
       <div className="container">
         <form>
 
-          <div className="checkbox">
+          <p>Type of scrollbars to use</p>
+          <div className="radio">
             <label>
-              <input type="checkbox" checked={this.state.native} onChange={this.onNativeChange}/> Use native scroll bars
+              <input type="radio" name="optionsRadios" id="optionsRadios2" checked={this.state.native === true} onChange={e => this.onNativeChange(true)}/> Native
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="optionsRadios" id="optionsRadios2" checked={this.state.native === false} onChange={e => this.onNativeChange(false)}/> Custom
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="optionsRadios" id="optionsRadios2" checked={this.state.native === null} onChange={e => this.onNativeChange(null)}/> Platform-dependent
             </label>
           </div>
 
@@ -84,27 +100,45 @@ class Demo extends Component {
             <small className="text-muted">We'll never share your email with anyone else.</small>
           </fieldset>
 
-          <fieldset className="form-group">
-            <label htmlFor="axes">Scrolling axes</label>
-            <select className="form-control" id="axes" value={this.state.axes} onChange={this.onScrollingAxesChange}>
-              <option value={ScrollAxes.X}>ScrollAxes.X</option>
-              <option value={ScrollAxes.Y}>ScrollAxes.Y</option>
-              <option value={ScrollAxes.XY}>ScrollAxes.XY</option>
-            </select>
-          </fieldset>
+          <p>Scrolling axes</p>
+          <div className="radio">
+            <label>
+              <input type="radio" name="axes" checked={this.state.axes === ScrollAxes.X} onChange={e => this.onScrollingAxesChange(ScrollAxes.X)}/> <code>ScrollAxes.X</code>
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="axes" checked={this.state.axes === ScrollAxes.Y} onChange={e => this.onScrollingAxesChange(ScrollAxes.Y)}/> <code>ScrollAxes.Y</code>
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="axes" checked={this.state.axes === ScrollAxes.XY} onChange={e => this.onScrollingAxesChange(ScrollAxes.XY)}/> <code>ScrollAxes.XY</code>
+            </label>
+          </div>
 
-          <fieldset className="form-group">
-            <label htmlFor="fast-track">Fast track behavior</label>
-            <select disabled={this.state.native} className="form-control" id="fast-track" value={this.state.fastTrack} onChange={this.onFastTrackChange}>
-              <option value={FastTrack.REWIND}>FastTrack.REWIND</option>
-              <option value={FastTrack.PAGING}>FastTrack.PAGING</option>
-              <option value={FastTrack.NONE}>FastTrack.NONE</option>
-            </select>
-          </fieldset>
+          <p>Fast track behavior</p>
+          <div className="radio">
+            <label>
+              <input type="radio" name="fast-track" checked={this.state.fastTrack === FastTrack.REWIND} onChange={e => this.onFastTrackChange(FastTrack.REWIND)}/> <code>FastTrack.REWIND</code>
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="fast-track" checked={this.state.fastTrack === FastTrack.PAGING} onChange={e => this.onFastTrackChange(FastTrack.PAGING)}/> <code>FastTrack.PAGING</code>
+            </label>
+          </div>
+          <div className="radio">
+            <label>
+              <input type="radio" name="fast-track" checked={this.state.fastTrack === FastTrack.NONE} onChange={e => this.onFastTrackChange(FastTrack.NONE)}/> <code>FastTrack.NONE</code>
+            </label>
+          </div>
 
         </form>
 
-        <ScrollBox {...this.state} className="scroll-box_example scroll-box_wrapped">{PLACEHOLDER}</ScrollBox>
+        <ScrollBox {...props} className="scroll-box_example scroll-box_wrapped">
+          <div className="scroll-box__clouds"/>
+        </ScrollBox>
       </div>
     );
   }

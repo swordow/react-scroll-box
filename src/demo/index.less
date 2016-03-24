@@ -16,11 +16,20 @@ body {
   }
 }
 
-#site {
-  padding: 50px;
+#demo {
+  padding: 50px 0;
 }
 
-.scroll-box_example {
-  height: 200px;
-  background: #cdcdcd;
+.scroll-box {
+  &_example {
+    height: 30vh;
+    background-color: rgba(74, 202, 255, 0.88);
+    border-radius: 5px;
+  }
+  &__clouds {
+    width: 4289px;
+    height: 1067px;
+    background-image: url('./panorama.jpg');
+    background-size: contain;
+  }
 }

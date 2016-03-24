@@ -38,6 +38,7 @@ export const FastTrack = Object.freeze({
 });
 
 // Default easing function.
+//noinspection JSUnusedLocalSymbols
 function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
 }
@@ -371,7 +372,7 @@ export class GenericScrollBox extends React.Component {
     if (native || disabled || !captureKeyboard || e.isDefaultPrevented()) {
       return;
     }
-    if (/3[6534879]|40/.test(e.keyCode)) {
+    if (/3[6534879]|40/.test(String(e.keyCode))) {
       // Prevent page scrolling.
       e.preventDefault();
     }
@@ -444,7 +445,7 @@ export class GenericScrollBox extends React.Component {
       this.scrollTo(x, y, 0);
     };
 
-    let onDragEnd = e => {
+    let onDragEnd = () => {
       this._activeHandle = null;
       removeEventListener(EVENT_MOUSE_MOVE, onDrag);
       removeEventListener(EVENT_MOUSE_UP, onDragEnd);

@@ -1,6 +1,6 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 import {findDOMNode} from 'react-dom';
-const {number, bool, func, oneOf} = PropTypes;
+const {number, bool, func, oneOf} = React.PropTypes;
 
 const
   CLASS_SCROLL_BOX = 'scroll-box',
@@ -23,14 +23,7 @@ const
 
   EVENT_MOUSE_MOVE = 'mousemove',
   EVENT_MOUSE_UP = 'mouseup',
-  EVENT_BLUR = 'blur',
-
-  ACTION_BUTTON = 1,
-
-  // Maximum amount of pixels allowed as mouse wheel delta.
-  // Required to normalize mouse wheel speed across devices.
-  // Usually varies from 100 - 1500px.
-  MAX_WHEEL_SPEED = 600;
+  EVENT_BLUR = 'blur';
 
 export const ScrollAxes = Object.freeze({
   X: 'x',
@@ -49,14 +42,28 @@ function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
 }
 
-// IE10+ has `classList.toggle` bu lacks second argument support,
-// so use this function to avoid excessive polyfill.
 function toggleClass(el, className, force) {
-  if (force) {
-    el.classList.add(className);
-  } else {
-    el.classList.remove(className);
+  let classNames = el.className.split(' '),
+      i = classNames.indexOf(className);
+  if (force == null) {
+    force = i < 0;
   }
+  if (force) {
+    if (i >= 0) {
+      return; // Class already added.
+    }
+    classNames.push(className);
+  } else {
+    if (i < 0) {
+      return; // Class already removed.
+    }
+    do {
+      // Class name can be repeated multiple times.
+      classNames.splice(i, 1);
+      i = classNames.indexOf(className);
+    } while (i >= 0);
+  }
+  el.className = classNames.join(' ');
 }
 
 export class GenericScrollBox extends React.Component {
@@ -332,9 +339,12 @@ export class GenericScrollBox extends React.Component {
     if (this.props.disabled || e.isDefaultPrevented()) {
       return;
     }
-    let {stepX, stepY} = this.props,
-        dx = Math.min(e.deltaX, MAX_WHEEL_SPEED) / 100 * stepX * this.hasAxis(ScrollAxes.X),
-        dy = Math.min(e.deltaY, MAX_WHEEL_SPEED) / 100 * stepY * this.hasAxis(ScrollAxes.Y);
+    let {stepX, stepY} = this.props;
+
+    // Maximum amount of pixels allowed as mouse wheel delta. Required to normalize mouse wheel speed across devices.
+    // In most browsers varies from 100px to 1500px.
+    let dx = Math.min(e.deltaX, 600) / 100 * stepX * this.hasAxis(ScrollAxes.X),
+        dy = Math.min(e.deltaY, 600) / 100 * stepY * this.hasAxis(ScrollAxes.Y);
 
     if (dx + dy == 0) {
       return; // Nothing to scroll.
@@ -396,7 +406,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   onDragStart(e, axis) {
-    if (this.props.disabled || e.buttons !== ACTION_BUTTON) {
+    if (this.props.disabled || e.button > 0) {
       return;
     }
     e.preventDefault();
@@ -415,7 +425,7 @@ export class GenericScrollBox extends React.Component {
           OFFSET_Y = e.clientY - this.handleY.offsetTop;
 
     let onDrag = e => {
-      if (e.buttons !== ACTION_BUTTON || this.handleX == null) {
+      if (e.button > 0 || this.handleX == null) {
         onDragEnd(); // Component was unmounted or mouse was released.
       }
       if (axis == ScrollAxes.X) {
@@ -433,14 +443,14 @@ export class GenericScrollBox extends React.Component {
       removeEventListener(EVENT_BLUR, onDragEnd);
       if (this.handleX) {
         // Check component is mounted.
-        draggedTrack.classList.remove(CLASS_TRACK_DRAGGED);
+        toggleClass(draggedTrack, CLASS_TRACK_DRAGGED, false);
       }
     };
 
     addEventListener(EVENT_MOUSE_MOVE, onDrag);
     addEventListener(EVENT_MOUSE_UP, onDragEnd);
     addEventListener(EVENT_BLUR, onDragEnd);
-    draggedTrack.classList.add(CLASS_TRACK_DRAGGED);
+    toggleClass(draggedTrack, CLASS_TRACK_DRAGGED, true);
   };
 
   onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
@@ -448,7 +458,7 @@ export class GenericScrollBox extends React.Component {
   onDragStartY = e => this.onDragStart(e, ScrollAxes.Y);
 
   onFastTrack(e, axis) {
-    if (this.props.disabled || e.buttons !== ACTION_BUTTON) {
+    if (this.props.disabled || e.button > 0) {
       return;
     }
     let x, y;
@@ -504,7 +514,7 @@ export class GenericScrollBox extends React.Component {
     // Do not track cursor proximity for native scroll bar, when handle is being dragged,
     // when selection is in progress or when another handle is being dragged (even on another
     // scroll box instance).
-    if (native || e.buttons === ACTION_BUTTON) {
+    if (native || e.buttons > 0) {
       return;
     }
     // Update track hover status only if it is actually visible.
@@ -521,7 +531,11 @@ export class GenericScrollBox extends React.Component {
       if (this.handleX == null) {
         return; // Component was unmounted.
       }
-      requestAnimationFrame(requestForceSync);
+      if (window.requestAnimationFrame) {
+        requestAnimationFrame(requestForceSync);
+      } else {
+        setTimeout(requestForceSync, 1000 / 30);
+      }
       this.forceSync();
     };
     requestForceSync();

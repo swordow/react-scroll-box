@@ -146,6 +146,10 @@ export class GenericScrollBox extends React.Component {
   // Is fast tracking in progress.
   _fastTracking = false;
 
+  // `native` flag status that was last processed by `forceSync`.
+  // Required to detect native to custom scrollbar switching.
+  _native;
+
   hasAxis(axis) {
     return this.props.axes.indexOf(axis) >= 0;
   }
@@ -279,8 +283,10 @@ export class GenericScrollBox extends React.Component {
         // Scroll animation completed.
         this._duration = 0;
       }
-      viewport.scrollLeft = x;
-      viewport.scrollTop = y;
+      if (!native) {
+        viewport.scrollLeft = x;
+        viewport.scrollTop = y;
+      }
     } else {
       // Viewport scroll position is not synced with component state.
       // This is usually caused by system scrolling, resize of element etc.
@@ -291,7 +297,7 @@ export class GenericScrollBox extends React.Component {
       y = this.targetY = viewport.scrollTop;
     }
 
-    if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y) {
+    if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y && this._native == native) {
       if (this._duration == 0) {
         // Animation has completed and geometry did not change, so reset flags possibly introduced
         // during scroll request (by `scrollTo` or fast tracking).
@@ -304,6 +310,7 @@ export class GenericScrollBox extends React.Component {
       return;
     }
 
+    this._native = native;
     this.handleXWidth = 0;
     this.handleYHeight = 0;
     this.trackMaxX = 0;
@@ -334,17 +341,16 @@ export class GenericScrollBox extends React.Component {
   }
 
   onWheel = e => {
-    // Do not disable wheel when native scrolling is enabled.
-    // This helps to avoid native smooth scroll collisions.
-    if (this.props.disabled || e.isDefaultPrevented()) {
+    const {stepX, stepY, native, disabled} = this.props;
+
+    if (native || disabled || e.isDefaultPrevented()) {
       return;
     }
-    let {stepX, stepY} = this.props;
-
-    // Maximum amount of pixels allowed as mouse wheel delta. Required to normalize mouse wheel speed across devices.
-    // In most browsers varies from 100px to 1500px.
-    let dx = Math.min(e.deltaX, 600) / 100 * stepX * this.hasAxis(ScrollAxes.X),
-        dy = Math.min(e.deltaY, 600) / 100 * stepY * this.hasAxis(ScrollAxes.Y);
+    // Normalize mouse wheel delta among browsers and devices.
+    // Usually `event.delta*` in IE 100-400, in Chrome 100-300, in FF 3-10, and
+    // these values may even differ in different browser versions.
+    let dx = e.deltaX / Math.abs(e.deltaX) * stepX * this.hasAxis(ScrollAxes.X),
+        dy = e.deltaY / Math.abs(e.deltaY) * stepY * this.hasAxis(ScrollAxes.Y);
 
     if (dx + dy == 0) {
       return; // Nothing to scroll.
@@ -359,14 +365,16 @@ export class GenericScrollBox extends React.Component {
   };
 
   onKeyDown = e => {
-    if (this.props.disabled || !this.props.captureKeyboard || e.isDefaultPrevented()) {
+    const {stepX, stepY, native, disabled, captureKeyboard} = this.props;
+
+    // Do nothing is keyboard event was prevented.
+    if (native || disabled || !captureKeyboard || e.isDefaultPrevented()) {
       return;
     }
     if (/3[6534879]|40/.test(e.keyCode)) {
       // Prevent page scrolling.
       e.preventDefault();
     }
-    let {stepX, stepY} = this.props;
     switch (e.keyCode) {
       case 36: // Home
         this.scrollTo(0, 0);
@@ -458,15 +466,16 @@ export class GenericScrollBox extends React.Component {
   onDragStartY = e => this.onDragStart(e, ScrollAxes.Y);
 
   onFastTrack(e, axis) {
-    if (this.props.disabled || e.button > 0) {
-      return;
+    const {disabled, fastTrack, fastTrackDuration} = this.props;
+    if (disabled || e.button > 0) {
+      return; // Component is disabled or mouse button is being pressed.
     }
     let x, y;
     const {clientWidth, clientHeight, scrollWidth, scrollHeight} = this.getViewport(),
           POINTER_X = e.clientX - this.getTrackX().getBoundingClientRect().left,
           POINTER_Y = e.clientY - this.getTrackY().getBoundingClientRect().top;
 
-    switch (this.props.fastTrack) {
+    switch (fastTrack) {
 
       case FastTrack.PAGING:
         if (axis == ScrollAxes.X) {
@@ -487,7 +496,7 @@ export class GenericScrollBox extends React.Component {
       default: return;
     }
     this._fastTracking = true;
-    this.scrollTo(x, y, this.props.fastTrackDuration);
+    this.scrollTo(x, y, fastTrackDuration);
   };
 
   onFastTrackX = e => this.onFastTrack(e, ScrollAxes.X);
@@ -527,6 +536,8 @@ export class GenericScrollBox extends React.Component {
   };
 
   componentDidMount() {
+    this._native = this.props.native;
+
     let requestForceSync = () => {
       if (this.handleX == null) {
         return; // Component was unmounted.

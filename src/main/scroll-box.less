@@ -40,11 +40,15 @@
   
   // Used if fallback to native system scrolling should occur.
   &_native {
+
     &.@{scroll-box}_has-axis-y.@{scroll-box}_show-axis-y > .@{scroll-box}__viewport {
       overflow-y: auto;
     }
     &.@{scroll-box}_has-axis-x.@{scroll-box}_show-axis-x > .@{scroll-box}__viewport {
       overflow-x: auto;
+    }
+    > .@{scroll-box}__viewport {
+      -webkit-overflow-scrolling: touch;
     }
   }
   

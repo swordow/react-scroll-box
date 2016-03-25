@@ -43,7 +43,7 @@ function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
 }
 
-function toggleClass(el, className, force) {
+function toggleClassName(el, className, force) {
   let classNames = el.className.split(' '),
       i = classNames.indexOf(className);
   if (force == null) {
@@ -265,8 +265,8 @@ export class GenericScrollBox extends React.Component {
     this.targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
     this.targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
 
-    toggleClass(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 0);
-    toggleClass(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 0);
+    toggleClassName(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 2);
+    toggleClassName(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 2);
 
     const {targetX, targetY, scrollY, scrollX, previousX, previousY, _duration} = this;
     let x = targetX,
@@ -285,6 +285,7 @@ export class GenericScrollBox extends React.Component {
         this._duration = 0;
       }
       if (!native) {
+        // Prevent native scrolling glitches, especially if native scroll is inertial or smooth.
         viewport.scrollLeft = x;
         viewport.scrollTop = y;
       }
@@ -452,14 +453,14 @@ export class GenericScrollBox extends React.Component {
       removeEventListener(EVENT_BLUR, onDragEnd);
       if (this.handleX) {
         // Check component is mounted.
-        toggleClass(draggedTrack, CLASS_TRACK_DRAGGED, false);
+        toggleClassName(draggedTrack, CLASS_TRACK_DRAGGED, false);
       }
     };
 
     addEventListener(EVENT_MOUSE_MOVE, onDrag);
     addEventListener(EVENT_MOUSE_UP, onDragEnd);
     addEventListener(EVENT_BLUR, onDragEnd);
-    toggleClass(draggedTrack, CLASS_TRACK_DRAGGED, true);
+    toggleClassName(draggedTrack, CLASS_TRACK_DRAGGED, true);
   };
 
   onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
@@ -504,16 +505,16 @@ export class GenericScrollBox extends React.Component {
 
   onFastTrackY = e => this.onFastTrack(e, ScrollAxes.Y);
 
-  onRenderHandleX = ref => this.handleX = ref;
+  onRenderHandleX = ref => this.handleX = ref && findDOMNode(ref);
 
-  onRenderHandleY = ref => this.handleY = ref;
+  onRenderHandleY = ref => this.handleY = ref && findDOMNode(ref);
 
   updateTrackHoverStatus(e, track) {
     const {clientX, clientY} = e,
           {hoverProximity} = this.props,
           {width, left, top, height} = track.getBoundingClientRect();
 
-    toggleClass(track, CLASS_TRACK_HOVER,
+    toggleClassName(track, CLASS_TRACK_HOVER,
       clientY - height - top < hoverProximity && top - clientY < hoverProximity &&
       clientX - width - left < hoverProximity && left - clientX < hoverProximity);
   }

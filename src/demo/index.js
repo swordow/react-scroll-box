@@ -55,7 +55,7 @@ class Demo extends Component {
 
     return (
       <div className="container">
-        <p><h1>React Scroll Box Component</h1></p>
+        <h1>React Scroll Box Component</h1>
         <div className="row">
           <div className="col-md-3">
             <form>

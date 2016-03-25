@@ -265,8 +265,8 @@ export class GenericScrollBox extends React.Component {
     this.targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
     this.targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
 
-    toggleClassName(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 2);
-    toggleClassName(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 2);
+    toggleClassName(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 0);
+    toggleClassName(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 0);
 
     const {targetX, targetY, scrollY, scrollX, previousX, previousY, _duration} = this;
     let x = targetX,

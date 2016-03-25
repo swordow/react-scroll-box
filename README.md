@@ -1,8 +1,8 @@
-# React Scroll Box Component v0.0.8
+# React Scroll Box Component v0.0.9
 
-Cross-browser and cross-platform scrollable container implementation with no external dependencies but React.
+Cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
-Supports FF, Chrome, Safari, iOS Safari, Opera and IE9+.
+Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
 [Live Demo](http://smikhalevski.github.io/react-scroll-box/) ([Source Code](https://github.com/smikhalevski/react-scroll-box/blob/master/src/demo/index.js))
 
@@ -12,10 +12,10 @@ Supports FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 2. [`ScrollBox`](#scroll-box)
 3. [`GenericScrollBox`](#generic-scroll-box)
   1. [Parameters](#parameters)
-  2. [Methods](#methods)
-  3. [Media Queries](#media-queries)
-4. [`ScrollAxes`](#scroll-axes)
-5. [`FastTrack`](#fast-track)
+  2. [Instance Members](#instance-members)
+4. [Styling](#styling)
+5. [`ScrollAxes`](#scroll-axes)
+6. [`FastTrack`](#fast-track)
 
 
 ## How to import
@@ -52,7 +52,6 @@ You can prevent scrolling via calling `event.preventDefault()` for keboard or mo
   </textarea>
 </GenericScrollBox>
 ```
-
 
 ### Parameters
 
@@ -113,7 +112,31 @@ Space-separated style class names.
 Callback that is invoked when any scrolling occurs. Repetedly called during animation, handle dragging and fast tracking.
 
 
-### Methods
+### Instance Members
+
+#### `{Number} targetX`, `targetY`
+
+Scroll position in pixels that was last requested.
+
+#### `{Number} previousX`, `previousY`
+
+Previously requested scroll position.
+
+#### `{Number} scrollX`, `scrollY`
+
+Actual scroll position that user observes. This changes repeatedly during animation, while is static these values are equal to `x` and `y`.
+
+#### `{Number} scrollMaxX`, `scrollMaxY`
+
+Maximum values for horizontal and vertical scroll positions.
+
+#### `{Number} trackMaxX`, `trackMaxY`
+
+Maximum values for horizontal and vertical handle positions.
+
+#### `{Number} handleXWidth`, `handleYHeight`
+
+Actual sizes of handles in pixels.
 
 #### `{?HTMLElement} getActiveHandle ()`
 
@@ -163,7 +186,10 @@ Specify how long the scrolling should run with `duration` in milliseconds.
 
 Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
-### Media Queries
+
+## Styling
+
+All styling of the component (position of scroll tracks and handles, paddings and margins, their size constraints etc.) is done via CSS.
 
 If you are using same markup for different platforms, sometimes it is useful to unwrap scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
 

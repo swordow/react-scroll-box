@@ -27,7 +27,7 @@
   "scripts": {
     "package": "webpack --p",
     "package-demo": "webpack --p --config webpack.demo.config.js",
-    "start": "webpack-dev-server --progress --d --config webpack.demo.config.js --content-base target/demo/ --port=8080"
+    "start": "webpack-dev-server --progress --d --config webpack.demo.config.js --content-base target/demo/ --host 0.0.0.0 --port 8080"
   },
   "devDependencies": {
     "webpack": "1.12.9",

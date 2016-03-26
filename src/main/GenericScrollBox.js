@@ -147,10 +147,6 @@ export class GenericScrollBox extends React.Component {
   // Is fast tracking in progress.
   _fastTracking = false;
 
-  // `native` flag status that was last processed by `forceSync`.
-  // Required to detect native to custom scrollbar switching.
-  _native;
-
   hasAxis(axis) {
     return this.props.axes.indexOf(axis) >= 0;
   }
@@ -227,11 +223,11 @@ export class GenericScrollBox extends React.Component {
       this.targetY = y;
     }
     this._quiet = Boolean(quiet);
-    this.forceSync();
+    this._forceSync();
   }
 
   // Synchronize scrollbar positions immediately without waiting for animation frame.
-  forceSync() {
+  _forceSync() {
     const {handleX, handleY} = this;
     if (handleX == null) {
       return; // Component was unmounted.
@@ -259,20 +255,22 @@ export class GenericScrollBox extends React.Component {
     viewport.style.height = height;
 
     const {clientWidth, clientHeight, scrollWidth, scrollHeight} = viewport,
-          SCROLL_MAX_X = this.hasAxis(ScrollAxes.X) * Math.max(0, scrollWidth - clientWidth),
-          SCROLL_MAX_Y = this.hasAxis(ScrollAxes.Y) * Math.max(0, scrollHeight - clientHeight);
+          HAS_X = this.hasAxis(ScrollAxes.X),
+          HAS_Y = this.hasAxis(ScrollAxes.Y),
+          SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
+          SCROLL_MAX_Y = Math.max(0, scrollHeight - clientHeight);
 
-    this.targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
-    this.targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
+    this.targetX = HAS_X * Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
+    this.targetY = HAS_Y * Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
 
-    toggleClassName(el, CLASS_SHOW_AXIS_X, SCROLL_MAX_X > 0);
-    toggleClassName(el, CLASS_SHOW_AXIS_Y, SCROLL_MAX_Y > 0);
+    toggleClassName(el, CLASS_SHOW_AXIS_X, HAS_X * SCROLL_MAX_X > 0);
+    toggleClassName(el, CLASS_SHOW_AXIS_Y, HAS_Y * SCROLL_MAX_Y > 0);
 
     const {targetX, targetY, scrollY, scrollX, previousX, previousY, _duration} = this;
     let x = targetX,
         y = targetY;
 
-    if (scrollY == viewport.scrollTop && scrollX == viewport.scrollLeft) {
+    if (!native && scrollY == viewport.scrollTop && scrollX == viewport.scrollLeft) {
       let elapsedTime = Date.now() - this._timestamp;
       if (elapsedTime < _duration) {
         let ratio = easing(elapsedTime / _duration, elapsedTime, 0, 1, _duration);
@@ -284,11 +282,9 @@ export class GenericScrollBox extends React.Component {
         // Scroll animation completed.
         this._duration = 0;
       }
-      if (!native) {
-        // Prevent native scrolling glitches, especially if native scroll is inertial or smooth.
-        viewport.scrollLeft = x;
-        viewport.scrollTop = y;
-      }
+      // Prevent native scrolling glitches, especially if native scroll is inertial or smooth.
+      viewport.scrollLeft = x;
+      viewport.scrollTop = y;
     } else {
       // Viewport scroll position is not synced with component state.
       // This is usually caused by system scrolling, resize of element etc.
@@ -299,7 +295,7 @@ export class GenericScrollBox extends React.Component {
       y = this.targetY = viewport.scrollTop;
     }
 
-    if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y && this._native == native) {
+    if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y) {
       if (this._duration == 0) {
         // Animation has completed and geometry did not change, so reset flags possibly introduced
         // during scroll request (by `scrollTo` or fast tracking).
@@ -312,7 +308,6 @@ export class GenericScrollBox extends React.Component {
       return;
     }
 
-    this._native = native;
     this.handleXWidth = 0;
     this.handleYHeight = 0;
     this.trackMaxX = 0;
@@ -338,7 +333,7 @@ export class GenericScrollBox extends React.Component {
     this.scrollMaxY = SCROLL_MAX_Y;
 
     if (!this._quiet) {
-      onViewportScroll.call(this, this);
+      onViewportScroll(this);
     }
   }
 
@@ -509,7 +504,7 @@ export class GenericScrollBox extends React.Component {
 
   onRenderHandleY = ref => this.handleY = ref && findDOMNode(ref);
 
-  updateTrackHoverStatus(e, track) {
+  _updateTrackHoverStatus(e, track) {
     const {clientX, clientY} = e,
           {hoverProximity} = this.props,
           {width, left, top, height} = track.getBoundingClientRect();
@@ -530,16 +525,14 @@ export class GenericScrollBox extends React.Component {
     }
     // Update track hover status only if it is actually visible.
     if (this.scrollMaxX > 0) {
-      this.updateTrackHoverStatus(e, this.getTrackX());
+      this._updateTrackHoverStatus(e, this.getTrackX());
     }
     if (this.scrollMaxY > 0) {
-      this.updateTrackHoverStatus(e, this.getTrackY());
+      this._updateTrackHoverStatus(e, this.getTrackY());
     }
   };
 
   componentDidMount() {
-    this._native = this.props.native;
-
     let requestForceSync = () => {
       if (this.handleX == null) {
         return; // Component was unmounted.
@@ -549,7 +542,7 @@ export class GenericScrollBox extends React.Component {
       } else {
         setTimeout(requestForceSync, 1000 / 30);
       }
-      this.forceSync();
+      this._forceSync();
     };
     requestForceSync();
     addEventListener(EVENT_MOUSE_MOVE, this.onCursorApproachingTrack);
@@ -560,7 +553,7 @@ export class GenericScrollBox extends React.Component {
   }
 
   componentDidUpdate() {
-    this.forceSync();
+    this._forceSync();
   }
 
   render() {

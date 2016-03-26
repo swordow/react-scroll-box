@@ -14,8 +14,8 @@ class Demo extends Component {
     hoverProximity: 50,
     fastTrackDuration: 500,
     fastTrack: FastTrack.REWIND,
-    native: false,
-    outset: false
+    native: null,
+    outset: true
   };
 
   onNativeChange = native => {
@@ -45,6 +45,10 @@ class Demo extends Component {
 
   onFastTrackDurationChange = e => {
     this.setState({fastTrackDuration: e.target.value});
+  };
+
+  onViewportScroll = scroll => {
+    document.getElementById('coordinates').innerHTML = `(${scroll.scrollX}, ${scroll.scrollY})`;
   };
 
   render() {
@@ -139,7 +143,8 @@ class Demo extends Component {
             </form>
           </div>
           <div className="col-md-9">
-            <ScrollBox {...props} className="scroll-box_example scroll-box_wrapped">
+            <div id="coordinates"></div>
+            <ScrollBox {...props} className="scroll-box_example scroll-box_wrapped" onViewportScroll={this.onViewportScroll}>
               <div className="scroll-box__clouds"/>
             </ScrollBox>
           </div>

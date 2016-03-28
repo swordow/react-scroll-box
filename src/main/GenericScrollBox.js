@@ -365,7 +365,7 @@ export class GenericScrollBox extends React.Component {
     const {stepX, stepY, native, disabled, captureKeyboard} = this.props;
 
     // Do nothing is keyboard event was prevented.
-    if (native || disabled || !captureKeyboard || e.isDefaultPrevented()) {
+    if (native || disabled || !captureKeyboard || e.isDefaultPrevented() || /textarea|input/i.test(e.target.tagName)) {
       return;
     }
     if (/3[6534879]|40/.test(String(e.keyCode))) {

@@ -129,7 +129,11 @@ Horizontal and vertical scroll step for mouse wheel scrolling in pixels.
 
 #### `{Boolean} [propagateScroll = true]`
 
-Propagate mouse wheel scroll to parent element of scroll box if content reached its minimum or maximum scroll position. 
+Propagate mouse wheel scroll to parent element of scroll box if content reached its minimum or maximum scroll position.
+ 
+#### `{Boolean} [wheelAxesSwap = false]`
+
+Swap mouse wheel axes. 
 
 #### `{Function} [easing (percentage, elapsedTime, min, max, duration)]`
 

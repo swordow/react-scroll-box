@@ -116,6 +116,7 @@ export class GenericScrollBox extends React.Component {
     wheelStepX: number,
     wheelStepY: number,
     propagateScroll: bool,
+    wheelAxesSwap: bool,
     easing: func,
     onViewportScroll: func,
     trackXChildren: any,
@@ -140,6 +141,7 @@ export class GenericScrollBox extends React.Component {
     wheelStepX: 30,
     wheelStepY: 30,
     propagateScroll: true,
+    wheelAxesSwap: false,
     easing: easeCircOut,
     onViewportScroll: target => {},
     className: CLASS_WRAPPED
@@ -406,7 +408,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, native, disabled, propagateScroll} = this.props,
+    const {wheelStepX, wheelStepY, native, disabled, propagateScroll, wheelAxesSwap} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
     if (native || disabled || e.isDefaultPrevented() || (el != this.getViewport() && isTextInput(el))) {
@@ -430,6 +432,9 @@ export class GenericScrollBox extends React.Component {
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
     if (e.shiftKey && !dx) {
+      [dx, dy] = [dy, dx];
+    }
+    if (wheelAxesSwap) {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();

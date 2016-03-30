@@ -1,6 +1,6 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
-const {number, bool, func, oneOf} = React.PropTypes;
+const {number, bool, func, oneOf, any} = React.PropTypes;
 
 const
   CLASS_SCROLL_BOX = 'scroll-box',
@@ -89,7 +89,11 @@ export class GenericScrollBox extends React.Component {
     wheelStepX: number,
     wheelStepY: number,
     easing: func,
-    onViewportScroll: func
+    onViewportScroll: func,
+    trackXChildren: any,
+    trackYChildren: any,
+    handleXChildren: any,
+    handleYChildren: any
   };
 
   static defaultProps = {
@@ -589,7 +593,7 @@ export class GenericScrollBox extends React.Component {
   }
 
   render() {
-    const {disabled, native, outset, className, children, style} = this.props;
+    const {trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, native, outset, className, children, style} = this.props;
     let classNames = [className, CLASS_SCROLL_BOX];
     if (disabled) {
       classNames.push(CLASS_DISABLED);
@@ -620,13 +624,19 @@ export class GenericScrollBox extends React.Component {
              onMouseDown={this.onFastTrackX}>
           <div ref={this.onRenderHandleX}
                onMouseDown={this.onDragStartX}
-               className={CLASS_HANDLE_X}/>
+               className={CLASS_HANDLE_X}>
+            {handleXChildren}
+          </div>
+          {trackXChildren}
         </div>
         <div className={CLASS_TRACK_Y}
              onMouseDown={this.onFastTrackY}>
           <div ref={this.onRenderHandleY}
                onMouseDown={this.onDragStartY}
-               className={CLASS_HANDLE_Y}/>
+               className={CLASS_HANDLE_Y}>
+            {handleYChildren}
+          </div>
+          {trackYChildren}
         </div>
         {React.Children.only(children)}
       </div>

@@ -28,7 +28,7 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 1. [How to import](#how-to-import)
 2. [`ScrollBox`](#scroll-box)
 3. [`GenericScrollBox`](#generic-scroll-box)
-  1. [Parameters](#parameters)
+  1. [Component Props](#component-props)
   2. [Instance Members](#instance-members)
 4. [Styling](#styling)
 5. [`ScrollAxes`](#scroll-axes)
@@ -77,7 +77,7 @@ You can prevent scrolling via calling `event.preventDefault()` for keboard or mo
 </GenericScrollBox>
 ```
 
-### Parameters
+### Component Props
 
 #### {<a href="#scroll-axes">ScrollAxes</a>} [axes = <a href="#scroll-axes-xy">ScrollAxes.XY</a>]</code>
 
@@ -97,7 +97,7 @@ Smooth scrolling duration in milliseconds.
 
 #### `{Number} [hoverProximity = 50]`
 
-Maximum distance between cursor and scroll track border when track is considered to be hovered. Useful when you want to hav thin scrollbars but don't want make user aim precisely with cursor to grab them.
+Maximum distance between cursor and scroll track border when track is considered to be hovered. Useful when you want to have thin scrollbars but don't want make user aim precisely with cursor to grab them.
 
 #### `{Boolean} [disabled = false]`
 
@@ -141,7 +141,7 @@ Style to apply to `.scroll-box` element.
 
 #### `{String} [className = "scroll-box_wrapped"]`
 
-Space-separated style class names.
+Space-separated style class names. See [styling section](#styling) for more info on `scroll-box_wrapped` class.
 
 #### `{Function} [onViewportScroll ({GenericScrollBox} target)]`
 
@@ -149,11 +149,11 @@ Callback that is invoked when any scrolling occurs. Repetedly called during anim
 
 #### `{*} [trackXChildren]`, `[trackYChildren]`
 
-Content appended to corresponding track elements for additional customization.
+Content to appended to corresponding track elements for additional customization.
 
 #### `{*} [handleXChildren]`, `[handleYChildren]`
 
-Content appended to corresponding handle elements for additional customization.
+Content to appended to corresponding handle elements for additional customization.
 
 
 ### Instance Members
@@ -176,13 +176,13 @@ Maximum values for horizontal and vertical scroll positions.
 
 #### `{Number} trackMaxX`, `trackMaxY`
 
-Maximum values for horizontal and vertical handle positions.
+Maximum values for horizontal and vertical handle positions. Equals to zero if native scroll bars are in use.
 
 #### `{Number} handleXWidth`, `handleYHeight`
 
-Actual sizes of handles in pixels.
+Actual sizes of handles in pixels. Equals to zero if native scroll bars are in use.
 
-#### `{?HTMLElement} getActiveHandle ()`
+#### `{?HTMLElement} getDraggedHandle ()`
 
 Handle that is being dragged by user or `null` if no handle is being dragged at the moment of invocation.
 
@@ -206,7 +206,7 @@ Get horizontal track element.
 
 Get vertical track element.
 
-#### `{void} scrollBy (dx, dy, [duration = 0], [quiet = false])`
+#### `{void} scrollBy (dx, dy, [duration = 0], [silent = false])`
 
 Scroll by the given amount of pixels.
 
@@ -216,9 +216,9 @@ If non-numeric value is provided as `dx` or `dy` then corresponding position of 
 
 Specify how long the scrolling should run with `duration` in milliseconds.
 
-Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+Set `silent` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
-#### `{void} scrollTo (x, y, [duration = 0], [quiet = false])`
+#### `{void} scrollTo (x, y, [duration = 0], [silent = false])`
 
 Scroll content to a particular place in pixels.
 
@@ -228,31 +228,36 @@ If non-numeric value is provided as `x` or `y` then corresponding position of sc
 
 Specify how long the scrolling should run with `duration` in milliseconds.
 
-Set `quiet` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+Set `silent` to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
 
 ## Styling
 
-All styling of the component (position of scroll tracks and handles, paddings and margins, their size constraints etc.) is done via CSS.
+Styling of the component (position of scroll tracks and handles, paddings and margins, their size constraints etc.) can be done via CSS.
 
-If you are using same markup for different platforms, sometimes it is useful to unwrap scroll box element and allow user to scroll its content along with page. Do achive this behavior follow these steps:
+If `padding` or `border-radius` are specified for scroll box, they are seamlessly propagated to viewport.
 
-1. Remove class `.scroll-box_wrapped` from `className` parameter.
+If you are using same markup for different platforms, sometimes it is useful to unwrap scroll box element and allow user to scroll its content along with page. To achieve this behavior follow these steps:
+
+1. Remove class `.scroll-box_wrapped` from `className` prop.
 2. Add media query restrictions and use `.scroll-box-wrap()` LESS mixin.
 
 ```less
 @media (min-width: 960px) {
-  // Now scroll box would unwrap its content if browser viewport is less than 960px in width.
+  // Now scroll box would _unwrap_ its content if browser
+  // viewport is less than 960px in width.
   .scroll-box {
     .scroll-box-wrap();
   }
 }
 ```
 
+**Important!** When you don't use `.scroll-box-wrap()` mixin and want to override `className` prop, ensure that you did not miss `scroll-box_wrapped`. Otherwise content would be unwrapped. 
+
 
 ## <a name="scroll-axes"></a>`ScrollAxes`
 
-Enum of combinations af axes that can be scrolled.
+Enum of combinations of axes that can be scrolled.
 
 #### `{String} ScrollAxes.X = "x"`
 
@@ -262,7 +267,7 @@ Allow horizontal scrolling only.
 
 Allow vertical scrolling only.
 
-#### <a name="scroll-axes-xy"></a>`ScrollAxes.XY = "xy"`
+#### <a name="scroll-axes-xy"></a>`{String} ScrollAxes.XY = "xy"`
 
 Allow both vertical and horizontal scrolling.
 
@@ -275,15 +280,15 @@ Array of values of `ScrollAxes` enum.
 
 Enum of fast track behaviors.
 
-#### `FastTrack.PAGING = "paging"`
+#### `{String} FastTrack.PAGING = "paging"`
 
 When user clicks on scrolling track, content is scrolled by one page in corresponding direction.
 
-#### <a name="fast-track-goto"></a>`FastTrack.GOTO = "goto"`
+#### <a name="fast-track-goto"></a>`{String} FastTrack.GOTO = "goto"`
 
 When user clicks on scrolling track, content is scrolled directly to the corresponding position.
 
-#### <a name="fast-track-none"></a>`FastTrack.OFF = null`
+#### <a name="fast-track-none"></a>`{?String} FastTrack.OFF = null`
 
 Prevent fast tracking.
 
@@ -294,7 +299,7 @@ Array of values of `FastTrack` enum.
 
 ## <a name="scroll-key"></a>`ScrollKey`
 
-Enum of keys used for scrolling.
+Enum of keys that are captured.
 
 #### `{Number} ScrollKey.HOME = 36`
 #### `{Number} ScrollKey.END = 35`
@@ -304,3 +309,7 @@ Enum of keys used for scrolling.
 #### `{Number} ScrollKey.DOWN = 40`
 #### `{Number} ScrollKey.LEFT = 37`
 #### `{Number} ScrollKey.RIGHT = 39`
+
+#### <a name="scroll-key-values"></a>`{Array.<Number>} ScrollKey.values`
+
+Array of values of `ScrollKey` enum.

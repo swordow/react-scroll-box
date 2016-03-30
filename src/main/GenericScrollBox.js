@@ -1,6 +1,6 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
-const {number, bool, func, oneOf, any} = React.PropTypes;
+const {number, bool, func, oneOf, any, arrayOf} = React.PropTypes;
 
 const
   CLASS_SCROLL_BOX = 'scroll-box',
@@ -25,24 +25,50 @@ const
   EVENT_MOUSE_UP = 'mouseup',
   EVENT_BLUR = 'blur';
 
-export const ScrollAxes = Object.freeze({
+export const ScrollAxes = {
   X: 'x',
   Y: 'y',
   XY: 'xy'
-});
+};
+ScrollAxes.values = values(ScrollAxes);
+Object.freeze(ScrollAxes);
 
-export const FastTrack = Object.freeze({
+export const FastTrack = {
   PAGING: 'paging',
   GOTO: 'goto',
   OFF: null
-});
+};
+FastTrack.values = values(FastTrack);
+Object.freeze(FastTrack);
+
+export const ScrollKeys = {
+  HOME: 36,
+  END: 35,
+  PAGE_UP: 33,
+  PAGE_DOWN: 34,
+  UP: 38,
+  DOWN: 40,
+  LEFT: 37,
+  RIGHT: 39
+};
+ScrollKeys.values = values(ScrollKeys);
+Object.freeze(ScrollKeys);
+
+// Get values of an object.
+function values(obj) {
+  let values = [];
+  for (let key of Object.keys(obj)) {
+    values.push(obj[key]);
+  }
+  return values;
+}
 
 // Default easing function.
-//noinspection JSUnusedLocalSymbols
 function easeCircOut(percentage, elapsedTime, min, max, duration) {
   return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
 }
 
+// Toggle class name for an element.
 function toggleClassName(el, className, force) {
   let classNames = el.className.split(' '),
       i = classNames.indexOf(className);
@@ -75,19 +101,21 @@ function isTextInput(el) {
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
-    axes: oneOf([ScrollAxes.X, ScrollAxes.Y, ScrollAxes.XY]),
-    fastTrack: oneOf([FastTrack.PAGING, FastTrack.GOTO, FastTrack.OFF]),
+    axes: oneOf(ScrollAxes.values),
+    fastTrack: oneOf(FastTrack.values),
     fastTrackDuration: number,
     scrollDuration: number,
     hoverProximity: number,
     disabled: bool,
     captureKeyboard: bool,
+    scrollKeys: arrayOf(oneOf(ScrollKeys.values)),
     outset: bool,
     native: bool,
     keyboardStepX: number,
     keyboardStepY: number,
     wheelStepX: number,
     wheelStepY: number,
+    propagateScroll: bool,
     easing: func,
     onViewportScroll: func,
     trackXChildren: any,
@@ -104,12 +132,14 @@ export class GenericScrollBox extends React.Component {
     hoverProximity: 50,
     disabled: false,
     captureKeyboard: true,
+    scrollKeys: ScrollKeys.values,
     outset: false,
     native: 'orientation' in window,
     keyboardStepX: 30,
     keyboardStepY: 30,
     wheelStepX: 30,
     wheelStepY: 30,
+    propagateScroll: true,
     easing: easeCircOut,
     onViewportScroll: target => {},
     className: CLASS_WRAPPED
@@ -376,7 +406,8 @@ export class GenericScrollBox extends React.Component {
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, native, disabled} = this.props,
+    const {wheelStepX, wheelStepY, native, disabled, propagateScroll} = this.props,
+          {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
     if (native || disabled || e.isDefaultPrevented() || (el != this.getViewport() && isTextInput(el))) {
       return;
@@ -384,30 +415,34 @@ export class GenericScrollBox extends React.Component {
     // Normalize mouse wheel delta among browsers and devices.
     // Usually `event.delta*` in IE 100-400, in Chrome 100-300, in FF 3-10, and
     // these values may even differ in different browser versions.
-    let dx = e.deltaX / Math.abs(e.deltaX) * wheelStepX * this.hasAxis(ScrollAxes.X),
-        dy = e.deltaY / Math.abs(e.deltaY) * wheelStepY * this.hasAxis(ScrollAxes.Y);
-
-    if (dx + dy == 0) {
-      return; // Nothing to scroll.
+    let dx = e.deltaX / Math.abs(e.deltaX) * wheelStepX * this.hasAxis(ScrollAxes.X) || 0,
+        dy = e.deltaY / Math.abs(e.deltaY) * wheelStepY * this.hasAxis(ScrollAxes.Y) || 0;
+    if (
+      (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+    ) {
+      // Content is scrolled to its possible limit.
+      if (!propagateScroll) {
+        e.preventDefault();
+      }
+      return;
     }
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
-    if (e.shiftKey && dx == 0) {
+    if (e.shiftKey && !dx) {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();
-    this.scrollTo(this.targetX + dx, this.targetY + dy);
+    this.scrollTo(targetX + dx, targetY + dy);
   };
 
   onKeyDown = e => {
-    const {keyboardStepX, keyboardStepY, native, disabled, captureKeyboard} = this.props;
-    if (native || disabled || !captureKeyboard || e.isDefaultPrevented() || isTextInput(e.target)) {
+    const {keyboardStepX, keyboardStepY, disabled, captureKeyboard, scrollKeys} = this.props;
+    if (disabled || !captureKeyboard || e.isDefaultPrevented() || scrollKeys.indexOf(e.keyCode) < 0 || isTextInput(e.target)) {
       return;
     }
-    if (/3[6534879]|40/.test(String(e.keyCode))) {
-      // Prevent page scrolling.
-      e.preventDefault();
-    }
+    // Prevent page scrolling.
+    e.preventDefault();
     switch (e.keyCode) {
       case 36: // Home
         this.scrollTo(0, 0);

@@ -1,4 +1,4 @@
-# React `ScrollBox` Component v0.1.0
+# React `ScrollBox` Component v0.1.1
 
 Cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 

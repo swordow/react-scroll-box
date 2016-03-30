@@ -41,7 +41,7 @@ export const FastTrack = {
 FastTrack.values = values(FastTrack);
 Object.freeze(FastTrack);
 
-export const ScrollKeys = {
+export const ScrollKey = {
   HOME: 36,
   END: 35,
   PAGE_UP: 33,
@@ -51,8 +51,8 @@ export const ScrollKeys = {
   LEFT: 37,
   RIGHT: 39
 };
-ScrollKeys.values = values(ScrollKeys);
-Object.freeze(ScrollKeys);
+ScrollKey.values = values(ScrollKey);
+Object.freeze(ScrollKey);
 
 // Get values of an object.
 function values(obj) {
@@ -108,7 +108,7 @@ export class GenericScrollBox extends React.Component {
     hoverProximity: number,
     disabled: bool,
     captureKeyboard: bool,
-    scrollKeys: arrayOf(oneOf(ScrollKeys.values)),
+    scrollKeys: arrayOf(oneOf(ScrollKey.values)),
     outset: bool,
     native: bool,
     keyboardStepX: number,
@@ -132,7 +132,7 @@ export class GenericScrollBox extends React.Component {
     hoverProximity: 50,
     disabled: false,
     captureKeyboard: true,
-    scrollKeys: ScrollKeys.values,
+    scrollKeys: ScrollKey.values,
     outset: false,
     native: 'orientation' in window,
     keyboardStepX: 30,

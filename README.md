@@ -1,10 +1,27 @@
-# React Scroll Box Component v0.0.9
+# React `ScrollBox` Component v0.1.0
 
 Cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
 [Live Demo](http://smikhalevski.github.io/react-scroll-box/) ([Source Code](https://github.com/smikhalevski/react-scroll-box/blob/master/src/demo/index.js))
+
+- Use custom or native scroll bars.
+- Highly customizable tracks and handles for both mobile and desktop.
+- Inset and outset scroll bars with ease.
+- Seamless native inertial scrolling on mobile devices.
+- Smooth scrolling support.
+- Animated scrolling to particular position.
+- Scrollbars detect mouse in close proximity and change their style accordingly for better UX.
+- Scrollbars are automatically added, removed and resized when scroll box dimensions are changed.
+- Scrolling speed is equalized among browsers.
+- Customizable keyboard scrolling support.
+- Scroll boxes can be nested.
+- Custom viewports can be used (ex. `textarea`).
+- Conditionally unwrap scroll box to scroll its content along with page. This can even be done using a media query!
+- LESS styles with a mixin to simplify coloring. 
+- Lots of other properties to customize scrolling behavior.
+
 
 ## Contents
 
@@ -20,9 +37,16 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
 ## How to import
 
+ES6
 ```javascript
 import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box';
 ```
+
+ES5
+```javascript
+var ScrollBox = require('react-scroll-box').ScrollBox;
+```
+
 
 ## <a name="scroll-box"></a>`ScrollBox`
 
@@ -59,13 +83,17 @@ You can prevent scrolling via calling `event.preventDefault()` for keboard or mo
 
 Scroll axes that are allowed to be affected. If scroll axis is not allowed to be changed, corresponding scroll offset would be constantly equal to 0.
 
-#### <code>{<a href="#fast-track">FastTrack</a>} [fastTrack = <a href="#fast-track-rewind">FastTrack.REWIND</a>]</code>
+#### <code>{<a href="#fast-track">FastTrack</a>} [fastTrack = <a href="#fast-track-goto">FastTrack.GOTO</a>]</code>
 
 Expected behavior when user clicks on scroll track.
 
 #### `{Number} [fastTrackDuration = 500]`
 
 Fast track animation duration in milliseconds.
+
+#### `{Number} [scrollDuration = 100]`
+
+Smooth scrolling duration in milliseconds.
 
 #### `{Number} [hoverProximity = 50]`
 
@@ -77,7 +105,11 @@ Disable scroll box control.
 
 #### `{Boolean} [captureKeyboard = true]`
 
-Use keyboard for scrolling when scroll box is focused. Arrow keys, `Home`, `End`, `Page Up`, `Page Down` are captured. You can also use `Shift` key along with `Page Up`, `Page Down` to scroll in horizontal axis.
+Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is never captured for text input elements placed in scroll box.
+
+#### <code>{Array.&lt;<a href="#scroll-key">ScrollKey</a>>} [scrollKeys = <a href="#scroll-key-values">ScrollKey.values</a>]</code>
+
+Array of keys that can be used for scrolling. Arrow keys, `Home`, `End`, `Page Up`, `Page Down` are captured. You can also use `Shift` key along with `Page Up`, `Page Down` to scroll in horizontal axis.
 
 #### `{Boolean} [outset = false]`
 
@@ -87,13 +119,17 @@ Display scrollbars outside of scrollable area. On mobile devices when native scr
 
 Use native scroll bars. By default, this flag is set to `true` on mobile platforms and `false` on desktops but you can change it manually.
 
-#### `{Number} [stepX = 30]`
+#### `{Number} [keyboardStepX = 30]`, `[keyboardStepY]`
 
-Horizontal scroll step for keyboard scrolling in pixels.
+Horizontal and vertical scroll step for keyboard scrolling in pixels.
 
-#### `{Number} [stepY = 30]`
+#### `{Number} [wheelStepX = 30]`, `[wheelStepY = 30]`
 
-Vertical scroll step for keyboard scrolling in pixels.
+Horizontal and vertical scroll step for mouse wheel scrolling in pixels.
+
+#### `{Boolean} [propagateScroll = true]`
+
+Propagate mouse wheel scroll to parent element of scroll box if content reached its minimum or maximum scroll position. 
 
 #### `{Function} [easing (percentage, elapsedTime, min, max, duration)]`
 
@@ -110,6 +146,14 @@ Space-separated style class names.
 #### `{Function} [onViewportScroll ({GenericScrollBox} target)]`
 
 Callback that is invoked when any scrolling occurs. Repetedly called during animation, handle dragging and fast tracking.
+
+#### `{*} [trackXChildren]`, `[trackYChildren]`
+
+Content appended to corresponding track elements for additional customization.
+
+#### `{*} [handleXChildren]`, `[handleYChildren]`
+
+Content appended to corresponding handle elements for additional customization.
 
 
 ### Instance Members
@@ -210,11 +254,11 @@ If you are using same markup for different platforms, sometimes it is useful to 
 
 Enum of combinations af axes that can be scrolled.
 
-#### <a name="scroll-axes-x"></a>`ScrollAxes.X = "x"`
+#### `{String} ScrollAxes.X = "x"`
 
 Allow horizontal scrolling only.
 
-#### <a name="scroll-axes-y"></a>`ScrollAxes.Y = "y"`
+#### `{String} ScrollAxes.Y = "y"`
 
 Allow vertical scrolling only.
 
@@ -222,19 +266,41 @@ Allow vertical scrolling only.
 
 Allow both vertical and horizontal scrolling.
 
+#### `{Array.<String>} ScrollAxes.values`
+
+Array of values of `ScrollAxes` enum.
+
 
 ## <a name="fast-track"></a>`FastTrack`
 
 Enum of fast track behaviors.
 
-#### <a name="fast-track-paging"></a>`FastTrack.PAGING = "paging"`
+#### `FastTrack.PAGING = "paging"`
 
 When user clicks on scrolling track, content is scrolled by one page in corresponding direction.
 
-#### <a name="fast-track-rewind"></a>`FastTrack.REWIND = "rewind"`
+#### <a name="fast-track-goto"></a>`FastTrack.GOTO = "goto"`
 
 When user clicks on scrolling track, content is scrolled directly to the corresponding position.
 
-#### <a name="fast-track-none"></a>`FastTrack.NONE = null`
+#### <a name="fast-track-none"></a>`FastTrack.OFF = null`
 
 Prevent fast tracking.
+
+#### `{Array.<?String>} FastTrack.values`
+
+Array of values of `FastTrack` enum.
+
+
+## <a name="scroll-key"></a>`ScrollKey`
+
+Enum of keys used for scrolling.
+
+#### `{Number} ScrollKey.HOME = 36`
+#### `{Number} ScrollKey.END = 35`
+#### `{Number} ScrollKey.PAGE_UP = 33`
+#### `{Number} ScrollKey.PAGE_DOWN = 34`
+#### `{Number} ScrollKey.UP = 38`
+#### `{Number} ScrollKey.DOWN = 40`
+#### `{Number} ScrollKey.LEFT = 37`
+#### `{Number} ScrollKey.RIGHT = 39`

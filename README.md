@@ -1,6 +1,6 @@
 # React `ScrollBox` Component v0.1.2
 
-Cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
+Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
@@ -33,6 +33,7 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 4. [Styling](#styling)
 5. [`ScrollAxes`](#scroll-axes)
 6. [`FastTrack`](#fast-track)
+7. [License](#license)
 
 
 ## How to import
@@ -317,3 +318,7 @@ Enum of keys that are captured.
 #### <a name="scroll-key-values"></a>`{Array.<Number>} ScrollKey.values`
 
 Array of values of `ScrollKey` enum.
+
+## License
+
+The code is available under [MIT licence](LICENSE.txt).

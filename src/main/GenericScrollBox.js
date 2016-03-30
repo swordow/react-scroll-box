@@ -372,8 +372,9 @@ export class GenericScrollBox extends React.Component {
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, native, disabled} = this.props;
-    if (native || disabled || e.isDefaultPrevented() || isTextInput(e.target)) {
+    const {wheelStepX, wheelStepY, native, disabled} = this.props,
+          el = e.target;
+    if (native || disabled || e.isDefaultPrevented() || (el != this.getViewport() && isTextInput(el))) {
       return;
     }
     // Normalize mouse wheel delta among browsers and devices.

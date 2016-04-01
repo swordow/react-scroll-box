@@ -388,7 +388,7 @@ export class GenericScrollBox extends React.Component {
     this.scrollMaxX = SCROLL_MAX_X;
     this.scrollMaxY = SCROLL_MAX_Y;
 
-    if (!this._silent) {
+    if (!this._silent && !(scrollX == x && scrollY == y)) {
       onViewportScroll(this);
     }
   }

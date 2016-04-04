@@ -615,7 +615,10 @@ export class GenericScrollBox extends React.Component {
 
   render() {
     const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, forceNativeScroll, outset, className, children, style} = this.props;
-    let classNames = [className, CLASS_SCROLL_BOX];
+    let classNames = [CLASS_SCROLL_BOX];
+    if (className) {
+      classNames.push(className);
+    }
     if (disabled) {
       classNames.push(CLASS_DISABLED);
     }

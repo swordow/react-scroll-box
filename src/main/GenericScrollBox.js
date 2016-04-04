@@ -203,6 +203,9 @@ export class GenericScrollBox extends React.Component {
   // Automatically reset to `false` then scroll animation finishes.
   _silent = false;
 
+  _touchStartX = -1;
+  _touchStartY = -1;
+
   /**
    * Scroll area by the given amount of pixels.
    *
@@ -353,28 +356,26 @@ export class GenericScrollBox extends React.Component {
   }
 
   onTouchStart = e => {
-    if (this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
+    if (this.props.forceNativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
       return;
     }
-    e.preventDefault();
     let touch = e.touches[0];
     this._touchStartX = this.viewport.scrollLeft + touch.screenX;
     this._touchStartY = this.viewport.scrollTop + touch.screenY;
   };
 
   onTouchMove = e => {
-    if (e.isDefaultPrevented()) {
+    if (this.props.forceNativeScroll || this.props.disabled || e.isDefaultPrevented() || this._touchStartX == -1 || this._touchStartY == -1) {
       return;
     }
-    if (this._touchStartX != null) {
-      let touch = e.touches[0];
-      this.scrollTo(this._touchStartX - touch.screenX, this._touchStartY - touch.screenY, 0);
-    }
+    e.preventDefault();
+    let touch = e.touches[0];
+    this.scrollTo(this._touchStartX - touch.screenX, this._touchStartY - touch.screenY, 0);
   };
 
   onTouchEnd = e => {
-    this._touchStartX = null;
-    this._touchStartY = null;
+    this._touchStartX = -1;
+    this._touchStartY = -1;
   };
 
   onScroll = e => {

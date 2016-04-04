@@ -4,6 +4,7 @@ const {number, bool, func, oneOf, any, arrayOf} = React.PropTypes;
 
 const
   CLASS_SCROLL_BOX = 'scroll-box',
+  CLASS_VIEWPORT = 'scroll-box__viewport',
   CLASS_TRACK_X = 'scroll-box__track scroll-box__track_x',
   CLASS_TRACK_Y = 'scroll-box__track scroll-box__track_y',
   CLASS_HANDLE_X = 'scroll-box__handle scroll-box__handle_x',
@@ -110,13 +111,15 @@ export class GenericScrollBox extends React.Component {
     captureKeyboard: bool,
     scrollKeys: arrayOf(oneOf(ScrollKey.values)),
     outset: bool,
-    native: bool,
+    forceNativeScroll: bool,
     keyboardStepX: number,
     keyboardStepY: number,
     wheelStepX: number,
     wheelStepY: number,
-    propagateScroll: bool,
-    wheelAxesSwap: bool,
+    propagateWheelScroll: bool,
+    swapWheelAxes: bool,
+    scrollMinX: number,
+    scrollMinY: number,
     easing: func,
     onViewportScroll: func,
     trackXChildren: any,
@@ -135,21 +138,33 @@ export class GenericScrollBox extends React.Component {
     captureKeyboard: true,
     scrollKeys: ScrollKey.values,
     outset: false,
-    native: 'orientation' in window,
+    forceNativeScroll: 'orientation' in window,
     keyboardStepX: 30,
     keyboardStepY: 30,
     wheelStepX: 30,
     wheelStepY: 30,
-    propagateScroll: true,
-    wheelAxesSwap: false,
+    propagateWheelScroll: true,
+    swapWheelAxes: false,
+    scrollMinX: 2,
+    scrollMinY: 2,
     easing: easeCircOut,
     onViewportScroll: target => {},
     className: CLASS_WRAPPED
   };
 
   // Handle elements.
+  // Set to `null` when component is unmounted.
   handleX = null;
   handleY = null;
+
+  // Track elements.
+  // Set to `null` when component is unmounted.
+  trackX = null;
+  trackY = null;
+
+  // Viewport element.
+  // Set to `null` when component is unmounted.
+  viewport = null;
 
   // Scroll position in pixels that was last requested.
   targetX = 0;
@@ -169,70 +184,24 @@ export class GenericScrollBox extends React.Component {
   scrollMaxX = 0;
   scrollMaxY = 0;
 
-  // Sizes of handles in pixels.
-  handleXWidth = 0;
-  handleYHeight = 0;
-  
-  // Maximum values for horizontal and vertical handle positions.
+  // Maximum values for horizontal and vertical handle positions. If native scroll is used then equals to 0.
   trackMaxX = 0;
   trackMaxY = 0;
 
-  // PRIVATE PROPERTIES
-  
-  // Handle currently dragged by user.
-  _draggedHandle = null;
+  // Does scroll box require actual presence of horizontal or vertical scroll bars.
+  // If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax >= scrollMin`.
+  exposesX = false;
+  exposesY = false;
 
-  // Timestamp when scroll position was last updated.
-  _timestamp = 0;
+  // Timestamp when scroll position started to change last time.
+  _start = 0;
 
   // Duration of currently running animation. In case no animation is in progress `_duration` equals to 0.
   _duration = 0;
 
-  // Prevent triggering `onViewportScroll` if any scrolling occurs.
+  // If set to `true` prevents triggering `onViewportScroll` if any scrolling occurs.
+  // Automatically reset to `false` then scroll animation finishes.
   _silent = false;
-
-  // Is fast tracking in progress.
-  _fastTracking = false;
-
-  // Is user currently touching device display.
-  _touching = false;
-
-  isNative() {
-    return this.props.native;
-  }
-
-  hasAxis(axis) {
-    return this.props.axes.indexOf(axis) >= 0;
-  }
-
-  getDraggedHandle() {
-    return this._draggedHandle;
-  }
-
-  // Is handle being dragged.
-  isDraggingHandle() {
-    return Boolean(this._draggedHandle);
-  }
-
-  isFastTracking() {
-    return this._fastTracking;
-  }
-
-  // Get element provided as viewport.
-  getViewport() {
-    let el = findDOMNode(this);
-    return el && el.lastChild;
-  }
-
-  // Get horizontal track.
-  getTrackX() {
-    return this.handleX && this.handleX.parentNode;
-  }
-
-  // Get vertical track.
-  getTrackY() {
-    return this.handleY && this.handleY.parentNode;
-  }
 
   /**
    * Scroll area by the given amount of pixels.
@@ -268,7 +237,7 @@ export class GenericScrollBox extends React.Component {
   scrollTo(x, y, duration = this.props.scrollDuration, silent = false) {
     // Consider actual scroll position to be a starting point.
     this._duration = duration;
-    this._timestamp = Date.now();
+    this._start = Date.now();
     this.previousX = this.scrollX;
     this.previousY = this.scrollY;
     if (!isNaN(x)) {
@@ -281,53 +250,50 @@ export class GenericScrollBox extends React.Component {
     this._forceSync();
   }
 
-  _updateViewport() {
-    const {native, outset} = this.props;
-    let el = findDOMNode(this),
-        viewport = this.getViewport(),
-        width = '100%',
-        height = '100%';
+  // Synchronize scrollbar positions immediately without waiting for animation frame.
+  _forceSync() {
+    const {handleX, handleY, viewport, _start, _silent} = this;
+    if (!viewport) {
+      return; // Component was unmounted.
+    }
+    const {scrollY, scrollX, previousX, previousY, exposesX, exposesY, _duration} = this,
+          {axes, forceNativeScroll, outset, easing, onViewportScroll, scrollMinX, scrollMinY} = this.props,
+          {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
-    // On desktops scrollbars may have non-zero thickness so in case of outset
-    // scrollbar positioning cropped pixes must be compensated.
-    if (native && outset) {
-      let trackYSize = viewport.offsetWidth - viewport.clientWidth,
-          trackXSize = viewport.offsetHeight - viewport.clientHeight;
-      if (trackYSize) {
-        width = `calc(${width} + ${trackYSize}px)`;
+    const SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
+          SCROLL_MAX_Y = Math.max(0, scrollHeight - clientHeight);
+
+    this.exposesX = axes.indexOf(ScrollAxes.X) > -1 && SCROLL_MAX_X >= scrollMinX;
+    this.exposesY = axes.indexOf(ScrollAxes.Y) > -1 && SCROLL_MAX_Y >= scrollMinY;
+
+    let el = findDOMNode(this);
+    toggleClassName(el, CLASS_SHOW_AXIS_X, this.exposesX);
+    toggleClassName(el, CLASS_SHOW_AXIS_Y, this.exposesY);
+
+    // Scrollbars may have non-zero thickness so in case of outset positioning
+    // pixes cropped by scrollbar must be compensated.
+    let width = '100%',
+        height = '100%';
+    if (forceNativeScroll && outset) {
+      let trackYWidth = offsetWidth - clientWidth,
+          trackXHeight = offsetHeight - clientHeight;
+      if (trackYWidth) {
+        width = `calc(100% + ${trackYWidth}px)`;
       }
-      if (trackXSize) {
-        height = `calc(${height} + ${trackXSize}px)`;
+      if (trackXHeight) {
+        height = `calc(100% + ${trackXHeight}px)`;
       }
     }
     viewport.style.width = width;
     viewport.style.height = height;
 
-    toggleClassName(el, CLASS_SHOW_AXIS_X, this.scrollMaxX > 0);
-    toggleClassName(el, CLASS_SHOW_AXIS_Y, this.scrollMaxY > 0);
-  }
-
-  // Synchronize scrollbar positions immediately without waiting for animation frame.
-  _forceSync() {
-    const {handleX, handleY} = this;
-    if (!handleX) {
-      return; // Component was unmounted.
-    }
-    let viewport = this.getViewport();
-    const {native, easing, onViewportScroll} = this.props,
-          {clientWidth, clientHeight, scrollWidth, scrollHeight} = viewport,
-          SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
-          SCROLL_MAX_Y = Math.max(0, scrollHeight - clientHeight);
-
-    this.targetX = this.hasAxis(ScrollAxes.X) * Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X));
-    this.targetY = this.hasAxis(ScrollAxes.Y) * Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y));
-
-    const {targetX, targetY, scrollY, scrollX, previousX, previousY, _duration} = this;
-    let x = targetX,
+    let targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X)) * this.exposesX,
+        targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y)) * this.exposesY,
+        x = targetX,
         y = targetY;
 
-    if (!native && !this._touching && scrollY == viewport.scrollTop && scrollX == viewport.scrollLeft) {
-      let elapsedTime = Date.now() - this._timestamp;
+    if (!forceNativeScroll && scrollY == scrollTop && scrollX == scrollLeft) {
+      let elapsedTime = Date.now() - _start;
       if (elapsedTime < _duration) {
         let ratio = easing(elapsedTime / _duration, elapsedTime, 0, 1, _duration);
 
@@ -347,84 +313,75 @@ export class GenericScrollBox extends React.Component {
       // So stop running animation and update component state with current
       // viewport scroll offsets.
       this._duration = 0;
-      x = this.targetX = viewport.scrollLeft;
-      y = this.targetY = viewport.scrollTop;
+      x = targetX = scrollLeft;
+      y = targetY = scrollTop;
     }
+    this.targetX = targetX;
+    this.targetY = targetY;
 
     if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y) {
-      if (this._duration == 0) {
-        // Animation has completed and geometry did not change, so reset flags possibly introduced
-        // during scroll request (by `scrollTo` or fast tracking).
+      if (!this._duration) {
+        // Animation has completed and geometry did not change.
         this._silent = false;
-        this._fastTracking = false;
       }
-
       // Viewport did not change its scroll parameters, so invocation of `onViewportScroll` and
       // further altering geometry of handles and tracks is not required.
       return;
-    }
-
-    this.handleXWidth = 0;
-    this.handleYHeight = 0;
-    this.trackMaxX = 0;
-    this.trackMaxY = 0;
-
-    // Update non-native handle positions and sizes.
-    if (!native) {
-      // Scrollbar size represents ratio of content and viewport sizes.
-      handleX.style.width = clientWidth / scrollWidth * 100 + '%';
-      handleY.style.height = clientHeight / scrollHeight * 100 + '%';
-
-      this.handleXWidth = handleX.offsetWidth;
-      this.handleYHeight = handleY.offsetHeight;
-      this.trackMaxX = this.getTrackX().clientWidth - this.handleXWidth;
-      this.trackMaxY = this.getTrackY().clientHeight - this.handleYHeight;
-
-      handleX.style.left = this.trackMaxX * x / SCROLL_MAX_X + 'px';
-      handleY.style.top = this.trackMaxY * y / SCROLL_MAX_Y + 'px';
     }
     this.scrollX = x;
     this.scrollY = y;
     this.scrollMaxX = SCROLL_MAX_X;
     this.scrollMaxY = SCROLL_MAX_Y;
+    this.trackMaxX = 0;
+    this.trackMaxY = 0;
 
-    if (!this._silent && !(scrollX == x && scrollY == y)) {
+    // Update custom handle positions and sizes.
+    // Scrollbar size represents ratio of content and viewport sizes.
+    if (!forceNativeScroll) {
+      this.trackMaxX = this.trackX.clientWidth - handleX.offsetWidth;
+      this.trackMaxY = this.trackY.clientHeight - handleY.offsetHeight;
+
+      handleX.style.width = clientWidth / scrollWidth * 100 + '%';
+      handleX.style.left = this.trackMaxX * x / SCROLL_MAX_X + 'px';
+
+      handleY.style.height = clientHeight / scrollHeight * 100 + '%';
+      handleY.style.top = this.trackMaxY * y / SCROLL_MAX_Y + 'px';
+    }
+    if (!_silent && !(scrollX == x && scrollY == y)) {
       onViewportScroll(this);
     }
   }
 
   onTouchStart = e => {
-    this._touching = true;
   };
 
   onTouchEnd = e => {
-    this._touching = false;
   };
 
   onScroll = e => {
-    if (this.props.native && e.target == this.getViewport()) {
+    if (this.props.forceNativeScroll && e.target == this.viewport) {
       this._forceSync();
     }
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, native, disabled, propagateScroll, wheelAxesSwap} = this.props,
+    const {axes, wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
-    if (native || disabled || e.isDefaultPrevented() || (el != this.getViewport() && isTextInput(el))) {
+    if (forceNativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
       return;
     }
     // Normalize mouse wheel delta among browsers and devices.
-    // Usually `event.delta*` in IE 100-400, in Chrome 100-300, in FF 3-10, and
-    // these values may even differ in different browser versions.
-    let dx = e.deltaX / Math.abs(e.deltaX) * wheelStepX * this.hasAxis(ScrollAxes.X) || 0,
-        dy = e.deltaY / Math.abs(e.deltaY) * wheelStepY * this.hasAxis(ScrollAxes.Y) || 0;
+    // Usually `event.delta*` in IE 100-400, in Chrome 100-300, in FF 3-10, and these values may even
+    // differ in different browser versions. Those W3C guys should better have standard on that.
+    let dx = e.deltaX / Math.abs(e.deltaX) * wheelStepX * this.exposesX || 0,
+        dy = e.deltaY / Math.abs(e.deltaY) * wheelStepY * this.exposesY || 0;
     if (
       (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
       (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
     ) {
       // Content is scrolled to its possible limit.
-      if (!propagateScroll) {
+      if (!propagateWheelScroll) {
         e.preventDefault();
       }
       return;
@@ -432,9 +389,10 @@ export class GenericScrollBox extends React.Component {
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
     if (e.shiftKey && !dx) {
-      [dx, dy] = [dy, dx];
+      dx = dy;
+      dy = 0;
     }
-    if (wheelAxesSwap) {
+    if (swapWheelAxes) {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();
@@ -457,10 +415,9 @@ export class GenericScrollBox extends React.Component {
         break;
       case 33: // PgUp
       case 34: // PgDn
-        let viewport = this.getViewport(),
-            dy = viewport.clientHeight,
-            dx = viewport.clientWidth;
-        if (e.keyCode === 33) {
+        let dy = this.viewport.clientHeight,
+            dx = this.viewport.clientWidth;
+        if (e.keyCode == 33) {
           // For PageUp invert direction.
           dy *= -1;
           dx *= -1;
@@ -493,20 +450,17 @@ export class GenericScrollBox extends React.Component {
     e.preventDefault();
     e.stopPropagation();
 
-    let draggedTrack;
+    let track;
     if (axis == ScrollAxes.X) {
-      this._draggedHandle = this.handleX;
-      draggedTrack = this.getTrackX();
+      track = this.trackX;
     } else {
-      this._draggedHandle = this.handleY;
-      draggedTrack = this.getTrackY();
+      track = this.trackY;
     }
-
     const OFFSET_X = e.clientX - this.handleX.offsetLeft,
           OFFSET_Y = e.clientY - this.handleY.offsetTop;
 
     let onDrag = e => {
-      if (!this.handleX || e.button != 0) {
+      if (!this.viewport || e.button != 0) {
         onDragEnd(); // Component was unmounted or button was released.
       }
       if (axis == ScrollAxes.X) {
@@ -518,20 +472,19 @@ export class GenericScrollBox extends React.Component {
     };
 
     let onDragEnd = e => {
-      this._draggedHandle = null;
       removeEventListener(EVENT_MOUSE_MOVE, onDrag);
       removeEventListener(EVENT_MOUSE_UP, onDragEnd);
       removeEventListener(EVENT_BLUR, onDragEnd);
-      if (this.handleX) {
+      if (this.viewport) {
         // Ensure component is mounted.
-        toggleClassName(draggedTrack, CLASS_TRACK_DRAGGED, false);
+        toggleClassName(track, CLASS_TRACK_DRAGGED, false);
       }
     };
 
     addEventListener(EVENT_MOUSE_MOVE, onDrag);
     addEventListener(EVENT_MOUSE_UP, onDragEnd);
     addEventListener(EVENT_BLUR, onDragEnd);
-    toggleClassName(draggedTrack, CLASS_TRACK_DRAGGED, true);
+    toggleClassName(track, CLASS_TRACK_DRAGGED, true);
   };
 
   onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
@@ -540,13 +493,13 @@ export class GenericScrollBox extends React.Component {
 
   onFastTrack(e, axis) {
     const {disabled, fastTrack, fastTrackDuration} = this.props;
-    if (disabled || e.button > 0) {
-      return; // Component is disabled or mouse button is being pressed.
+    if (disabled || e.button != 0) {
+      return; // Component is disabled or secondary mouse button is being pressed.
     }
     let x, y;
-    const {clientWidth, clientHeight, scrollWidth, scrollHeight} = this.getViewport(),
-          POINTER_X = e.clientX - this.getTrackX().getBoundingClientRect().left,
-          POINTER_Y = e.clientY - this.getTrackY().getBoundingClientRect().top;
+    const {clientWidth, clientHeight, scrollWidth, scrollHeight} = this.viewport,
+          POINTER_X = e.clientX - this.trackX.getBoundingClientRect().left,
+          POINTER_Y = e.clientY - this.trackY.getBoundingClientRect().top;
 
     switch (fastTrack) {
 
@@ -560,15 +513,14 @@ export class GenericScrollBox extends React.Component {
 
       case FastTrack.GOTO:
         if (axis == ScrollAxes.X) {
-          x = POINTER_X / this.getTrackX().clientWidth * scrollWidth - clientWidth / 2;
+          x = POINTER_X / this.trackX.clientWidth * scrollWidth - clientWidth / 2;
         } else {
-          y = POINTER_Y / this.getTrackY().clientHeight * scrollHeight - clientHeight / 2;
+          y = POINTER_Y / this.trackY.clientHeight * scrollHeight - clientHeight / 2;
         }
         break;
 
       default: return;
     }
-    this._fastTracking = true;
     this.scrollTo(x, y, fastTrackDuration);
   };
 
@@ -589,26 +541,32 @@ export class GenericScrollBox extends React.Component {
       clientY - height - top < hoverProximity && top - clientY < hoverProximity &&
       clientX - width - left < hoverProximity && left - clientX < hoverProximity);
   }
-  
+
   onCursorApproachingTrack = e => {
     // Do not track cursor proximity for native scroll bar, when handle is being dragged,
     // when selection is in progress or when another handle is being dragged (even on another
     // scroll box instance).
-    if (this.props.native || e.buttons > 0) {
+    if (this.props.forceNativeScroll || e.buttons > 0) {
       return;
     }
-    // Update track hover status only if it is actually visible.
-    if (this.scrollMaxX) {
-      this._updateTrackHoverStatus(e, this.getTrackX());
+    // Update track hover status only if it is actually in use.
+    if (this.exposesX) {
+      this._updateTrackHoverStatus(e, this.trackX);
     }
-    if (this.scrollMaxY) {
-      this._updateTrackHoverStatus(e, this.getTrackY());
+    if (this.exposesY) {
+      this._updateTrackHoverStatus(e, this.trackY);
     }
   };
 
+  _updateReferences() {
+    this.trackX = this.handleX.parentNode;
+    this.trackY = this.handleY.parentNode;
+    this.viewport = findDOMNode(this).lastChild;
+  }
+
   componentDidMount() {
     let requestForceSync = () => {
-      if (!this.handleX) {
+      if (!this.viewport) {
         return; // Component was unmounted.
       }
       if (window.requestAnimationFrame) {
@@ -616,38 +574,41 @@ export class GenericScrollBox extends React.Component {
       } else {
         setTimeout(requestForceSync, 1000 / 30);
       }
-      this._updateViewport();
       this._forceSync();
     };
+    this._updateReferences();
     requestForceSync();
     addEventListener(EVENT_MOUSE_MOVE, this.onCursorApproachingTrack);
   }
 
-  componentWillUnmount() {
-    removeEventListener(EVENT_MOUSE_MOVE, this.onCursorApproachingTrack);
-  }
-
   componentDidUpdate() {
-    this._updateViewport();
+    this._updateReferences();
     this._forceSync();
   }
 
+  componentWillUnmount() {
+    this.trackX = null;
+    this.trackY = null;
+    this.viewport = null;
+    removeEventListener(EVENT_MOUSE_MOVE, this.onCursorApproachingTrack);
+  }
+
   render() {
-    const {trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, native, outset, className, children, style} = this.props;
+    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, forceNativeScroll, outset, className, children, style} = this.props;
     let classNames = [className, CLASS_SCROLL_BOX];
     if (disabled) {
       classNames.push(CLASS_DISABLED);
     }
-    if (native) {
+    if (forceNativeScroll) {
       classNames.push(CLASS_NATIVE);
     }
     if (outset) {
       classNames.push(CLASS_OUTSET);
     }
-    if (this.hasAxis(ScrollAxes.X)) {
+    if (axes.indexOf(ScrollAxes.X) > -1) {
       classNames.push(CLASS_HAS_AXIS_X);
     }
-    if (this.hasAxis(ScrollAxes.Y)) {
+    if (axes.indexOf(ScrollAxes.Y) > -1) {
       classNames.push(CLASS_HAS_AXIS_Y);
     }
     return (

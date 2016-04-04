@@ -353,9 +353,28 @@ export class GenericScrollBox extends React.Component {
   }
 
   onTouchStart = e => {
+    if (this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
+      return;
+    }
+    e.preventDefault();
+    let touch = e.touches[0];
+    this._touchStartX = this.viewport.scrollLeft + touch.screenX;
+    this._touchStartY = this.viewport.scrollTop + touch.screenY;
+  };
+
+  onTouchMove = e => {
+    if (e.isDefaultPrevented()) {
+      return;
+    }
+    if (this._touchStartX != null) {
+      let touch = e.touches[0];
+      this.scrollTo(this._touchStartX - touch.screenX, this._touchStartY - touch.screenY, 0);
+    }
   };
 
   onTouchEnd = e => {
+    this._touchStartX = null;
+    this._touchStartY = null;
   };
 
   onScroll = e => {
@@ -618,6 +637,7 @@ export class GenericScrollBox extends React.Component {
            onWheel={this.onWheel}
            onKeyDown={this.onKeyDown}
            onTouchStart={this.onTouchStart}
+           onTouchMove={this.onTouchMove}
            onTouchEnd={this.onTouchEnd}
            onTouchCancel={this.onTouchEnd}
            tabIndex="-1">

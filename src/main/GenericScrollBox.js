@@ -203,8 +203,10 @@ export class GenericScrollBox extends React.Component {
   // Automatically reset to `false` then scroll animation finishes.
   _silent = false;
 
-  _touchStartX = -1;
-  _touchStartY = -1;
+  _touchOffsetX = -1;
+  _touchOffsetY = -1;
+  _touchStart = null;
+  _touchEnd = null;
 
   /**
    * Scroll area by the given amount of pixels.
@@ -359,23 +361,51 @@ export class GenericScrollBox extends React.Component {
     if (this.props.forceNativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
       return;
     }
-    let touch = e.touches[0];
-    this._touchStartX = this.viewport.scrollLeft + touch.screenX;
-    this._touchStartY = this.viewport.scrollTop + touch.screenY;
+    let touch = e.touches[0],
+        x = this.viewport.scrollLeft,
+        y = this.viewport.scrollTop;
+    this._touchOffsetX = x + touch.screenX;
+    this._touchOffsetY = y + touch.screenY;
+    this._touchStart = {x, y};
   };
 
   onTouchMove = e => {
-    if (this.props.forceNativeScroll || this.props.disabled || e.isDefaultPrevented() || this._touchStartX == -1 || this._touchStartY == -1) {
+    if (!this._touchStart) {
       return;
     }
     e.preventDefault();
     let touch = e.touches[0];
-    this.scrollTo(this._touchStartX - touch.screenX, this._touchStartY - touch.screenY, 0);
+    let x = this._touchOffsetX - touch.screenX,
+        y = this._touchOffsetY - touch.screenY;
+    if (this._touchEnd) {
+      let coords = this._touchStart;
+      this._touchStart = this._touchEnd;
+      this._touchEnd = coords;
+      coords.x = x;
+      coords.y = y;
+    } else {
+      this._touchEnd = {x, y};
+    }
+    this.scrollTo(x, y, 0);
   };
 
   onTouchEnd = e => {
-    this._touchStartX = -1;
-    this._touchStartY = -1;
+    if (!this._touchEnd) {
+      return;
+    }
+    const {_touchStart, _touchEnd} = this;
+    let dt = Date.now() - this._start,
+        dx = _touchStart.x - _touchEnd.x,
+        dy = _touchStart.y - _touchEnd.y,
+        l = Math.sqrt(dx * dx + dy * dy),
+        velocity = l / dt;
+
+    this._touchOffsetX = -1;
+    this._touchOffsetY = -1;
+    this._touchStart = null;
+    this._touchEnd = null;
+
+    this.scrollTo(_touchEnd.x - velocity * dx / l * 20, _touchEnd.y - velocity * dy / l * 20, velocity * 50);
   };
 
   onScroll = e => {
@@ -385,7 +415,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   onWheel = e => {
-    const {axes, wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes} = this.props,
+    const {wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
     if (forceNativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
@@ -617,7 +647,7 @@ export class GenericScrollBox extends React.Component {
     const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, forceNativeScroll, outset, className, children, style} = this.props;
     let classNames = [CLASS_SCROLL_BOX];
     if (className) {
-      classNames.push(className);
+      classNames.unshift(className);
     }
     if (disabled) {
       classNames.push(CLASS_DISABLED);

@@ -1,10 +1,9 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
-const {number, bool, func, oneOf, any, arrayOf} = React.PropTypes;
+const {number, bool, func, oneOf, any, arrayOf, string} = React.PropTypes;
 
 const
   CLASS_SCROLL_BOX = 'scroll-box',
-  CLASS_VIEWPORT = 'scroll-box__viewport',
   CLASS_TRACK_X = 'scroll-box__track scroll-box__track_x',
   CLASS_TRACK_Y = 'scroll-box__track scroll-box__track_y',
   CLASS_HANDLE_X = 'scroll-box__handle scroll-box__handle_x',
@@ -102,26 +101,39 @@ function isTextInput(el) {
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
+    forceNativeScroll: bool,
+    className: string,
     axes: oneOf(ScrollAxes.values),
-    fastTrack: oneOf(FastTrack.values),
-    fastTrackDuration: number,
-    scrollDuration: number,
     hoverProximity: number,
     disabled: bool,
+    outset: bool,
+    scrollMinX: number,
+    scrollMinY: number,
+    defaultEasing: func,
+    onViewportScroll: func,
+
+    // Fast tracking
+    fastTrack: oneOf(FastTrack.values),
+    fastTrackDuration: number,
+
+    // Keyboard
     captureKeyboard: bool,
     scrollKeys: arrayOf(oneOf(ScrollKey.values)),
-    outset: bool,
-    forceNativeScroll: bool,
     keyboardStepX: number,
     keyboardStepY: number,
+    keyboardScrollDuration: number,
+
+    // Wheel
     wheelStepX: number,
     wheelStepY: number,
     propagateWheelScroll: bool,
     swapWheelAxes: bool,
-    scrollMinX: number,
-    scrollMinY: number,
-    easing: func,
-    onViewportScroll: func,
+    wheelScrollDuration: number,
+
+    // Touch
+    touchInertia: number,
+
+    // Layout
     trackXChildren: any,
     trackYChildren: any,
     handleXChildren: any,
@@ -129,27 +141,37 @@ export class GenericScrollBox extends React.Component {
   };
 
   static defaultProps = {
+    forceNativeScroll: 'orientation' in window,
+    className: CLASS_WRAPPED,
     axes: ScrollAxes.XY,
-    fastTrack: FastTrack.GOTO,
-    fastTrackDuration: 500,
-    scrollDuration: 100,
     hoverProximity: 50,
     disabled: false,
+    outset: false,
+    scrollMinX: 2,
+    scrollMinY: 2,
+    defaultEasing: easeCircOut,
+    onViewportScroll: target => {},
+
+    // Fast tracking
+    fastTrack: FastTrack.GOTO,
+    fastTrackDuration: 500,
+
+    // Keyboard
     captureKeyboard: true,
     scrollKeys: ScrollKey.values,
-    outset: false,
-    forceNativeScroll: 'orientation' in window,
     keyboardStepX: 30,
     keyboardStepY: 30,
+    keyboardScrollDuration: 200,
+
+    // Wheel
     wheelStepX: 30,
     wheelStepY: 30,
     propagateWheelScroll: true,
     swapWheelAxes: false,
-    scrollMinX: 2,
-    scrollMinY: 2,
-    easing: easeCircOut,
-    onViewportScroll: target => {},
-    className: CLASS_WRAPPED
+    wheelScrollDuration: 100,
+
+    // Touch
+    touchInertia: 20
   };
 
   // Handle elements.
@@ -208,38 +230,11 @@ export class GenericScrollBox extends React.Component {
   _touchStart = null;
   _touchEnd = null;
 
-  /**
-   * Scroll area by the given amount of pixels.
-   *
-   * Positive coordinates will scroll to the right and down the content.
-   * Negative values will scroll to the left and up the content.
-   *
-   * If non-numeric value is provided then corresponding position of
-   * scroll bar coordinate is not changed.
-   *
-   * @param {Number} [dx = 0] Horizontal offset.
-   * @param {Number} [dy = 0] Vertical offset.
-   * @param {Number} [duration = 0] How long the scrolling should run.
-   * @param {Boolean} [silent = false] Prevent invocation of `onViewportScroll` until requested
-   *        scrolling is finished. Can be used for synchronization of multiple scroll areas.
-   */
-  scrollBy(dx, dy, duration, silent) {
-    this.scrollTo(this.scrollX + dx, this.scrollY + dy, duration, silent);
+  scrollBy(dx, dy, duration, easing, silent) {
+    this.scrollTo(this.targetX + dx, this.targetY + dy, duration, silent);
   }
 
-  /**
-   * Scroll content to a particular place in pixels.
-   *
-   * If non-numeric value is provided then corresponding position of
-   * scroll bar coordinate is not changed.
-   *
-   * @param {Number} [x] Horizontal offset.
-   * @param {Number} [y] Vertical offset.
-   * @param {Number} [duration = 0] How long the scrolling should run.
-   * @param {Boolean} [silent = false] Prevent invocation of `onViewportScroll` until requested
-   *        scrolling is finished. Can be used for synchronization of multiple scroll areas.
-   */
-  scrollTo(x, y, duration = this.props.scrollDuration, silent = false) {
+  scrollTo(x, y, duration = 0, easing = this.props.defaultEasing, silent = false) {
     // Consider actual scroll position to be a starting point.
     this._duration = duration;
     this._start = Date.now();
@@ -251,6 +246,7 @@ export class GenericScrollBox extends React.Component {
     if (!isNaN(y)) {
       this.targetY = y;
     }
+    this._easing = easing;
     this._silent = Boolean(silent);
     this._forceSync();
   }
@@ -261,8 +257,8 @@ export class GenericScrollBox extends React.Component {
     if (!viewport) {
       return; // Component was unmounted.
     }
-    const {scrollY, scrollX, previousX, previousY, exposesX, exposesY, _duration} = this,
-          {axes, forceNativeScroll, outset, easing, onViewportScroll, scrollMinX, scrollMinY} = this.props,
+    const {scrollY, scrollX, previousX, previousY, _easing, _duration} = this,
+          {axes, forceNativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
           {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
     const SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
@@ -299,8 +295,8 @@ export class GenericScrollBox extends React.Component {
 
     if (!forceNativeScroll && scrollY == scrollTop && scrollX == scrollLeft) {
       let elapsedTime = Date.now() - _start;
-      if (elapsedTime < _duration) {
-        let ratio = easing(elapsedTime / _duration, elapsedTime, 0, 1, _duration);
+      if (elapsedTime < _duration && typeof _easing == 'function') {
+        let ratio = _easing(elapsedTime / _duration, elapsedTime, 0, 1, _duration);
 
         // Compute eased scroll positions.
         x = Math.round(previousX + ratio * (targetX - previousX));
@@ -374,8 +370,8 @@ export class GenericScrollBox extends React.Component {
       return;
     }
     e.preventDefault();
-    let touch = e.touches[0];
-    let x = this._touchOffsetX - touch.screenX,
+    let touch = e.touches[0],
+        x = this._touchOffsetX - touch.screenX,
         y = this._touchOffsetY - touch.screenY;
     if (this._touchEnd) {
       let coords = this._touchStart;
@@ -393,19 +389,19 @@ export class GenericScrollBox extends React.Component {
     if (!this._touchEnd) {
       return;
     }
-    const {_touchStart, _touchEnd} = this;
+    const {_touchStart, _touchEnd} = this,
+          {touchInertia} = this.props;
     let dt = Date.now() - this._start,
         dx = _touchStart.x - _touchEnd.x,
         dy = _touchStart.y - _touchEnd.y,
         l = Math.sqrt(dx * dx + dy * dy),
-        velocity = l / dt;
-
+        velocity = l / dt * touchInertia * Math.log(l) / Math.log(2.718);
     this._touchOffsetX = -1;
     this._touchOffsetY = -1;
     this._touchStart = null;
     this._touchEnd = null;
 
-    this.scrollTo(_touchEnd.x - velocity * dx / l * 20, _touchEnd.y - velocity * dy / l * 20, velocity * 50);
+    this.scrollTo(_touchEnd.x - velocity * dx / l, _touchEnd.y - velocity * dy / l, velocity);
   };
 
   onScroll = e => {
@@ -415,7 +411,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes} = this.props,
+    const {wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
     if (forceNativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
@@ -446,11 +442,11 @@ export class GenericScrollBox extends React.Component {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();
-    this.scrollTo(targetX + dx, targetY + dy);
+    this.scrollBy(dx, dy, wheelScrollDuration);
   };
 
   onKeyDown = e => {
-    const {keyboardStepX, keyboardStepY, disabled, captureKeyboard, scrollKeys} = this.props;
+    const {keyboardStepX, keyboardStepY, disabled, captureKeyboard, scrollKeys, keyboardScrollDuration} = this.props;
     if (disabled || !captureKeyboard || e.isDefaultPrevented() || scrollKeys.indexOf(e.keyCode) < 0 || isTextInput(e.target)) {
       return;
     }
@@ -458,10 +454,10 @@ export class GenericScrollBox extends React.Component {
     e.preventDefault();
     switch (e.keyCode) {
       case 36: // Home
-        this.scrollTo(0, 0);
+        this.scrollTo(0, 0, keyboardScrollDuration);
         break;
       case 35: // End
-        this.scrollTo(this.scrollMaxX, this.scrollMaxY);
+        this.scrollTo(this.scrollMaxX, this.scrollMaxY, keyboardScrollDuration);
         break;
       case 33: // PgUp
       case 34: // PgDn
@@ -473,22 +469,22 @@ export class GenericScrollBox extends React.Component {
           dx *= -1;
         }
         if (e.shiftKey) {
-          this.scrollBy(dx, 0);
+          this.scrollBy(dx, 0, keyboardScrollDuration);
         } else {
-          this.scrollBy(0, dy);
+          this.scrollBy(0, dy, keyboardScrollDuration);
         }
         break;
       case 38: // Up
-        this.scrollBy(0, -keyboardStepY);
+        this.scrollBy(0, -keyboardStepY, keyboardScrollDuration);
         break;
       case 40: // Down
-        this.scrollBy(0, keyboardStepY);
+        this.scrollBy(0, keyboardStepY, keyboardScrollDuration);
         break;
       case 37: // Left
-        this.scrollBy(-keyboardStepX, 0);
+        this.scrollBy(-keyboardStepX, 0, keyboardScrollDuration);
         break;
       case 39: // Right
-        this.scrollBy(keyboardStepX, 0);
+        this.scrollBy(keyboardStepX, 0, keyboardScrollDuration);
         break;
     }
   };

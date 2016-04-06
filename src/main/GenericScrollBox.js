@@ -101,7 +101,7 @@ function isTextInput(el) {
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
-    forceNativeScroll: bool,
+    nativeScroll: bool,
     className: string,
     axes: oneOf(ScrollAxes.values),
     hoverProximity: number,
@@ -141,7 +141,7 @@ export class GenericScrollBox extends React.Component {
   };
 
   static defaultProps = {
-    forceNativeScroll: 'orientation' in window,
+    nativeScroll: 'orientation' in window,
     className: CLASS_WRAPPED,
     axes: ScrollAxes.XY,
     hoverProximity: 50,
@@ -258,7 +258,7 @@ export class GenericScrollBox extends React.Component {
       return; // Component was unmounted.
     }
     const {scrollY, scrollX, previousX, previousY, _easing, _duration} = this,
-          {axes, forceNativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
+          {axes, nativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
           {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
     const SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
@@ -275,7 +275,7 @@ export class GenericScrollBox extends React.Component {
     // pixes cropped by scrollbar must be compensated.
     let width = '100%',
         height = '100%';
-    if (forceNativeScroll && outset) {
+    if (nativeScroll && outset) {
       let trackYWidth = offsetWidth - clientWidth,
           trackXHeight = offsetHeight - clientHeight;
       if (trackYWidth) {
@@ -293,7 +293,7 @@ export class GenericScrollBox extends React.Component {
         x = targetX,
         y = targetY;
 
-    if (!forceNativeScroll && scrollY == scrollTop && scrollX == scrollLeft) {
+    if (!nativeScroll && scrollY == scrollTop && scrollX == scrollLeft) {
       let elapsedTime = Date.now() - _start;
       if (elapsedTime < _duration && typeof _easing == 'function') {
         let ratio = _easing(elapsedTime / _duration, elapsedTime, 0, 1, _duration);
@@ -338,7 +338,7 @@ export class GenericScrollBox extends React.Component {
 
     // Update custom handle positions and sizes.
     // Scrollbar size represents ratio of content and viewport sizes.
-    if (!forceNativeScroll) {
+    if (!nativeScroll) {
       this.trackMaxX = this.trackX.clientWidth - handleX.offsetWidth;
       this.trackMaxY = this.trackY.clientHeight - handleY.offsetHeight;
 
@@ -354,7 +354,7 @@ export class GenericScrollBox extends React.Component {
   }
 
   onTouchStart = e => {
-    if (this.props.forceNativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
+    if (this.props.nativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
       return;
     }
     let touch = e.touches[0],
@@ -405,16 +405,16 @@ export class GenericScrollBox extends React.Component {
   };
 
   onScroll = e => {
-    if (this.props.forceNativeScroll && e.target == this.viewport) {
+    if (this.props.nativeScroll && e.target == this.viewport) {
       this._forceSync();
     }
   };
 
   onWheel = e => {
-    const {wheelStepX, wheelStepY, forceNativeScroll, disabled, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
+    const {wheelStepX, wheelStepY, nativeScroll, disabled, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
-    if (forceNativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
+    if (nativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
       return;
     }
     // Normalize mouse wheel delta among browsers and devices.
@@ -589,10 +589,11 @@ export class GenericScrollBox extends React.Component {
   }
 
   onCursorApproachingTrack = e => {
+    let {nativeScroll, disabled} = this.props;
     // Do not track cursor proximity for native scroll bar, when handle is being dragged,
     // when selection is in progress or when another handle is being dragged (even on another
     // scroll box instance).
-    if (this.props.forceNativeScroll || e.buttons > 0) {
+    if (nativeScroll || disabled || e.buttons > 0) {
       return;
     }
     // Update track hover status only if it is actually in use.
@@ -640,7 +641,7 @@ export class GenericScrollBox extends React.Component {
   }
 
   render() {
-    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, forceNativeScroll, outset, className, children, style} = this.props;
+    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, nativeScroll, outset, className, children, style} = this.props;
     let classNames = [CLASS_SCROLL_BOX];
     if (className) {
       classNames.unshift(className);
@@ -648,7 +649,7 @@ export class GenericScrollBox extends React.Component {
     if (disabled) {
       classNames.push(CLASS_DISABLED);
     }
-    if (forceNativeScroll) {
+    if (nativeScroll) {
       classNames.push(CLASS_NATIVE);
     }
     if (outset) {

@@ -1,10 +1,11 @@
-# React `ScrollBox` Component v0.1.3
+# React `ScrollBox` Component v0.2.0
 
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
 [Live Demo](http://smikhalevski.github.io/react-scroll-box/) ([Source Code](https://github.com/smikhalevski/react-scroll-box/blob/master/src/demo/index.js))
+
 
 - Use custom or native scroll bars.
 - Highly customizable tracks and handles for both mobile and desktop.
@@ -19,9 +20,10 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 - Scroll boxes can be nested.
 - Custom viewports can be used (ex. `textarea`).
 - Conditionally unwrap scroll box to scroll its content along with page. This can even be done using a media query!
-- LESS styles with a mixin to simplify coloring. 
+- LESS styles with a mixin to simplify coloring.
 - Lots of other properties to customize scrolling behavior.
-
+- Scrollbar size represents ratio of content and viewport sizes.
+- Custom easing function can be specified for every `scrollTo` and `scrollBy` invocation.
 
 ## Contents
 

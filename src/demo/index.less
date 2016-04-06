@@ -10,10 +10,6 @@ body {
   margin: 0;
   padding: 0;
 
-  input,
-  select {
-    max-width: 200px;
-  }
 }
 
 #demo {
@@ -22,14 +18,48 @@ body {
 
 .scroll-box {
   &_example {
-    height: 70vh;
+    height: 300px;
+    max-width: 500px;
+    margin: 40px auto;
     background-color: rgba(74, 202, 255, 0.88);
     border-radius: 5px;
   }
-  &__clouds {
-    width: 4289px;
-    height: 1067px;
-    background-image: url('./panorama.jpg');
+  &__bg {
+    width: 1680px;
+    height: 1050px;
+    background-image: url('./bg.jpg');
     background-size: contain;
+    padding: 20px;
   }
+  &__nested-example {
+    width: 200px;
+    height: 200px;
+
+    textarea {
+      border: none;
+      overflow: hidden;
+      resize: none;
+    }
+  }
+}
+
+.form-group_disabled {
+  color: #888;
+
+  code {
+    color: #c7798d;
+  }
+  kbd {
+    background-color: #a0a0a0;
+    box-shadow: none;
+  }
+}
+
+.form-control,
+.input-group {
+  max-width: 200px;
+}
+
+.input-group + .input-group {
+  margin-top: 10px;
 }

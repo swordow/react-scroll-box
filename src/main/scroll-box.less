@@ -29,8 +29,18 @@
 .@{scroll-box} {
   position: relative;
 
+  &:focus {
+    outline: none;
+  }
+
   &_disabled {
-    // Noop by default.
+    // Force hide native scrollbars.
+    overflow: hidden !important;
+
+    .@{scroll-box}__track {
+      // Force hide custom scrollbars.
+      visibility: hidden !important;
+    }
   }
   
   // By default scroll box looks like an unwrapped container.

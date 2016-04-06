@@ -1,5 +1,11 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
+import {toggleClassName} from './toggleClassName';
+import {easeCircOut} from './easing';
+import {FastTrack} from './FastTrack';
+import {ScrollAxes} from './ScrollAxes';
+import {ScrollKey} from './ScrollKey';
+
 const {number, bool, func, oneOf, any, arrayOf, string} = React.PropTypes;
 
 const
@@ -23,80 +29,10 @@ const
 
   EVENT_MOUSE_MOVE = 'mousemove',
   EVENT_MOUSE_UP = 'mouseup',
-  EVENT_BLUR = 'blur';
+  EVENT_BLUR = 'blur',
 
-export const ScrollAxes = {
-  X: 'x',
-  Y: 'y',
-  XY: 'xy'
-};
-ScrollAxes.values = values(ScrollAxes);
-Object.freeze(ScrollAxes);
-
-export const FastTrack = {
-  PAGING: 'paging',
-  GOTO: 'goto',
-  OFF: null
-};
-FastTrack.values = values(FastTrack);
-Object.freeze(FastTrack);
-
-export const ScrollKey = {
-  HOME: 36,
-  END: 35,
-  PAGE_UP: 33,
-  PAGE_DOWN: 34,
-  UP: 38,
-  DOWN: 40,
-  LEFT: 37,
-  RIGHT: 39
-};
-ScrollKey.values = values(ScrollKey);
-Object.freeze(ScrollKey);
-
-// Get values of an object.
-function values(obj) {
-  let values = [];
-  for (let key of Object.keys(obj)) {
-    values.push(obj[key]);
-  }
-  return values;
-}
-
-// Default easing function.
-function easeCircOut(percentage, elapsedTime, min, max, duration) {
-  return max * Math.sqrt(1 - (percentage -= 1) * percentage) + min;
-}
-
-// Toggle class name for an element.
-function toggleClassName(el, className, force) {
-  let classNames = el.className.split(' '),
-      i = classNames.indexOf(className);
-  if (force == null) {
-    force = i < 0;
-  }
-  if (force) {
-    if (i >= 0) {
-      return; // Class already added.
-    }
-    classNames.push(className);
-  } else {
-    if (i < 0) {
-      return; // Class already removed.
-    }
-    do {
-      // Class name can be repeated multiple times.
-      classNames.splice(i, 1);
-      i = classNames.indexOf(className);
-    } while (i >= 0);
-  }
-  el.className = classNames.join(' ');
-}
-
-function isTextInput(el) {
-  let tagName = el.tagName.toLocaleLowerCase();
-  return tagName == 'textarea' || (tagName == 'input' && el.type == 'text');
-}
+  REF_HANDLE_X = 'handleX',
+  REF_HANDLE_Y = 'handleY';
 
 export class GenericScrollBox extends React.Component {
 
@@ -394,14 +330,14 @@ export class GenericScrollBox extends React.Component {
     let dt = Date.now() - this._start,
         dx = _touchStart.x - _touchEnd.x,
         dy = _touchStart.y - _touchEnd.y,
-        l = Math.sqrt(dx * dx + dy * dy),
-        velocity = l / dt * touchInertia * Math.log(l) / Math.log(2.718);
+        distance = Math.sqrt(dx * dx + dy * dy),
+        velocity = distance / dt * touchInertia * Math.log(distance) / Math.log(2.718);
     this._touchOffsetX = -1;
     this._touchOffsetY = -1;
     this._touchStart = null;
     this._touchEnd = null;
 
-    this.scrollTo(_touchEnd.x - velocity * dx / l, _touchEnd.y - velocity * dy / l, velocity);
+    this.scrollTo(_touchEnd.x - velocity * dx / distance, _touchEnd.y - velocity * dy / distance, velocity);
   };
 
   onScroll = e => {
@@ -414,7 +350,10 @@ export class GenericScrollBox extends React.Component {
     const {wheelStepX, wheelStepY, nativeScroll, disabled, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
-    if (nativeScroll || disabled || e.isDefaultPrevented() || (el != this.viewport && isTextInput(el))) {
+    if (
+      nativeScroll || disabled || e.isDefaultPrevented() || // Event prevented
+      (el != this.viewport && el.tagName.toLocaleLowerCase() == 'textarea') // Nested textarea that is not a viewport is focused.
+    ) {
       return;
     }
     // Normalize mouse wheel delta among browsers and devices.
@@ -447,7 +386,13 @@ export class GenericScrollBox extends React.Component {
 
   onKeyDown = e => {
     const {keyboardStepX, keyboardStepY, disabled, captureKeyboard, scrollKeys, keyboardScrollDuration} = this.props;
-    if (disabled || !captureKeyboard || e.isDefaultPrevented() || scrollKeys.indexOf(e.keyCode) < 0 || isTextInput(e.target)) {
+    let el = e.target,
+        tagName = el.tagName.toLocaleLowerCase();
+    if (
+      disabled || e.isDefaultPrevented() || // Event prevented.
+      !captureKeyboard || scrollKeys.indexOf(e.keyCode) < 0 || // Keyboard events prevented.
+      tagName == 'textarea' || (tagName == 'input' && el.type == 'text') // Nested textarea or input is focused.
+    ) {
       return;
     }
     // Prevent page scrolling.
@@ -574,10 +519,6 @@ export class GenericScrollBox extends React.Component {
 
   onFastTrackY = e => this.onFastTrack(e, ScrollAxes.Y);
 
-  onRenderHandleX = ref => this.handleX = ref && findDOMNode(ref);
-
-  onRenderHandleY = ref => this.handleY = ref && findDOMNode(ref);
-
   _updateTrackHoverStatus(e, track) {
     const {clientX, clientY} = e,
           {hoverProximity} = this.props,
@@ -606,6 +547,8 @@ export class GenericScrollBox extends React.Component {
   };
 
   _updateReferences() {
+    this.handleX = findDOMNode(this.refs[REF_HANDLE_X]);
+    this.handleY = findDOMNode(this.refs[REF_HANDLE_Y]);
     this.trackX = this.handleX.parentNode;
     this.trackY = this.handleY.parentNode;
     this.viewport = findDOMNode(this).lastChild;
@@ -634,8 +577,6 @@ export class GenericScrollBox extends React.Component {
   }
 
   componentWillUnmount() {
-    this.trackX = null;
-    this.trackY = null;
     this.viewport = null;
     removeEventListener(EVENT_MOUSE_MOVE, this.onCursorApproachingTrack);
   }
@@ -674,7 +615,7 @@ export class GenericScrollBox extends React.Component {
            tabIndex="-1">
         <div className={CLASS_TRACK_X}
              onMouseDown={this.onFastTrackX}>
-          <div ref={this.onRenderHandleX}
+          <div ref={REF_HANDLE_X}
                onMouseDown={this.onDragStartX}
                className={CLASS_HANDLE_X}>
             {handleXChildren}
@@ -683,7 +624,7 @@ export class GenericScrollBox extends React.Component {
         </div>
         <div className={CLASS_TRACK_Y}
              onMouseDown={this.onFastTrackY}>
-          <div ref={this.onRenderHandleY}
+          <div ref={REF_HANDLE_Y}
                onMouseDown={this.onDragStartY}
                className={CLASS_HANDLE_Y}>
             {handleYChildren}

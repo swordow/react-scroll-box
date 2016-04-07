@@ -35,7 +35,9 @@
 
   &--disabled {
     // Force hide native scrollbars.
-    overflow: hidden !important;
+    > .@{scroll-box}__viewport {
+      overflow: hidden !important;
+    }
 
     > .@{scroll-box}__track {
       // Force hide custom scrollbars.

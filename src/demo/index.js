@@ -17,6 +17,8 @@ class Demo extends Component {
     scrollMinX: 2,
     scrollMinY: 2,
 
+    captureHandleDrag: true,
+
     // Fast tracking
     fastTrack: FastTrack.GOTO,
     fastTrackDuration: 500,
@@ -28,14 +30,12 @@ class Demo extends Component {
     keyboardScrollDuration: 200,
 
     // Wheel
+    captureWheel: true,
     wheelStepX: 30,
     wheelStepY: 30,
     propagateWheelScroll: true,
     swapWheelAxes: false,
-    wheelScrollDuration: 100,
-
-    // Touch
-    //touchInertia: 20
+    wheelScrollDuration: 100
   };
 
   render() {
@@ -68,10 +68,11 @@ class Demo extends Component {
             <div className="col-md-4">
 
               <fieldset className="form-group">
-                <p><kbd>nativeScroll</kbd></p>
+                <p><a name="native-scroll"/><code className="prop-name">nativeScroll</code></p>
                 <p>
-                  Use native scroll mechanism. By default, this flag is set to <code>true</code> on mobile platforms
-                  and <code>false</code> on desktops but you can change it manually.
+                  Use native scrollbars. By default, this flag is set to <code>true</code> on mobile platforms and
+                  <code>false</code> on desktops. Paltform is considered mobile if <code>window.orientation</code> is
+                  defined.
                 </p>
                 <div className="radio">
                   <label>
@@ -97,16 +98,16 @@ class Demo extends Component {
                            name="native-scroll"
                            checked={this.state.nativeScroll === null}
                            onChange={e => this.setState({nativeScroll: null})}/>
-                    Platform-dependent
+                    Platform-dependent scrollbars
                   </label>
                 </div>
             </fieldset>
 
               <fieldset className="form-group">
-                <p><kbd>axes</kbd></p>
+                <p><code className="prop-name">axes</code></p>
                 <p>
-                  Scroll axes that are allowed to be affected. If scroll axis is not allowed to be changed, corresponding
-                  scroll offset would be constantly equal to 0.
+                  Scroll axes which are managed by scroll box. If scroll axis is not listed then corresponding scroll
+                  offset would be constantly equal to 0.
                 </p>
                 <div className="radio">
                   <label>
@@ -137,12 +138,18 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>hoverProximity</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">hoverProximity</code></p>
                 <p>
-                  Maximum distance between cursor and scroll track border when track is considered to be hovered.
-                  Useful when you want to have thin scrollbars but don't want make user aim precisely with cursor
-                  to grab them.
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
+                <p>
+                  Maximum distance between cursor and scroll track edge where track is considered to be hovered. Useful
+                  when you want to have thin scrollbars but don't want make user aim precisely to grab them. Set to 0 to
+                  disable hover proximity detection.
                 </p>
                 <div className="input-group">
                   <input type="number"
@@ -155,7 +162,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><kbd>disabled</kbd></p>
+                <p><code className="prop-name">disabled</code></p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
@@ -167,10 +174,10 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><kbd>outset</kbd></p>
+                <p><code className="prop-name">outset</code></p>
                 <p>
-                  Display scrollbars outside of scrollable area. On mobile devices when native scrollbar is used
-                  this has no effect because scrollbars do not crop any space from viewport.
+                  Display scrollbars outside of scrollable area. On mobile devices when native scrollbars are used this
+                  property has no effect because scrollbars have no widths and thus don't crop any space from viewport.
                 </p>
                 <div className="checkbox">
                   <label>
@@ -182,11 +189,15 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>scrollMinX</kbd> <kbd>scrollMinY</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">scrollMinX</code> <code className="prop-name">scrollMinY</code></p>
                 <p>
-                  Minimum scroll size to allow scrolling.
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
                 </p>
+                <p>Minimum scrollable disatnce to allow scrolling.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
                   <input type="number"
@@ -211,11 +222,15 @@ class Demo extends Component {
 
             <div className="col-md-4">
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>fastTrack</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><a name="fast-track"/><code className="prop-name">fastTrack</code></p>
                 <p>
-                  Defines expected behavior when user clicks on scroll track.
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
                 </p>
+                <p>Defines expected behavior when user clicks on scroll track.</p>
                 <div className="radio">
                   <label>
                     <input type="radio"
@@ -224,7 +239,7 @@ class Demo extends Component {
                            checked={this.state.fastTrack === FastTrack.PAGING}
                            onChange={e => this.setState({fastTrack: FastTrack.PAGING})}/>
                     <code>FastTrack.PAGING</code>
-                    <p><small>When user clicks on scrolling track, content is scrolled by one page in corresponding direction.</small></p>
+                    <p><small>Content is scrolled by one page.</small></p>
                   </label>
                 </div>
                 <div className="radio">
@@ -235,7 +250,7 @@ class Demo extends Component {
                            checked={this.state.fastTrack === FastTrack.GOTO}
                            onChange={e => this.setState({fastTrack: FastTrack.GOTO})}/>
                     <code>FastTrack.GOTO</code>
-                    <p><small>When user clicks on scrolling track, content is scrolled directly to the corresponding position.</small></p>
+                    <p><small>Content is scrolled directly to the corresponding position.</small></p>
                   </label>
                 </div>
                 <div className="radio">
@@ -251,11 +266,21 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll || this.state.fastTrack == FastTrack.OFF})}>
-                <p><kbd>fastTrackDuration</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll || this.state.fastTrack == FastTrack.OFF})}>
+                <p><code className="prop-name">fastTrackDuration</code></p>
                 <p>
-                  Fast track animation duration.
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
                 </p>
+                <p>
+                  <a href="#fast-track"
+                     className={classNames({hidden: this.state.fastTrack != FastTrack.OFF})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires fast track to be enabled
+                  </a>
+                </p>
+                <p>Animation duration of fast track smooth scroll.</p>
                 <div className="input-group">
                   <input type="number"
                          disabled={props.nativeScroll}
@@ -267,7 +292,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><kbd>captureKeyboard</kbd></p>
+                <p><code className="prop-name">captureKeyboard</code></p>
                 <p>
                   Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is
                   never captured for text input elements placed in scroll box.
@@ -282,11 +307,15 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': !this.state.captureKeyboard})}>
-                <p><kbd>keyboardStepX</kbd> <kbd>keyboardStepY</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': !this.state.captureKeyboard})}>
+                <p><code className="prop-name">keyboardStepX</code> <code className="prop-name">keyboardStepY</code></p>
                 <p>
-                  Keyboard scrolling distance.
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
                 </p>
+                <p>Keyboard scrolling distance.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
                   <input type="number"
@@ -305,8 +334,14 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': !this.state.captureKeyboard})}>
-                <p><kbd>keyboardScrollDuration</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': !this.state.captureKeyboard})}>
+                <p><code className="prop-name">keyboardScrollDuration</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>
                   Keyboard smooth scrolling animation duration.
                 </p>
@@ -323,8 +358,14 @@ class Demo extends Component {
 
             <div className="col-md-4">
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>wheelStepX</kbd> <kbd>wheelStepY</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">wheelStepX</code> <code className="prop-name">wheelStepY</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>
                   Wheel scrolling distance.
                 </p>
@@ -348,8 +389,14 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>propagateWheelScroll</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">propagateWheelScroll</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>
                   Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
                 </p>
@@ -364,8 +411,14 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>swapWheelAxes</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">swapWheelAxes</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
@@ -377,8 +430,14 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>wheelScrollDuration</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">wheelScrollDuration</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>
                   Wheel smooth scrolling animation duration.
                 </p>
@@ -392,8 +451,14 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group_disabled': props.nativeScroll})}>
-                <p><kbd>touchInertia</kbd></p>
+              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+                <p><code className="prop-name">touchInertia</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>
                   Sensivity of touch inertia. Greater values cause longer distance the content would travel after touch
                   finishes. Set to 0 to disable intertia.

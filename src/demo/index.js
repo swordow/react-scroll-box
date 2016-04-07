@@ -3,11 +3,8 @@ import ReactDOM, {findDOMNode} from 'react-dom';
 import classNames from 'classnames';
 
 import './index.less';
-import {FastTrack} from '../main/FastTrack';
-import {ScrollAxes} from '../main/ScrollAxes';
-import {ScrollKey} from '../main/ScrollKey';
 import {ScrollBox} from '../main/ScrollBox';
-import {GenericScrollBox} from '../main/GenericScrollBox';
+import {GenericScrollBox, FastTrack, ScrollAxes} from '../main/GenericScrollBox';
 
 class Demo extends Component {
 
@@ -26,7 +23,6 @@ class Demo extends Component {
 
     // Keyboard
     captureKeyboard: true,
-    scrollKeys: ScrollKey.values,
     keyboardStepX: 30,
     keyboardStepY: 30,
     keyboardScrollDuration: 200,
@@ -41,17 +37,6 @@ class Demo extends Component {
     // Touch
     touchInertia: 20
   };
-
-  toggleScrollKey(key) {
-    let keys = this.state.scrollKeys.slice(0),
-        i = keys.indexOf(key);
-    if (i >= 0) {
-      keys.splice(i, 1);
-      this.setState({scrollKeys: keys});
-    } else {
-      this.setState({scrollKeys: keys.concat(key)});
-    }
-  }
 
   render() {
     let {nativeScroll, ...props} = this.state;
@@ -293,85 +278,6 @@ class Demo extends Component {
                            checked={this.state.captureKeyboard}
                            onChange={e => this.setState({captureKeyboard: e.target.checked})}/>
                     Use keyboard
-                  </label>
-                </div>
-              </fieldset>
-
-              <fieldset className={classNames('form-group', {'form-group_disabled': !this.state.captureKeyboard})}>
-                <p><kbd>scrollKeys</kbd></p>
-                <p>
-                  Keys captured with keyboard scrolling.
-                </p>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.HOME)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.HOME)}/>
-                    <code>ScrollKey.HOME</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.END)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.END)}/>
-                    <code>ScrollKey.END</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.PAGE_UP)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.PAGE_UP)}/>
-                    <code>ScrollKey.PAGE_UP</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.PAGE_DOWN)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.PAGE_DOWN)}/>
-                    <code>ScrollKey.PAGE_DOWN</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.UP)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.UP)}/>
-                    <code>ScrollKey.UP</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.DOWN)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.DOWN)}/>
-                    <code>ScrollKey.DOWN</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.LEFT)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.LEFT)}/>
-                    <code>ScrollKey.LEFT</code>
-                  </label>
-                </div>
-                <div className="checkbox">
-                  <label>
-                    <input type="checkbox"
-                           name="scroll-keys"
-                           checked={this.state.scrollKeys.includes(ScrollKey.RIGHT)}
-                           onChange={e => this.toggleScrollKey(ScrollKey.RIGHT)}/>
-                    <code>ScrollKey.RIGHT</code>
                   </label>
                 </div>
               </fieldset>

@@ -50,11 +50,7 @@ export class GenericScrollBox extends React.Component {
     wheelStepY: 30,
     propagateWheelScroll: true,
     swapWheelAxes: false,
-    wheelScrollDuration: 100,
-
-    // Touch
-    touchInertia: (distance, duration) => 20,
-    touchEasing: (percent, elapsed, min, max, duration) => (max - min) * percent + min
+    wheelScrollDuration: 100
   };
 
   static propTypes = {
@@ -91,10 +87,6 @@ export class GenericScrollBox extends React.Component {
     propagateWheelScroll: bool,
     swapWheelAxes: bool,
     wheelScrollDuration: number,
-
-    // Touch
-    touchInertia: func,
-    touchEasing: func,
 
     // Layout
     trackXChildren: any,
@@ -154,8 +146,8 @@ export class GenericScrollBox extends React.Component {
   // Automatically reset to `false` then scroll animation finishes.
   _silent = false;
 
-  _touchOffsetX = -1;
-  _touchOffsetY = -1;
+  _touchOffsetX = 0;
+  _touchOffsetY = 0;
   _touchStart = null;
   _touchEnd = null;
 
@@ -320,20 +312,16 @@ export class GenericScrollBox extends React.Component {
     if (!this._touchEnd) {
       return;
     }
-    const {_touchStart, _touchEnd} = this,
-          {touchInertia, touchEasing} = this.props;
+    const {_touchStart, _touchEnd} = this;
     let dt = Date.now() - this._start,
         dx = _touchStart.x - _touchEnd.x,
         dy = _touchStart.y - _touchEnd.y,
         distance = Math.sqrt(dx * dx + dy * dy),
-        velocity = distance / dt * touchInertia(distance, dt);
+        velocity = distance / dt * 100;
 
-    this._touchOffsetX = -1;
-    this._touchOffsetY = -1;
     this._touchStart = null;
     this._touchEnd = null;
-
-    this.scrollTo(_touchEnd.x - velocity * dx / distance, _touchEnd.y - velocity * dy / distance, velocity, touchEasing);
+    this.scrollTo(_touchEnd.x - velocity * dx / distance, _touchEnd.y - velocity * dy / distance, velocity);
   };
 
   onScroll = e => {
@@ -348,7 +336,7 @@ export class GenericScrollBox extends React.Component {
           el = e.target;
     if (
       nativeScroll || disabled || e.isDefaultPrevented() || // Event prevented.
-      !captureWheel || // Wheel events prevented
+      !captureWheel || // Wheel events prevented.
       (el != this.viewport && el.tagName.toLocaleLowerCase() == 'textarea') // Nested textarea is focused and its is not a viewport.
     ) {
       return;

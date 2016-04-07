@@ -19,7 +19,7 @@ export class GenericScrollBox extends React.Component {
 
   static defaultProps = {
     nativeScroll: 'orientation' in window,
-    className: 'scroll-box_wrapped',
+    className: 'scroll-box--wrapped',
     axes: ScrollAxes.XY,
     hoverProximity: 50,
     disabled: false,
@@ -94,7 +94,7 @@ export class GenericScrollBox extends React.Component {
 
     // Touch
     touchInertia: func,
-    touchEasing: undefined,
+    touchEasing: func,
 
     // Layout
     trackXChildren: any,
@@ -197,8 +197,8 @@ export class GenericScrollBox extends React.Component {
     this.exposesY = axes.indexOf(ScrollAxes.Y) > -1 && SCROLL_MAX_Y >= scrollMinY;
 
     let el = findDOMNode(this);
-    el.classList.toggle('scroll-box_show-axis-x', this.exposesX);
-    el.classList.toggle('scroll-box_show-axis-y', this.exposesY);
+    el.classList.toggle('scroll-box--show-axis-x', this.exposesX);
+    el.classList.toggle('scroll-box--show-axis-y', this.exposesY);
 
     // Scrollbars may have non-zero thickness so in case of outset positioning
     // pixes cropped by scrollbar must be compensated.
@@ -465,13 +465,13 @@ export class GenericScrollBox extends React.Component {
       removeEventListener('mouseup', onDragEnd);
       if (this.viewport) {
         // Ensure component is mounted.
-        track.classList.remove('scroll-box__track_dragged');
+        track.classList.remove('scroll-box__track--dragged');
       }
     };
 
     addEventListener('mousemove', onDrag);
     addEventListener('mouseup', onDragEnd);
-    track.classList.add('scroll-box__track_dragged');
+    track.classList.add('scroll-box__track--dragged');
   };
 
   onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
@@ -520,7 +520,7 @@ export class GenericScrollBox extends React.Component {
           {hoverProximity} = this.props,
           {width, left, top, height} = track.getBoundingClientRect();
 
-    track.classList.toggle('scroll-box__track_hover',
+    track.classList.toggle('scroll-box__track--hover',
       clientY - height - top < hoverProximity && top - clientY < hoverProximity &&
       clientX - width - left < hoverProximity && left - clientX < hoverProximity);
   }
@@ -586,19 +586,19 @@ export class GenericScrollBox extends React.Component {
       classNames.unshift(className);
     }
     if (disabled) {
-      classNames.push('scroll-box_disabled');
+      classNames.push('scroll-box--disabled');
     }
     if (nativeScroll) {
-      classNames.push('scroll-box_native');
+      classNames.push('scroll-box--native');
     }
     if (outset) {
-      classNames.push('scroll-box_outset');
+      classNames.push('scroll-box--outset');
     }
     if (axes.indexOf(ScrollAxes.X) > -1) {
-      classNames.push('scroll-box_has-axis-x');
+      classNames.push('scroll-box--has-axis-x');
     }
     if (axes.indexOf(ScrollAxes.Y) > -1) {
-      classNames.push('scroll-box_has-axis-y');
+      classNames.push('scroll-box--has-axis-y');
     }
     return (
       <div style={style}
@@ -611,20 +611,20 @@ export class GenericScrollBox extends React.Component {
            onTouchEnd={this.onTouchEnd}
            onTouchCancel={this.onTouchEnd}
            tabIndex="-1">
-        <div className="scroll-box__track scroll-box__track_x"
+        <div className="scroll-box__track scroll-box__track--x"
              onMouseDown={this.onFastTrackX}
              ref="trackX">
-          <div className="scroll-box__handle scroll-box__handle_x"
+          <div className="scroll-box__handle scroll-box__handle--x"
                onMouseDown={this.onDragStartX}
                ref="handleX">
             {handleXChildren}
           </div>
           {trackXChildren}
         </div>
-        <div className="scroll-box__track scroll-box__track_y"
+        <div className="scroll-box__track scroll-box__track--y"
              onMouseDown={this.onFastTrackY}
              ref="trackY">
-          <div className="scroll-box__handle scroll-box__handle_y"
+          <div className="scroll-box__handle scroll-box__handle--y"
                onMouseDown={this.onDragStartY}
                ref="handleY">
             {handleYChildren}

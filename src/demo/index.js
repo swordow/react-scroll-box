@@ -35,7 +35,7 @@ class Demo extends Component {
     wheelScrollDuration: 100,
 
     // Touch
-    touchInertia: 20
+    //touchInertia: 20
   };
 
   render() {
@@ -50,10 +50,10 @@ class Demo extends Component {
         <h1>React <code>ScrollBox</code> Component</h1>
         <div className="row">
 
-          <ScrollBox {...props} className="scroll-box_example scroll-box_wrapped">
+          <ScrollBox {...props} className="scroll-box_example scroll-box--wrapped">
             <div className="scroll-box__bg">
 
-              <GenericScrollBox className="form-control scroll-box__nested-example scroll-box_wrapped">
+              <GenericScrollBox className="form-control scroll-box__nested-example scroll-box--wrapped">
                 <textarea className="scroll-box__viewport"
                           defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
               </GenericScrollBox>

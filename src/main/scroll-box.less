@@ -33,7 +33,7 @@
     outline: none;
   }
 
-  &_disabled {
+  &--disabled {
     // Force hide native scrollbars.
     overflow: hidden !important;
 
@@ -44,17 +44,17 @@
   }
   
   // By default scroll box looks like an unwrapped container.
-  &_wrapped {
+  &--wrapped {
     .scroll-box-wrap();
   }
   
   // Used if fallback to native system scrolling should occur.
-  &_native {
+  &--native {
 
-    &.@{scroll-box}_has-axis-y.@{scroll-box}_show-axis-y > .@{scroll-box}__viewport {
+    &.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y > .@{scroll-box}__viewport {
       overflow-y: auto;
     }
-    &.@{scroll-box}_has-axis-x.@{scroll-box}_show-axis-x > .@{scroll-box}__viewport {
+    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x > .@{scroll-box}__viewport {
       overflow-x: auto;
     }
     > .@{scroll-box}__viewport {
@@ -62,23 +62,23 @@
     }
   }
   
-  &:not(.@{scroll-box}_native) {
-    &.@{scroll-box}_has-axis-y.@{scroll-box}_show-axis-y > .@{scroll-box}__track_y {
+  &:not(.@{scroll-box}--native) {
+    &.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y > .@{scroll-box}__track--y {
       visibility: visible;
     }
-    &.@{scroll-box}_has-axis-x.@{scroll-box}_show-axis-x > .@{scroll-box}__track_x {
+    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x > .@{scroll-box}__track--x {
       visibility: visible;
     }
 
     // Both non-native scrollbars are visible and they are inside
     // scrollable are, we should prevent their intersection in the
     // shared corner.
-    &.@{scroll-box}_has-axis-x.@{scroll-box}_show-axis-x.@{scroll-box}_has-axis-y.@{scroll-box}_show-axis-y:not(.@{scroll-box}_outset) {
+    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y:not(.@{scroll-box}--outset) {
       > .@{scroll-box}__track {
-        &_y {
+        &--y {
           margin-bottom: (2 * @scroll-bar-y-bottom + @scroll-bar-x-height);
         }
-        &_x {
+        &--x {
           margin-right: (2 * @scroll-bar-x-right + @scroll-bar-y-width);
         }
       }
@@ -95,13 +95,13 @@
     transition-property: background;
     cursor: @scroll-cursor-handle;
 
-    &_y {
+    &--y {
       width: 100%;
       min-height: @scroll-bar-y-min-height;
       max-height: @scroll-bar-y-max-height;
       top: 0;
     }
-    &_x {
+    &--x {
       height: 100%;
       min-width: @scroll-bar-x-min-width;
       max-width: @scroll-bar-x-max-width;
@@ -115,7 +115,7 @@
     transition-property: background, width, height, opacity;
     cursor: @scroll-cursor-track;
 
-    &_y {
+    &--y {
       top: 0;
       bottom: 0;
       right: 0;
@@ -123,17 +123,17 @@
       margin: @scroll-bar-y-top @scroll-bar-y-right @scroll-bar-y-bottom 0;
 
       &.@{scroll-box}__track {
-        &_hover,
-        &_dragged {
+        &--hover,
+        &--dragged {
           width: @scroll-bar-y-hover-width;
         }
       }
-      .@{scroll-box}_outset > & {
+      .@{scroll-box}--outset > & {
         left: 100%;
         margin-left: @scroll-bar-y-right;
       }
     }
-    &_x {
+    &--x {
       left: 0;
       right: 0;
       bottom: 0;
@@ -141,17 +141,17 @@
       margin: 0 @scroll-bar-x-right @scroll-bar-x-bottom @scroll-bar-x-left;
 
       &.@{scroll-box}__track {
-        &_hover,
-        &_dragged {
+        &--hover,
+        &--dragged {
           height: @scroll-bar-x-hover-height;
         }
       }
-      .@{scroll-box}_outset > & {
+      .@{scroll-box}--outset > & {
         top: 100%;
         margin-top: @scroll-bar-x-bottom;
       }
     }
-    &_dragged {
+    &--dragged {
       opacity: 1;
     }
   }
@@ -185,8 +185,8 @@
   > .@{scroll-box}__track {
     background: @track-bg;
 
-    &_hover,
-    &_dragged {
+    &--hover,
+    &--dragged {
       background: @hover-track-bg;
 
       > .@{scroll-box}__handle {

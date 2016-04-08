@@ -362,8 +362,8 @@ class Demo extends Component {
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
-                           checked={this.state.captureKeyboard}
-                           onChange={e => this.setState({captureKeyboard: e.target.checked})}/>
+                           checked={this.state.captureWheel}
+                           onChange={e => this.setState({captureWheel: e.target.checked})}/>
                     Use mouse wheel
                   </label>
                 </div>

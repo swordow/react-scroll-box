@@ -57,7 +57,7 @@ class Demo extends Component {
     }
     return (
       <div className="container">
-        <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.0</span></h1>
+        <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.1</span></h1>
         <div className="row">
 
           <ScrollBox {...props} className="scroll-box_example scroll-box--wrapped">

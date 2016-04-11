@@ -45,7 +45,8 @@
     "babel-preset-stage-0": "6.5.0",
     "babel-plugin-transform-runtime": "6.6.0",
     "less": "2.6.1",
-    "classnames": ""
+    "classnames": "",
+    "classlist-polyfill": ""
   },
   "dependencies": {
     "react": ">=0.13.0",

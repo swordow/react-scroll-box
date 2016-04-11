@@ -1,3 +1,5 @@
+import 'classlist-polyfill';
+
 import React, {Component} from 'react';
 import ReactDOM, {findDOMNode} from 'react-dom';
 import classNames from 'classnames';

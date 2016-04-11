@@ -17,7 +17,7 @@ body {
 }
 
 .scroll-box {
-  &_example {
+  &--example {
     height: 300px;
     max-width: 500px;
     margin: 40px auto;
@@ -30,16 +30,6 @@ body {
     background-image: url('./bg.jpg');
     background-size: contain;
     padding: 20px;
-  }
-  &__nested-example {
-    width: 200px;
-    height: 200px;
-
-    textarea {
-      border: none;
-      overflow: hidden;
-      resize: none;
-    }
   }
 }
 
@@ -83,9 +73,15 @@ h1 {
   margin-top: 10px;
 }
 
-.prop-name {
-  background-color: #2e3436;
-  color: #fff;
+.prop {
+  &__name {
+    background-color: #2e3436;
+    color: #fff;
+  }
+  &__type {
+    background-color: #e7e7e7;
+    color: #000;
+  }
 }
 
 * {

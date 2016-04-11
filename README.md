@@ -1,6 +1,8 @@
-# React `ScrollBox` Component v0.2.1
+# React `ScrollBox` Component v0.2.2
 
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
+
+ScrollBox requires [`classList` polyfill](https://www.npmjs.com/package/classlist-polyfill) to work properly in IE9+.
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 

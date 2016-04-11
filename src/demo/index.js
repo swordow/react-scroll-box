@@ -59,18 +59,11 @@ class Demo extends Component {
     }
     return (
       <div className="container">
-        <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.1</span></h1>
+        <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.2</span></h1>
         <div className="row">
 
-          <ScrollBox {...props} className="scroll-box_example scroll-box--wrapped">
-            <div className="scroll-box__bg">
-
-              <GenericScrollBox className="form-control scroll-box__nested-example scroll-box--wrapped">
-                <textarea className="scroll-box__viewport"
-                          defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."/>
-              </GenericScrollBox>
-
-            </div>
+          <ScrollBox {...props} className="scroll-box--example scroll-box--wrapped">
+            <div className="scroll-box__bg"/>
           </ScrollBox>
 
         </div>
@@ -85,7 +78,7 @@ class Demo extends Component {
               <h3>General</h3>
 
               <fieldset className="form-group">
-                <p><a name="native-scroll"/><code>{'{boolean}'}</code> <code className="prop-name">nativeScroll</code></p>
+                <p><a name="native-scroll"/><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">nativeScroll</code></p>
                 <p>Use native scrollbars. By default, this flag is set to <code>true</code> on mobile platforms and <code>false</code> on desktops. Paltforms are distinguished by presence of <code>window.orientation</code>.</p>
                 <div className="radio">
                   <label>
@@ -117,7 +110,7 @@ class Demo extends Component {
             </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{ScrollAxes}'}</code> <code className="prop-name">axes</code></p>
+                <p><code className="prop__type">{'{ScrollAxes}'}</code> <code className="prop__name">axes</code></p>
                 <p>Scroll axes which are managed by scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0.</p>
                 <div className="radio">
                   <label>
@@ -149,7 +142,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{int}'}</code> <code className="prop-name">hoverProximity</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">hoverProximity</code></p>
                 <p>
                   <a href="#native-scroll"
                      className={classNames({hidden: !props.nativeScroll})}>
@@ -169,7 +162,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{boolean}'}</code> <code className="prop-name">disabled</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">disabled</code></p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
@@ -181,7 +174,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{boolean}'}</code> <code className="prop-name">outset</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">outset</code></p>
                 <p>Display scrollbars outside of scrollable area. Outset scrllbars do not require additional space and do not affect surrounding layout.</p>
                 <p>On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.</p>
                 <div className="checkbox">
@@ -195,7 +188,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{int}'}</code> <code className="prop-name">scrollMinX</code> <code className="prop-name">scrollMinY</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">scrollMinX</code> <code className="prop__name">scrollMinY</code></p>
                 <p>Minimum difference in content and viewport sizes to enable scrolling.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
@@ -223,7 +216,7 @@ class Demo extends Component {
               <h3>Keyboard</h3>
 
               <fieldset className="form-group">
-                <p><code>{'{boolean}'}</code> <code className="prop-name">captureKeyboard</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureKeyboard</code></p>
                 <p>Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for <code>&lt;input type="text"/&gt;</code> and <code>&lt;textarea/&gt;</code> elements placed inside scroll box.</p>
                 <p><kbd>PgUp</kbd> <kbd>PgDown</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured.</p>
                 <p>You can page-scroll alternate axis with <nobr><kbd>Shift</kbd> + <kbd>PgUp</kbd></nobr> and <nobr><kbd>Shift</kbd> + <kbd>PgDown</kbd></nobr> shortcuts.</p>
@@ -238,7 +231,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{int}'}</code> <code className="prop-name">keyboardStepX</code> <code className="prop-name">keyboardStepY</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">keyboardStepX</code> <code className="prop__name">keyboardStepY</code></p>
                 <p>Distance to scroll by when arrow keys are pressed.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
@@ -261,7 +254,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className="form-group">
-                <p><code>{'{int}'}</code> <code className="prop-name">keyboardScrollDuration</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">keyboardScrollDuration</code></p>
                 <p>Keyboard smooth scrolling animation duration. Set to 0 to disable smooth keyboard scrolling.</p>
                 <div className="input-group">
                   <input type="number"
@@ -282,7 +275,7 @@ class Demo extends Component {
               </p>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><a name="fast-track"/><code>{'{FastTrack}'}</code> <code className="prop-name">fastTrack</code></p>
+                <p><a name="fast-track"/><code className="prop__type">{'{FastTrack}'}</code> <code className="prop__name">fastTrack</code></p>
                 <p>Defines expected behavior when user clicks on scroll track.</p>
                 <div className="radio">
                   <label>
@@ -320,7 +313,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{int}'}</code> <code className="prop-name">fastTrackDuration</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">fastTrackDuration</code></p>
                 <p>Animation duration of fast track smooth scroll.</p>
                 <div className="input-group">
                   <input type="number"
@@ -345,7 +338,7 @@ class Demo extends Component {
               </p>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{boolean}'}</code> <code className="prop-name">captureHandleDrag</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureHandleDrag</code></p>
                 <p>Allow user to drag scroll handles.</p>
                 <p>If handle drag is disabled along with enabled <a href="#fast-track">fast track</a> then clicking on a handle would cause fast tracking.</p>
                 <div className="checkbox">
@@ -359,7 +352,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{boolean}'}</code> <code className="prop-name">captureWheel</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureWheel</code></p>
                 <p>Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.</p>
                 <div className="checkbox">
                   <label>
@@ -372,7 +365,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{int}'}</code> <code className="prop-name">wheelStepX</code> <code className="prop-name">wheelStepY</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">wheelStepX</code> <code className="prop__name">wheelStepY</code></p>
                 <p>Wheel scrolling distance.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
@@ -397,7 +390,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{boolean}'}</code> <code className="prop-name">propagateWheelScroll</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">propagateWheelScroll</code></p>
                 <p>Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.</p>
                 <div className="checkbox">
                   <label>
@@ -411,7 +404,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{boolean}'}</code> <code className="prop-name">swapWheelAxes</code></p>
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">swapWheelAxes</code></p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
@@ -424,7 +417,7 @@ class Demo extends Component {
               </fieldset>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><code>{'{int}'}</code> <code className="prop-name">wheelScrollDuration</code></p>
+                <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">wheelScrollDuration</code></p>
                 <p>Wheel smooth scrolling animation duration. Set to 0 to disable smooth whee scrolling.</p>
                 <div className="input-group">
                   <input type="number"
@@ -439,16 +432,16 @@ class Demo extends Component {
 
               <h3>Other</h3>
 
-              <p><code>{'{string}'}</code> <code className="prop-name">className</code></p>
+              <p><code className="prop__type">{'{string}'}</code> <code className="prop__name">className</code></p>
               <p>Class name to use.</p>
 
-              <p><code>{'{object}'}</code> <code className="prop-name">style</code></p>
+              <p><code className="prop__type">{'{object}'}</code> <code className="prop__name">style</code></p>
               <p>Style to apply to root element of scroll box.</p>
 
-              <p><code>{'{Function}'}</code> <code className="prop-name">defaultEasing</code></p>
+              <p><code className="prop__type">{'{Function}'}</code> <code className="prop__name">defaultEasing</code></p>
               <p>Easing to use when none is provided.</p>
 
-              <p><code>{'{Function}'}</code> <code className="prop-name">onViewportScroll</code></p>
+              <p><code className="prop__type">{'{Function}'}</code> <code className="prop__name">onViewportScroll</code></p>
               <p>Scroll event callback.</p>
 
             </div>
@@ -464,38 +457,40 @@ class Demo extends Component {
           <div className="col-md-4">
             <h3>Properties</h3>
 
-            <p><code>{'{HTMLElement}'}</code> <code className="prop-name">handleX</code> <code className="prop-name">handleY</code></p>
+            <p><em>All properties are read only.</em></p>
+
+            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">handleX</code> <code className="prop__name">handleY</code></p>
             <p>Handle elements. Both are always available.</p>
 
-            <p><code>{'{HTMLElement}'}</code> <code className="prop-name">trackX</code> <code className="prop-name">trackY</code></p>
+            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">trackX</code> <code className="prop__name">trackY</code></p>
             <p>Track elements. Both are always available.</p>
 
-            <p><code>{'{HTMLElement}'}</code> <code className="prop-name">viewport</code></p>
+            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">viewport</code></p>
             <p>Viewport element.</p>
 
-            <p><code>{'{int}'}</code> <code className="prop-name">targetX</code> <code className="prop-name">targetY</code></p>
+            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">targetX</code> <code className="prop__name">targetY</code></p>
             <p>Scroll position in pixels that was last requested.</p>
 
-            <p><code>{'{int}'}</code> <code className="prop-name">previousX</code> <code className="prop-name">previousY</code></p>
+            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">previousX</code> <code className="prop__name">previousY</code></p>
             <p>Previously requested scroll position.</p>
 
-            <p><code>{'{int}'}</code> <code className="prop-name">scrollX</code> <code className="prop-name">scrollX</code></p>
+            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">scrollX</code> <code className="prop__name">scrollX</code></p>
             <p>Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to <code>targetX</code> and <code>targetY</code> respectively.</p>
 
-            <p><code>{'{int}'}</code> <code className="prop-name">scrollMaxX</code> <code className="prop-name">scrollMaxY</code></p>
+            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">scrollMaxX</code> <code className="prop__name">scrollMaxY</code></p>
             <p>Maximum values for horizontal and vertical content scroll positions. See <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX"><code>Window.scrollMaxX</code></a> for more info.</p>
 
-            <p><code>{'{int}'}</code> <code className="prop-name">trackMaxX</code> <code className="prop-name">trackMaxY</code></p>
+            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">trackMaxX</code> <code className="prop__name">trackMaxY</code></p>
             <p>Maximum values for horizontal and vertical track scroll positions.</p>
 
-            <p><code>{'{boolean}'}</code> <code className="prop-name">exposesX</code> <code className="prop-name">exposesX</code></p>
+            <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">exposesX</code> <code className="prop__name">exposesX</code></p>
             <p>Does scroll box require actual presence of horizontal or vertical scroll bars. If set to <code>true</code>, then axis is permitted via <code>props.axes</code> and corresponding <code>scrollMax</code> is greater or equal to <code>scrollMin</code>.</p>
 
           </div>
           <div className="col-md-8">
             <h3>Methods</h3>
 
-            <p><code>{'{void}'}</code> <code className="prop-name">scrollBy</code> <code>{'(dx, dy, duration, easing, silent)'}</code></p>
+            <p><code className="prop__type">{'{void}'}</code> <code className="prop__name">scrollBy</code> <code>{'(dx, dy, duration, easing, silent)'}</code></p>
 
             <p>Scroll by the given amount of pixels.</p>
 
@@ -507,7 +502,7 @@ class Demo extends Component {
 
             <p><code>[silent = false]</code> &ndash; Set to <code>true</code> to prevent invocation of <code>onViewportScroll</code> until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.</p>
 
-            <p><code>{'{void}'}</code> <code className="prop-name">scrollTo</code> <code>{'(x, y, duration, easing, silent)'}</code></p>
+            <p><code className="prop__type">{'{void}'}</code> <code className="prop__name">scrollTo</code> <code>{'(x, y, duration, easing, silent)'}</code></p>
 
             <p>Scroll to arbitrary content position.</p>
 

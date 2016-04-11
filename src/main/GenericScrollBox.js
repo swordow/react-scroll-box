@@ -214,7 +214,7 @@ export class GenericScrollBox extends React.Component {
         x = targetX,
         y = targetY;
 
-    if (!nativeScroll && scrollY == scrollTop && scrollX == scrollLeft) {
+    if (scrollY == scrollTop && scrollX == scrollLeft) {
       let elapsed = Date.now() - _start;
       if (elapsed < _duration && typeof _easing == 'function') {
         let ratio = _easing(elapsed / _duration, elapsed, 0, 1, _duration);
@@ -335,7 +335,7 @@ export class GenericScrollBox extends React.Component {
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
     if (
-      nativeScroll || disabled || e.isDefaultPrevented() || // Event prevented.
+      disabled || e.isDefaultPrevented() || // Event prevented.
       !captureWheel || // Wheel events prevented.
       (el != this.viewport && el.tagName.toLocaleLowerCase() == 'textarea') // Nested textarea is focused and its is not a viewport.
     ) {

@@ -55,7 +55,7 @@ export class GenericScrollBox extends React.Component {
 
   static propTypes = {
     nativeScroll: bool,
-    className: oneOfType([string, arrayOf(string)]),
+    className: any,
     axes: oneOf([ScrollAxes.X, ScrollAxes.Y, ScrollAxes.XY]),
     hoverProximity: number,
     disabled: bool,

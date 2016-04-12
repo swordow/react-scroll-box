@@ -1,7 +1,7 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
 
-const {number, bool, func, oneOf, any, string} = React.PropTypes;
+const {number, bool, func, oneOf, any, string, arrayOf, oneOfType} = React.PropTypes;
 
 export const ScrollAxes = {
   X: 'x',
@@ -55,7 +55,7 @@ export class GenericScrollBox extends React.Component {
 
   static propTypes = {
     nativeScroll: bool,
-    className: string,
+    className: oneOfType([string, arrayOf(string)]),
     axes: oneOf([ScrollAxes.X, ScrollAxes.Y, ScrollAxes.XY]),
     hoverProximity: number,
     disabled: bool,
@@ -571,7 +571,7 @@ export class GenericScrollBox extends React.Component {
     const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, nativeScroll, outset, className, children, style} = this.props;
     let classNames = ['scroll-box'];
     if (className) {
-      classNames.unshift(className);
+      classNames.concat(className);
     }
     if (disabled) {
       classNames.push('scroll-box--disabled');

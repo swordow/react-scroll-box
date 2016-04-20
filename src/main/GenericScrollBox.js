@@ -18,7 +18,7 @@ export const FastTrack = {
 export class GenericScrollBox extends React.Component {
 
   static defaultProps = {
-    nativeScroll: 'orientation' in window,
+    nativeScroll: typeof window === 'undefined' || 'orientation' in window,
     className: 'scroll-box--wrapped',
     axes: ScrollAxes.XY,
     hoverProximity: 50,

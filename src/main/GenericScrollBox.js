@@ -1,7 +1,7 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
 
-const {number, bool, func, oneOf, any, string, arrayOf, oneOfType} = React.PropTypes;
+const {number, bool, func, oneOf, any} = React.PropTypes;
 
 export const ScrollAxes = {
   X: 'x',

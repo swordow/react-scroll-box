@@ -330,20 +330,21 @@ class Demo extends Component {
 
             <div className="col-md-4">
               <h3>Mouse</h3>
-              <p>
-                <a href="#native-scroll"
-                   className={classNames({hidden: !props.nativeScroll})}>
-                  <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
-                </a>
-              </p>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
                 <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureHandleDrag</code></p>
+                <p>
+                  <a href="#native-scroll"
+                     className={classNames({hidden: !props.nativeScroll})}>
+                    <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                  </a>
+                </p>
                 <p>Allow user to drag scroll handles.</p>
                 <p>If handle drag is disabled along with enabled <a href="#fast-track">fast track</a> then clicking on a handle would cause fast tracking.</p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
+                           disabled={props.nativeScroll}
                            checked={this.state.captureHandleDrag}
                            onChange={e => this.setState({captureHandleDrag: e.target.checked})}/>
                     Draggable handles
@@ -351,7 +352,7 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+              <fieldset className="form-group">
                 <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureWheel</code></p>
                 <p>Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.</p>
                 <div className="checkbox">
@@ -364,13 +365,12 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+              <fieldset className="form-group">
                 <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">wheelStepX</code> <code className="prop__name">wheelStepY</code></p>
                 <p>Wheel scrolling distance.</p>
                 <div className="input-group">
                   <div className="input-group-addon">X</div>
                   <input type="number"
-                         disabled={props.nativeScroll}
                          className="form-control"
                          value={this.state.wheelStepX}
                          onKeyPress={this.onKeyPressNumbersOnly}
@@ -380,7 +380,6 @@ class Demo extends Component {
                 <div className="input-group">
                   <div className="input-group-addon">Y</div>
                   <input type="number"
-                         disabled={props.nativeScroll}
                          className="form-control"
                          value={this.state.wheelStepY}
                          onKeyPress={this.onKeyPressNumbersOnly}
@@ -389,13 +388,12 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+              <fieldset className="form-group">
                 <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">propagateWheelScroll</code></p>
                 <p>Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.</p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
-                           disabled={props.nativeScroll}
                            checked={this.state.propagateWheelScroll}
                            onChange={e => this.setState({propagateWheelScroll: e.target.checked})}/>
                     Propagate wheel scroll
@@ -403,12 +401,11 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+              <fieldset className="form-group">
                 <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">swapWheelAxes</code></p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
-                           disabled={props.nativeScroll}
                            checked={this.state.swapWheelAxes}
                            onChange={e => this.setState({swapWheelAxes: e.target.checked})}/>
                     Swap wheel scrolling axes
@@ -416,12 +413,11 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
+              <fieldset className="form-group">
                 <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">wheelScrollDuration</code></p>
                 <p>Wheel smooth scrolling animation duration. Set to 0 to disable smooth whee scrolling.</p>
                 <div className="input-group">
                   <input type="number"
-                         disabled={props.nativeScroll}
                          className="form-control"
                          value={this.state.wheelScrollDuration}
                          onKeyPress={this.onKeyPressNumbersOnly}

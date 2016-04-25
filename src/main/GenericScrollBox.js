@@ -48,7 +48,7 @@ export class GenericScrollBox extends React.Component {
     captureWheel: true,
     wheelStepX: 30,
     wheelStepY: 30,
-    propagateWheelScroll: true,
+    propagateWheelScroll: false,
     swapWheelAxes: false,
     wheelScrollDuration: 100
   };
@@ -150,9 +150,6 @@ export class GenericScrollBox extends React.Component {
   _touchOffsetY = 0;
   _touchStart = null;
   _touchEnd = null;
-
-  _wheelTimestamp = 0;
-  _wheelTimeout;
 
   scrollBy(dx, dy, duration, easing, silent) {
     this.scrollTo(this.targetX + dx, this.targetY + dy, duration, easing, silent);
@@ -344,11 +341,8 @@ export class GenericScrollBox extends React.Component {
     ) {
       return;
     }
-    // Normalize mouse wheel delta among browsers and devices.
-    // Usually `event.delta*` in IE 100-400, in Chrome 100-300, in FF 3-10, and these values may even
-    // differ in different browser versions. Those W3C guys should better have standard on that.
-    let dx = e.deltaX / Math.abs(e.deltaX) * wheelStepX * this.exposesX || 0,
-        dy = e.deltaY / Math.abs(e.deltaY) * wheelStepY * this.exposesY || 0;
+    let dx = e.deltaX * this.exposesX,
+        dy = e.deltaY * this.exposesY;
     if (
       (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
       (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
@@ -369,21 +363,14 @@ export class GenericScrollBox extends React.Component {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();
-
-    // Original, non-debounced version
-    //this.scrollBy(dx, dy, wheelScrollDuration);
-
-    const DEBOUNCE_DELAY = 10;
-    let callback = () => this.scrollBy(dx, dy, wheelScrollDuration);
-
-    let now = Date.now();
-    if (now - this._wheelTimestamp > DEBOUNCE_DELAY) {
-      this._wheelTimestamp = now;
-      callback();
-    } else {
-      clearTimeout(this._wheelTimeout);
-      this._wheelTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+    if (typeof InstallTrigger != 'undefined') {
+      // Firefox wheel speed fix.
+      dx *= 5;
+      dy *= 5;
     }
+    dx *= wheelStepX / 100;
+    dy *= wheelStepY / 100;
+    this.scrollBy(dx, dy, wheelScrollDuration);
   };
 
   onKeyDown = e => {

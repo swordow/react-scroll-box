@@ -1,12 +1,16 @@
-# React `ScrollBox` Component v0.2.4
+# React Scroll Box
+
+[![npm version](https://badge.fury.io/js/react-scroll-box.svg)](https://www.npmjs.com/package/react-scroll-box)
 
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
-ScrollBox requires [`classList` polyfill](https://www.npmjs.com/package/classlist-polyfill) to work properly in IE9+.
+Requires [`classList` polyfill](https://www.npmjs.com/package/classlist-polyfill) to work properly in IE9+.
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
-[API and Live Demo](http://smikhalevski.github.io/react-scroll-box/)
+[**API and Live Demo**](http://smikhalevski.github.io/react-scroll-box/)
+
+## Motivation
 
 - Use custom or native scroll bars.
 - Highly customizable tracks and handles for both mobile and desktop.
@@ -26,16 +30,16 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 - Scrollbar size represents ratio of content and viewport sizes.
 - Custom easing function can be specified for every `scrollTo` and `scrollBy` invocation.
 
-## How to import
+## Usage
 
-ES6
-```javascript
-import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box';
-```
+```jsx
+var ScrollBox = require('react-scroll-box').ScrollBox; // ES5
 
-ES5
-```javascript
-var ScrollBox = require('react-scroll-box').ScrollBox;
+import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
+
+<ScrollBox axes={ScrollAxes.Y}>
+  Your content goes here
+</ScrollBox>
 ```
 
 ## License

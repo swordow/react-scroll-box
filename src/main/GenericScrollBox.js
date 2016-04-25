@@ -326,16 +326,13 @@ export class GenericScrollBox extends React.Component {
     this.scrollTo(_touchEnd.x - velocity * dx / distance, _touchEnd.y - velocity * dy / distance, velocity);
   };
 
-  onScroll = e => {
-    if (this.props.nativeScroll && e.target == this.viewport) {
-      this._forceSync();
-    }
-  };
-
   onWheel = e => {
-    const {wheelStepX, wheelStepY, nativeScroll, disabled, captureWheel, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
+    const {wheelStepX, wheelStepY, disabled, nativeScroll, captureWheel, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
           {targetX, targetY, scrollMaxX, scrollMaxY} = this,
           el = e.target;
+    if (nativeScroll && !captureWheel) {
+      e.preventDefault();
+    }
     if (
       disabled || e.isDefaultPrevented() || // Event prevented.
       !captureWheel || // Wheel events prevented.
@@ -597,7 +594,6 @@ export class GenericScrollBox extends React.Component {
     return (
       <div style={style}
            className={classNames.join(' ')}
-           onScroll={this.onScroll}
            onWheel={this.onWheel}
            onKeyDown={this.onKeyDown}
            onTouchStart={this.onTouchStart}

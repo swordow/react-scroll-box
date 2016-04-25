@@ -137,10 +137,10 @@ export class GenericScrollBox extends React.Component {
   exposesY = false;
 
   // Timestamp when scroll position started to change last time.
-  _start = 0;
+  _scrollTimestamp = 0;
 
-  // Duration of currently running animation. In case no animation is in progress `_duration` equals to 0.
-  _duration = 0;
+  // Duration of currently running animation. In case no animation is in progress `_scrollDuration` equals to 0.
+  _scrollDuration = 0;
 
   // If set to `true` prevents triggering `onViewportScroll` if any scrolling occurs.
   // Automatically reset to `false` then scroll animation finishes.
@@ -151,14 +151,17 @@ export class GenericScrollBox extends React.Component {
   _touchStart = null;
   _touchEnd = null;
 
+  _wheelTimestamp = 0;
+  _wheelTimeout;
+
   scrollBy(dx, dy, duration, easing, silent) {
     this.scrollTo(this.targetX + dx, this.targetY + dy, duration, easing, silent);
   }
 
   scrollTo(x, y, duration = 0, easing = this.props.defaultEasing, silent = false) {
     // Consider actual scroll position to be a starting point.
-    this._duration = duration;
-    this._start = Date.now();
+    this._scrollDuration = duration;
+    this._scrollTimestamp = Date.now();
     this.previousX = this.scrollX;
     this.previousY = this.scrollY;
     if (!isNaN(x)) {
@@ -174,11 +177,11 @@ export class GenericScrollBox extends React.Component {
 
   // Synchronize scrollbar positions immediately without waiting for animation frame.
   _forceSync() {
-    const {handleX, handleY, viewport, _start, _silent} = this;
+    const {handleX, handleY, viewport, _scrollTimestamp, _silent} = this;
     if (!viewport) {
       return; // Component was unmounted.
     }
-    const {scrollY, scrollX, previousX, previousY, _easing, _duration} = this,
+    const {scrollY, scrollX, previousX, previousY, _easing, _scrollDuration} = this,
           {axes, nativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
           {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
@@ -215,16 +218,16 @@ export class GenericScrollBox extends React.Component {
         y = targetY;
 
     if (scrollY == scrollTop && scrollX == scrollLeft) {
-      let elapsed = Date.now() - _start;
-      if (elapsed < _duration && typeof _easing == 'function') {
-        let ratio = _easing(elapsed / _duration, elapsed, 0, 1, _duration);
+      let elapsed = Date.now() - _scrollTimestamp;
+      if (elapsed < _scrollDuration && typeof _easing == 'function') {
+        let ratio = _easing(elapsed / _scrollDuration, elapsed, 0, 1, _scrollDuration);
 
         // Compute eased scroll positions.
         x = Math.round(previousX + ratio * (targetX - previousX));
         y = Math.round(previousY + ratio * (targetY - previousY));
       } else {
         // Scroll animation completed.
-        this._duration = 0;
+        this._scrollDuration = 0;
       }
       // Prevent native scrolling glitches, especially if native scroll is inertial or smooth.
       viewport.scrollLeft = x;
@@ -234,7 +237,7 @@ export class GenericScrollBox extends React.Component {
       // This is usually caused by system scrolling, resize of element etc.
       // So stop running animation and update component state with current
       // viewport scroll offsets.
-      this._duration = 0;
+      this._scrollDuration = 0;
       x = targetX = scrollLeft;
       y = targetY = scrollTop;
     }
@@ -242,7 +245,7 @@ export class GenericScrollBox extends React.Component {
     this.targetY = targetY;
 
     if (scrollX == x && scrollY == y && this.scrollMaxX == SCROLL_MAX_X && this.scrollMaxY == SCROLL_MAX_Y) {
-      if (!this._duration) {
+      if (!this._scrollDuration) {
         // Animation has completed and geometry did not change.
         this._easing = null;
         this._silent = false;
@@ -313,7 +316,7 @@ export class GenericScrollBox extends React.Component {
       return;
     }
     const {_touchStart, _touchEnd} = this;
-    let dt = Date.now() - this._start,
+    let dt = Date.now() - this._scrollTimestamp,
         dx = _touchStart.x - _touchEnd.x,
         dy = _touchStart.y - _touchEnd.y,
         distance = Math.sqrt(dx * dx + dy * dy),
@@ -366,7 +369,21 @@ export class GenericScrollBox extends React.Component {
       [dx, dy] = [dy, dx];
     }
     e.preventDefault();
-    this.scrollBy(dx, dy, wheelScrollDuration);
+
+    // Original, non-debounced version
+    //this.scrollBy(dx, dy, wheelScrollDuration);
+
+    const DEBOUNCE_DELAY = 10;
+    let callback = () => this.scrollBy(dx, dy, wheelScrollDuration);
+
+    let now = Date.now();
+    if (now - this._wheelTimestamp > DEBOUNCE_DELAY) {
+      this._wheelTimestamp = now;
+      callback();
+    } else {
+      clearTimeout(this._wheelTimeout);
+      this._wheelTimeout = setTimeout(callback, DEBOUNCE_DELAY);
+    }
   };
 
   onKeyDown = e => {

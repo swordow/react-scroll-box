@@ -8,6 +8,8 @@ Requires [`classList` polyfill](https://www.npmjs.com/package/classlist-polyfill
 
 Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 
+Any help with improvement of this component would be greatly appreciated.
+
 [**API and Live Demo**](http://smikhalevski.github.io/react-scroll-box/)
 
 ## Motivation

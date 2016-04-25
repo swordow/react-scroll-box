@@ -364,9 +364,9 @@ export class GenericScrollBox extends React.Component {
     }
     e.preventDefault();
     if (typeof InstallTrigger != 'undefined') {
-      // Firefox wheel speed fix.
-      dx *= 5;
-      dy *= 5;
+      const FIREFOX_SPEED_FACTOR = 20;
+      dx *= FIREFOX_SPEED_FACTOR;
+      dy *= FIREFOX_SPEED_FACTOR;
     }
     dx *= wheelStepX / 100;
     dy *= wheelStepY / 100;

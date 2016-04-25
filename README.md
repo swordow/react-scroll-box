@@ -15,20 +15,18 @@ Tested in FF, Chrome, Safari, iOS Safari, Opera and IE9+.
 - Use custom or native scroll bars.
 - Highly customizable tracks and handles for both mobile and desktop.
 - Inset and outset scroll bars with ease.
-- Seamless native inertial scrolling on mobile devices.
-- Smooth scrolling support.
-- Animated scrolling to particular position.
+- Optional fallback to native inertial scrolling on mobile devices.
+- Animated and smooth scrolling with customizable easing functions.
 - Scrollbars detect mouse in close proximity and change their style accordingly for better UX.
 - Scrollbars are automatically added, removed and resized when scroll box dimensions are changed.
 - Scrolling speed is equalized among browsers.
 - Customizable keyboard scrolling support.
 - Scroll boxes can be nested.
-- Custom viewports can be used (ex. `textarea`).
-- Conditionally unwrap scroll box to scroll its content along with page. This can even be done using a media query!
+- Custom viewports can be used. Have a look at [`react-text-input`](https://github.com/smikhalevski/react-text-input) for `textarea` with customizable scrollbars.
+- Conditionally unwrap scroll box to scroll its content along with page. This can even be done using a media query.
+- Scrollbar size represents ratio of content and viewport sizes and can be constrained from CSS.
 - LESS styles with a mixin to simplify coloring.
 - Lots of other properties to customize scrolling behavior.
-- Scrollbar size represents ratio of content and viewport sizes.
-- Custom easing function can be specified for every `scrollTo` and `scrollBy` invocation.
 
 ## Usage
 

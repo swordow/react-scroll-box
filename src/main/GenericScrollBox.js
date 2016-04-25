@@ -152,7 +152,7 @@ export class GenericScrollBox extends React.Component {
   _touchEnd = null;
 
   scrollBy(dx, dy, duration, easing, silent) {
-    this.scrollTo(this.targetX + dx, this.targetY + dy, duration, silent);
+    this.scrollTo(this.targetX + dx, this.targetY + dy, duration, easing, silent);
   }
 
   scrollTo(x, y, duration = 0, easing = this.props.defaultEasing, silent = false) {

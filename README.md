@@ -1,6 +1,6 @@
 # React Scroll Box
 
-[![npm version](https://badge.fury.io/js/react-scroll-box.svg)](https://www.npmjs.com/package/react-scroll-box)
+[![npm version](https://img.shields.io/npm/v/react-scroll-box.svg?style=flat)](https://www.npmjs.com/package/react-scroll-box)
 
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
@@ -30,7 +30,7 @@ Any help with improvement of this component would be greatly appreciated.
 - LESS styles with a mixin to simplify coloring.
 - Lots of other properties to customize scrolling behavior.
 
-## Usage
+## Basic Usage
 
 ```jsx
 var ScrollBox = require('react-scroll-box').ScrollBox; // ES5
@@ -40,6 +40,49 @@ import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-b
 <ScrollBox axes={ScrollAxes.Y}>
   Your content goes here
 </ScrollBox>
+```
+
+## Components
+
+This module exports `GenericScrollBox` and `ScrollBox`. In most cases you should use `ScrollBox` to create a scrollable area, but in cause you need more control over viewport use `GenericScrollBox`.
+
+### `GenericScrollBox`
+
+
+
+Produced layout:
+```jsx
+<div class="
+    scroll-box
+    scroll-box--disabled
+    scroll-box--native
+    scroll-box--outset
+    scroll-box--has-axis-x
+    scroll-box--has-axis-y
+    scroll-box--show-axis-x
+    scroll-box--show-axis-y">
+  <div class="
+      scroll-box__track
+      scroll-box__track--x
+      scroll-box__track--hover
+      scroll-box__track--dragged">
+    <div class="
+        scroll-box__handle
+        scroll-box__handle--x">
+    </div>
+  </div>
+  <div class="
+      scroll-box__track
+      scroll-box__track--y
+      scroll-box__track--hover
+      scroll-box__track--dragged">
+    <div class="
+        scroll-box__handle
+        scroll-box__handle--y">
+    </div>
+  </div>
+  <div class="scroll-box__viewport"></div>
+</div>
 ```
 
 ## License

@@ -50,14 +50,27 @@ import {ScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 
 Property | Type | Default | Description
 --- | --- | --- | --- 
-nativeScroll | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
-axes | `ScrollAxes.XY` | `ScrollAxes` | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
-hoverProximity | --- | --- | --- 
---- | --- | --- | --- 
---- | --- | --- | --- 
---- | --- | --- | --- 
---- | --- | --- | --- 
---- | --- | --- | --- 
+`nativeScroll` | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
+`axes` | `ScrollAxes.XY` | `ScrollAxes` | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
+`hoverProximity` | int | 50 | Maximum distance between cursor and scroll track edge where track is considered to be hovered. Useful when you want to have thin scrollbars but don't want make user aim precisely to grab them. Set to 0 to disable hover proximity detection.
+disabled | boolean | false | Disable scroll box
+outset | boolean | false | Display scrollbars outside of scrollable area. Outset scrllbars do not require additional space and do not affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
+scrollMinX scrollMinY | int | 2 | Minimum difference in content and viewport sizes to enable scrolling.
+captureKeyboard | boolean | `true` | Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. PgUp PgDown Home End and arrow keys are captured. You can page-scroll alternate axis with Shift + PgUp and Shift + PgDown shortcuts.
+keyboardStepX keyboardStepY | int | 30 | Distance to scroll by when arrow keys are pressed.
+keyboardScrollDuration | int | 200 | Keyboard smooth scrolling animation duration. Set to 0 to disable smooth keyboard scrolling. 
+fastTrack | FastTrack | FastTrack.GOTO | Defines expected behavior when user clicks on scroll track. 
+fastTrackDuration | int | 500 | Animation duration of fast track smooth scroll.
+captureHandleDrag | boolean | `true` | Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
+captureWheel | boolean | `true` | Use mouse wheel for scrolling. You can scroll alternate axis with Shift key is pressed.
+wheelStepX wheelStepY | int | 30 | Wheel scrolling distance.
+propagateWheelScroll | boolean | false | Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
+swapWheelAxes | boolean | false | Swap wheel scrolling axes
+wheelScrollDuration | int | 100 | Wheel smooth scrolling animation duration. Set to 0 to disable smooth whee scrolling.
+className | string | | Style class name to use.
+style | object | | Style to apply to root element of scroll box.
+defaultEasing | function | | Easing to use when none is provided.
+onViewportScroll | function | | Scroll event callback.
 
 ### `GenericScrollBox`
 

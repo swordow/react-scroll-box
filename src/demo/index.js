@@ -5,6 +5,7 @@ import ReactDOM, {findDOMNode} from 'react-dom';
 import classNames from 'classnames';
 
 import './index.less';
+import packageJson from '../../package.json';
 import {GenericScrollBox, FastTrack, ScrollAxes} from '../main/GenericScrollBox';
 
 function toPositiveInteger(val) {
@@ -18,7 +19,7 @@ class Demo extends Component {
     axes: ScrollAxes.XY,
     hoverProximity: 50,
     disabled: false,
-    outset: true,
+    outset: false,
     scrollMinX: 2,
     scrollMinY: 2,
 
@@ -68,7 +69,7 @@ class Demo extends Component {
           <GenericScrollBox {...props} ref="scrollBox" className="scroll-box--example scroll-box--wrapped">
             <div className="scroll-box__viewport">
               <div className="scroll-box__bg">
-                <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.4</span></h1>
+                <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">v{packageJson.version}</span></h1>
               </div>
             </div>
           </GenericScrollBox>
@@ -268,7 +269,7 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <h3><br/>Fast Tracking</h3>
+              <h3>Fast Tracking</h3>
               <p>
                 <a href="#native-scroll"
                    className={classNames({hidden: !props.nativeScroll})}>

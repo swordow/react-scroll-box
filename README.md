@@ -55,15 +55,15 @@ axes | string | `ScrollAxes.XY` | Scroll axes which are managed by the scroll bo
 hoverProximity | integer | 50 | Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
 disabled | boolean | false | Disable scroll box.
 outset | boolean | false | Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
-scrollMinX scrollMinY | integer | 2 | Minimum difference in pixels in content and viewport sizes to enable scrolling.
+scrollMinX<br/>scrollMinY | integer | 2 | Minimum difference in pixels in content and viewport sizes to enable scrolling.
 captureKeyboard | boolean | `true` | Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>PgUp</kbd> <kbd>PgDown</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd> + <kbd>PgUp</kbd> and <kbd>Shift</kbd> + <kbd>PgDown</kbd> shortcuts.
-keyboardStepX keyboardStepY | integer | 30 | Distance in pixels to scroll by when arrow keys are pressed.
+keyboardStepX<br/>keyboardStepY | integer | 30 | Distance in pixels to scroll by when arrow keys are pressed.
 keyboardScrollDuration | integer | 200 | Keyboard smooth scrolling animation duration in milliseconds. Set to 0 to disable smooth keyboard scrolling.
 fastTrack | string | `FastTrack.GOTO` | Defines expected behavior when user clicks on scroll track. 
 fastTrackDuration | integer | 500 | Animation duration of fast track smooth scroll.
 captureHandleDrag | boolean | `true` | Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
 captureWheel | boolean | `true` | Use mouse wheel for scrolling. You can scroll alternate axis with Shift key is pressed.
-wheelStepX wheelStepY | integer | 30 | Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
+wheelStepX<br/>wheelStepY | integer | 30 | Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
 propagateWheelScroll | boolean | `false` | Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
 swapWheelAxes | boolean | `false` | Swap wheel scrolling axes.
 wheelScrollDuration | integer | 100 | Wheel smooth scrolling animation duration. Set to 0 to disable smooth whee scrolling.

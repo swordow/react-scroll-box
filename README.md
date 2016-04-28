@@ -86,41 +86,9 @@ function onViewportScroll(scrollBox) {
 }
 ```
 
-#### Properties
-
-Name | Type | Description
---- | --- | --- 
-`handleX` `handleY` | `HTMLDivElement` | Handle elements. Both are always available, even if [`axes`](#generic-scroll-box-axes) exclude one or both of them.
-`trackX` `trackY` | `HTMLDivElement` | Track elements. Both are always available.
-`viewport` | `HTMLElement` | Viewport element provided to `GenericScrollBox`.
-`targetX` `targetY` | integer | Scroll position in pixels that was last requested.
-`previousX` `previousY` | integer | Previously requested scroll position.
-`scrollX` `scrollX` | integer | Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to `targetX` and `targetY` respectively.
-`scrollMaxX`&nbsp;`scrollMaxY` | integer | Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
-`trackMaxX` `trackMaxY` | integer | Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#generic-scroll-box-native-scroll) is set to `true` these are constanly equal to 0.
-`exposesX` `exposesY` | boolean | Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.
-
-#### Methods
-
-`scrollBy(dx = 0, dy = 0, duration = 0, easing = defaultEasing, silent = false)`
-
-Scroll by the given amount of pixels.
-
-- **`dx` `dy`** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration`** Duration of scrolling animation.
-- **`easing`** Scroll easing function.
-- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
-
-`scrollTo(x = undefined, y = undefined, duration = 0, easing = defaultEasing, silent = false)`
-
-Scroll to arbitrary content position.
-
-- **`x` `y`** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration`** Duration of scrolling animation.
-- **`easing`** Scroll easing function.
-- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
-
 ### `GenericScrollBox`
+
+Expects viewport element at its only child. Has all the same attributes as `ScrollBox`.
 
 Produced layout:
 ```jsx
@@ -156,6 +124,40 @@ Produced layout:
   <div class="scroll-box__viewport"></div>
 </div>
 ```
+
+#### Properties
+
+Name | Type | Description
+--- | --- | --- 
+`handleX` `handleY` | `HTMLDivElement` | Handle elements. Both are always available, even if [`axes`](#generic-scroll-box-axes) exclude one or both of them.
+`trackX` `trackY` | `HTMLDivElement` | Track elements. Both are always available.
+`viewport` | `HTMLElement` | Viewport element provided to `GenericScrollBox`.
+`targetX` `targetY` | integer | Scroll position in pixels that was last requested.
+`previousX` `previousY` | integer | Previously requested scroll position.
+`scrollX` `scrollX` | integer | Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to `targetX` and `targetY` respectively.
+`scrollMaxX`&nbsp;`scrollMaxY` | integer | Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
+`trackMaxX` `trackMaxY` | integer | Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#generic-scroll-box-native-scroll) is set to `true` these are constanly equal to 0.
+`exposesX` `exposesY` | boolean | Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.
+
+#### Methods
+
+`scrollBy(dx = 0, dy = 0, duration = 0, easing = defaultEasing, silent = false)`
+
+Scroll by the given amount of pixels.
+
+- **`dx` `dy`** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **`duration`** Duration of scrolling animation.
+- **`easing`** Scroll easing function.
+- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+
+`scrollTo(x = undefined, y = undefined, duration = 0, easing = defaultEasing, silent = false)`
+
+Scroll to arbitrary content position.
+
+- **`x` `y`** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **`duration`** Duration of scrolling animation.
+- **`easing`** Scroll easing function.
+- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
 ## License
 

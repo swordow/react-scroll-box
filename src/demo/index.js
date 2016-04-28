@@ -5,7 +5,6 @@ import ReactDOM, {findDOMNode} from 'react-dom';
 import classNames from 'classnames';
 
 import './index.less';
-import {ScrollBox} from '../main/ScrollBox';
 import {GenericScrollBox, FastTrack, ScrollAxes} from '../main/GenericScrollBox';
 
 function toPositiveInteger(val) {
@@ -50,6 +49,11 @@ class Demo extends Component {
     }
   }
 
+  componentDidMount() {
+    this.refs.scrollBox.scrollTo(this.refs.scrollBox.scrollMaxX / 2,  0);
+    this.refs.scrollBox.scrollTo(this.refs.scrollBox.scrollMaxX / 2, this.refs.scrollBox.scrollMaxY / 2, 5000);
+  }
+
   render() {
     let {nativeScroll, ...props} = this.state;
     if (nativeScroll == null) {
@@ -59,18 +63,16 @@ class Demo extends Component {
     }
     return (
       <div className="container">
-        <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.4</span></h1>
         <div className="row">
 
-          <ScrollBox {...props} className="scroll-box--example scroll-box--wrapped">
-            <div className="scroll-box__bg"/>
-          </ScrollBox>
+          <GenericScrollBox {...props} ref="scrollBox" className="scroll-box--example scroll-box--wrapped">
+            <div className="scroll-box__viewport">
+              <div className="scroll-box__bg">
+                <h1><span className="light">React</span> <abbr about="Scroll" aria-label="Scroll">Scro<i className="fa fa-long-arrow-up"/><i className="fa fa-long-arrow-down"/></abbr> Box <span className="light">0.2.4</span></h1>
+              </div>
+            </div>
+          </GenericScrollBox>
 
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <h2>Attributes</h2>
-          </div>
         </div>
         <div className="row">
           <form>
@@ -443,74 +445,6 @@ class Demo extends Component {
             </div>
 
           </form>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <h2>API</h2>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-4">
-            <h3>Properties</h3>
-
-            <p><em>All properties are read only.</em></p>
-
-            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">handleX</code> <code className="prop__name">handleY</code></p>
-            <p>Handle elements. Both are always available.</p>
-
-            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">trackX</code> <code className="prop__name">trackY</code></p>
-            <p>Track elements. Both are always available.</p>
-
-            <p><code className="prop__type">{'{HTMLElement}'}</code> <code className="prop__name">viewport</code></p>
-            <p>Viewport element.</p>
-
-            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">targetX</code> <code className="prop__name">targetY</code></p>
-            <p>Scroll position in pixels that was last requested.</p>
-
-            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">previousX</code> <code className="prop__name">previousY</code></p>
-            <p>Previously requested scroll position.</p>
-
-            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">scrollX</code> <code className="prop__name">scrollX</code></p>
-            <p>Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to <code>targetX</code> and <code>targetY</code> respectively.</p>
-
-            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">scrollMaxX</code> <code className="prop__name">scrollMaxY</code></p>
-            <p>Maximum values for horizontal and vertical content scroll positions. See <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX"><code>Window.scrollMaxX</code></a> for more info.</p>
-
-            <p><code className="prop__type">{'{int}'}</code> <code className="prop__name">trackMaxX</code> <code className="prop__name">trackMaxY</code></p>
-            <p>Maximum values for horizontal and vertical track scroll positions.</p>
-
-            <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">exposesX</code> <code className="prop__name">exposesX</code></p>
-            <p>Does scroll box require actual presence of horizontal or vertical scroll bars. If set to <code>true</code>, then axis is permitted via <code>props.axes</code> and corresponding <code>scrollMax</code> is greater or equal to <code>scrollMin</code>.</p>
-
-          </div>
-          <div className="col-md-8">
-            <h3>Methods</h3>
-
-            <p><code className="prop__type">{'{void}'}</code> <code className="prop__name">scrollBy</code> <code>{'(dx, dy, duration, easing, silent)'}</code></p>
-
-            <p>Scroll by the given amount of pixels.</p>
-
-            <p><code>[dx = 0] [dy = 0]</code> &ndash; Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.</p>
-
-            <p><code>[duration = 0]</code> &ndash; Duration of scrolling animation.</p>
-
-            <p><code>[easing = defaultEasing]</code> &ndash; Scroll easing function.</p>
-
-            <p><code>[silent = false]</code> &ndash; Set to <code>true</code> to prevent invocation of <code>onViewportScroll</code> until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.</p>
-
-            <p><code className="prop__type">{'{void}'}</code> <code className="prop__name">scrollTo</code> <code>{'(x, y, duration, easing, silent)'}</code></p>
-
-            <p>Scroll to arbitrary content position.</p>
-
-            <p><code>[x] [y]</code> &ndash; Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.</p>
-
-            <p><code>[duration = 0]</code> &ndash; Duration of scrolling animation.</p>
-
-            <p><code>[easing = defaultEasing]</code> &ndash; Scroll easing function.</p>
-
-            <p><code>[silent = false]</code> &ndash; Set to <code>true</code> to prevent invocation of <code>onViewportScroll</code> until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.</p>
-
-          </div>
         </div>
       </div>
     );

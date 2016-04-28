@@ -90,6 +90,18 @@ function onViewportScroll(scrollBox) {
 
 Expects viewport element at its only child. Has all the same attributes as `ScrollBox`.
 
+```jsx
+var GenericScrollBox = require('react-scroll-box').GenericScrollBox; // ES5
+
+import {GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
+
+<GenericScrollBox style={{height: '200px'}} axes={ScrollAxes.Y} fastTrack={FastTrack.PAGING}>
+  <div className="scroll-box__viewport">
+    Place any content here.
+  </div>
+</GenericScrollBox>
+```
+
 Produced layout:
 ```jsx
 <div class="

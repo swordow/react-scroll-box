@@ -30,21 +30,34 @@ Any help with improvement of this component would be greatly appreciated.
 - LESS styles with a mixin to simplify coloring.
 - Lots of other properties to customize scrolling behavior.
 
-## Basic Usage
+## Components
+
+### `ScrollBox`
+
+In most cases you should use `ScrollBox` to create a scrollable area, but in cause you need more control over viewport use `GenericScrollBox`.
+
+By default, `ScrollBox` has no decoration and behaves as a regular `div` container. Specify height for scroll box in your styles, otherwise container would contract to zero height.
 
 ```jsx
 var ScrollBox = require('react-scroll-box').ScrollBox; // ES5
 
-import {ScrollBox, GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
+import {ScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 
-<ScrollBox axes={ScrollAxes.Y}>
-  Your content goes here
+<ScrollBox style={{height: '200px'}} axes={ScrollAxes.Y} fastTrack={FastTrack.PAGING}>
+  Place any content here.
 </ScrollBox>
 ```
 
-## Components
-
-This module exports `GenericScrollBox` and `ScrollBox`. In most cases you should use `ScrollBox` to create a scrollable area, but in cause you need more control over viewport use `GenericScrollBox`.
+Property | Type | Default | Description
+--- | --- | --- | --- 
+nativeScroll | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
+axes | `ScrollAxes.XY` | `ScrollAxes` | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
+hoverProximity | --- | --- | --- 
+--- | --- | --- | --- 
+--- | --- | --- | --- 
+--- | --- | --- | --- 
+--- | --- | --- | --- 
+--- | --- | --- | --- 
 
 ### `GenericScrollBox`
 

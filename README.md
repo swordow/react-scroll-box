@@ -48,10 +48,12 @@ import {ScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 </ScrollBox>
 ```
 
-Property | Type | Default | Description
+#### Attributes
+
+Name | Type | Default | Description
 --- | --- | --- | --- 
-`nativeScroll` | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
-`axes` | [`ScrollAxes`](#scroll-axes) | [`ScrollAxes.XY`](#scroll-axes-xy) | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
+<a name="generic-scroll-box-native-scroll"></a>`nativeScroll` | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
+<a name="generic-scroll-box-axes"></a>`axes` | [`ScrollAxes`](#scroll-axes) | [`ScrollAxes.XY`](#scroll-axes-xy) | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
 `hoverProximity` | integer | 50 | Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
 `disabled` | boolean | `false` | Disable scroll box.
 `outset` | boolean | `false` | Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
@@ -62,15 +64,47 @@ Property | Type | Default | Description
 `fastTrack` | [`FastTrack`](#fast-track) | [`FastTrack.GOTO`](#fast-track-goto) | Defines expected behavior when user clicks on scroll track. 
 `fastTrackDuration` | integer | 500 | Animation duration of fast track smooth scroll.
 `captureHandleDrag` | boolean | `true` | Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
-`captureWheel` | boolean | `true` | Use mouse wheel for scrolling. You can scroll alternate axis with Shift key is pressed.
+`captureWheel` | boolean | `true` | Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.
 `wheelStepX`<br/>`wheelStepY` | integer | 30 | Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
 `propagateWheelScroll` | boolean | `false` | Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
 `swapWheelAxes` | boolean | `false` | Swap wheel scrolling axes.
-`wheelScrollDuration` | integer | 100 | Wheel smooth scrolling animation duration. Set to 0 to disable smooth whee scrolling.
+`wheelScrollDuration` | integer | 100 | Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
 `className` | string | | Style class name to use.
 `style` | object | | Style to apply to root element of scroll box.
 `defaultEasing` | function | | Easing to use when none is provided.
 `onViewportScroll` | function | | Scroll event callback.
+
+```javascript
+function defaultEasing(percent, elapsed, min, max, duration) {
+  return min + (max - min) * percent;
+}
+```
+
+```javascript
+function onViewportScroll(scrollBox) {
+  console.log(scrollBox.scrollX, scrollBox.scrollY);
+}
+```
+
+#### Properties
+
+Name | Type | Description
+--- | --- | --- 
+`handleX`<br/>`handleY` | `HTMLDivElement` | Handle elements. Both are always available, even if [`axes`](#generic-scroll-box-axes) exclude one or both of them.
+`trackX trackY` | `HTMLDivElement` | Track elements. Both are always available.
+`viewport` | `HTMLElement` | Viewport element provided to `GenericScrollBox`.
+`targetX`<br/>`targetY` | integer | Scroll position in pixels that was last requested.
+`previousX`<br/>`previousY` | integer | Previously requested scroll position.
+`scrollX`<br/>`scrollX` | integer | Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to `targetX` and `targetY` respectively.
+`scrollMaxX`<br/>`scrollMaxY` | integer | Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
+`trackMaxX`<br/>`trackMaxY` | integer | Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#generic-scroll-box-native-scroll) is set to `true` these are constanly equal to 0.
+`exposesX`<br/>`exposesY` | boolean | Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.
+
+
+
+
+
+
 
 ### `GenericScrollBox`
 

@@ -90,15 +90,15 @@ function onViewportScroll(scrollBox) {
 
 Name | Type | Description
 --- | --- | --- 
-`handleX`<br/>`handleY` | `HTMLDivElement` | Handle elements. Both are always available, even if [`axes`](#generic-scroll-box-axes) exclude one or both of them.
-`trackX trackY` | `HTMLDivElement` | Track elements. Both are always available.
+`handleX` `handleY` | `HTMLDivElement` | Handle elements. Both are always available, even if [`axes`](#generic-scroll-box-axes) exclude one or both of them.
+`trackX` `trackY` | `HTMLDivElement` | Track elements. Both are always available.
 `viewport` | `HTMLElement` | Viewport element provided to `GenericScrollBox`.
-`targetX`<br/>`targetY` | integer | Scroll position in pixels that was last requested.
-`previousX`<br/>`previousY` | integer | Previously requested scroll position.
-`scrollX`<br/>`scrollX` | integer | Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to `targetX` and `targetY` respectively.
-`scrollMaxX`<br/>`scrollMaxY` | integer | Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
-`trackMaxX`<br/>`trackMaxY` | integer | Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#generic-scroll-box-native-scroll) is set to `true` these are constanly equal to 0.
-`exposesX`<br/>`exposesY` | boolean | Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.
+`targetX` `targetY` | integer | Scroll position in pixels that was last requested.
+`previousX` `previousY` | integer | Previously requested scroll position.
+`scrollX` `scrollX` | integer | Actual scroll position that user observes. This changes repeatedly during scroll animation, when no animation is in proggress equals to `targetX` and `targetY` respectively.
+`scrollMaxX`&nbsp;`scrollMaxY` | integer | Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
+`trackMaxX` `trackMaxY` | integer | Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#generic-scroll-box-native-scroll) is set to `true` these are constanly equal to 0.
+`exposesX` `exposesY` | boolean | Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.
 
 
 

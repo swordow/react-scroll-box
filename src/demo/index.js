@@ -268,7 +268,7 @@ class Demo extends Component {
                 </div>
               </fieldset>
 
-              <h3>Fast Tracking</h3>
+              <h3><br/>Fast Tracking</h3>
               <p>
                 <a href="#native-scroll"
                    className={classNames({hidden: !props.nativeScroll})}>
@@ -427,21 +427,6 @@ class Demo extends Component {
                   <div className="input-group-addon">msec</div>
                 </div>
               </fieldset>
-
-              <h3>Other</h3>
-
-              <p><code className="prop__type">{'{string}'}</code> <code className="prop__name">className</code></p>
-              <p>Class name to use.</p>
-
-              <p><code className="prop__type">{'{object}'}</code> <code className="prop__name">style</code></p>
-              <p>Style to apply to root element of scroll box.</p>
-
-              <p><code className="prop__type">{'{Function}'}</code> <code className="prop__name">defaultEasing</code></p>
-              <p>Easing to use when none is provided.</p>
-
-              <p><code className="prop__type">{'{Function}'}</code> <code className="prop__name">onViewportScroll</code></p>
-              <p>Scroll event callback.</p>
-
             </div>
 
           </form>

@@ -190,9 +190,8 @@ export class GenericScrollBox extends React.Component {
     this.exposesX = axes.indexOf(ScrollAxes.X) > -1 && SCROLL_MAX_X >= scrollMinX;
     this.exposesY = axes.indexOf(ScrollAxes.Y) > -1 && SCROLL_MAX_Y >= scrollMinY;
 
-    let el = findDOMNode(this);
-    el.classList.toggle('scroll-box--show-axis-x', this.exposesX);
-    el.classList.toggle('scroll-box--show-axis-y', this.exposesY);
+    this.el.classList.toggle('scroll-box--show-axis-x', this.exposesX);
+    this.el.classList.toggle('scroll-box--show-axis-y', this.exposesY);
 
     // Scrollbars may have non-zero thickness so in case of outset positioning
     // pixes cropped by scrollbar must be compensated.
@@ -540,7 +539,8 @@ export class GenericScrollBox extends React.Component {
         this[ref] = findDOMNode(refs[ref]);
       }
     }
-    this.viewport = findDOMNode(this).lastChild;
+    this.el = findDOMNode(this);
+    this.viewport = this.el.lastChild;
   }
 
   componentDidMount() {

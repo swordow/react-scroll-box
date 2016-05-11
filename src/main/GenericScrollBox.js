@@ -280,6 +280,9 @@ export class GenericScrollBox extends React.Component {
     if (this.props.nativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
       return;
     }
+    if (!this.exposesX && !this.exposesY) {
+      return; // No scrolling is available.
+    }
     e.stopPropagation();
     let touch = e.touches[0],
         x = this.viewport.scrollLeft,
@@ -327,7 +330,7 @@ export class GenericScrollBox extends React.Component {
 
   onWheel = e => {
     const {wheelStepX, wheelStepY, disabled, nativeScroll, captureWheel, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
-          {targetX, targetY, scrollMaxX, scrollMaxY} = this,
+          {targetX, targetY, scrollMaxX, scrollMaxY, exposesX, exposesY} = this,
           el = e.target;
     if (nativeScroll && !captureWheel) {
       e.preventDefault();
@@ -339,11 +342,11 @@ export class GenericScrollBox extends React.Component {
     ) {
       return;
     }
-    let dx = e.deltaX * this.exposesX,
-        dy = e.deltaY * this.exposesY;
+    let dx = e.deltaX * exposesX,
+        dy = e.deltaY * exposesY;
     if (
-      (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
-      (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+      (e.deltaX && !exposesX) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (e.deltaY && !exposesY) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
     ) {
       // Content is scrolled to its possible limit.
       if (!propagateWheelScroll) {

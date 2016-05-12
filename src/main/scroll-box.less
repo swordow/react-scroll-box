@@ -34,13 +34,12 @@
   }
 
   &--disabled {
-    // Force hide native scrollbars.
     > .@{scroll-box}__viewport {
+      // Hide native scrollbars.
       overflow: hidden !important;
     }
-
     > .@{scroll-box}__track {
-      // Force hide custom scrollbars.
+      // Hide custom scrollbars.
       visibility: hidden !important;
     }
   }

@@ -338,7 +338,7 @@ export class GenericScrollBox extends React.Component {
     if (
       disabled || e.isDefaultPrevented() || // Event prevented.
       !captureWheel || // Wheel events prevented.
-      (el != this.viewport && el.tagName.toLocaleLowerCase() == 'textarea') // Nested textarea is focused and its is not a viewport.
+      (el != this.viewport && el.tagName.toLowerCase() == 'textarea') // Nested textarea is focused and its is not a viewport.
     ) {
       return;
     }
@@ -365,19 +365,26 @@ export class GenericScrollBox extends React.Component {
     }
     e.preventDefault();
     if (typeof InstallTrigger != 'undefined') {
-      const FIREFOX_SPEED_FACTOR = 20;
+      const FIREFOX_SPEED_FACTOR = 30;
       dx *= FIREFOX_SPEED_FACTOR;
       dy *= FIREFOX_SPEED_FACTOR;
     }
     dx *= wheelStepX / 100;
     dy *= wheelStepY / 100;
-    this.scrollBy(dx, dy, wheelScrollDuration);
+
+    // Prevent jumping to target position when slow animated scrolling is in progress,
+    // but preserve scroll speed when mouse wheel arrive frequently.
+    if (Date.now() - this._easingBeginTimestamp > wheelScrollDuration) {
+      this.scrollTo(this.scrollX + dx, this.scrollY + dy, wheelScrollDuration);
+    } else {
+      this.scrollTo(this.targetX + dx, this.targetY + dy, wheelScrollDuration);
+    }
   };
 
   onKeyDown = e => {
     const {keyboardStepX, keyboardStepY, disabled, captureKeyboard, keyboardScrollDuration} = this.props;
     let el = e.target,
-        tagName = el.tagName.toLocaleLowerCase();
+        tagName = el.tagName.toLowerCase();
     if (
       disabled || e.isDefaultPrevented() || // Event prevented.
       !captureKeyboard || !/3[3456789]|40/.test(String(e.keyCode)) || // Keyboard events prevented.

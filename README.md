@@ -1,6 +1,6 @@
 # React Scroll Box
 
-[![npm version](https://img.shields.io/npm/v/react-scroll-box.svg?style=flat)](https://www.npmjs.com/package/react-scroll-box)
+[![npm version](https://badge.fury.io/js/react-scroll-box.svg)](https://www.npmjs.com/package/react-scroll-box)
 
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 

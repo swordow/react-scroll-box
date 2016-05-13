@@ -136,6 +136,9 @@ export class GenericScrollBox extends React.Component {
   exposesX = false;
   exposesY = false;
 
+  // Id of request animation frame that keeps scroll box in sync.
+  _forceSyncId = 0;
+
   // Timestamp when scroll position started to change last time.
   _easingBeginTimestamp = 0;
 
@@ -176,11 +179,7 @@ export class GenericScrollBox extends React.Component {
 
   // Synchronize scrollbar positions immediately without waiting for animation frame.
   _forceSync() {
-    const {handleX, handleY, viewport, _easingBeginTimestamp, _silent} = this;
-    if (!viewport) {
-      return; // Component was unmounted.
-    }
-    const {scrollY, scrollX, previousX, previousY, _easing, _easingDuration} = this,
+    const {handleX, handleY, viewport, scrollY, scrollX, previousX, previousY, _silent, _easingBeginTimestamp, _easing, _easingDuration} = this,
           {axes, nativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
           {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
@@ -449,7 +448,7 @@ export class GenericScrollBox extends React.Component {
           OFFSET_Y = e.clientY - this.handleY.offsetTop;
 
     let onDrag = e => {
-      if (!this.viewport || e.button != 0) {
+      if (!this._forceSyncId || e.button != 0) {
         onDragEnd(); // Component was unmounted or button was released.
       }
       if (axis == ScrollAxes.X) {
@@ -463,7 +462,7 @@ export class GenericScrollBox extends React.Component {
     let onDragEnd = e => {
       removeEventListener('mousemove', onDrag);
       removeEventListener('mouseup', onDragEnd);
-      if (this.viewport) {
+      if (this._forceSyncId) {
         // Ensure component is mounted.
         track.classList.remove('scroll-box__track--dragged');
       }
@@ -555,13 +554,10 @@ export class GenericScrollBox extends React.Component {
 
   componentDidMount() {
     let requestForceSync = () => {
-      if (!this.viewport) {
-        return; // Component was unmounted.
-      }
-      if (window.requestAnimationFrame) {
-        requestAnimationFrame(requestForceSync);
+      if (window.cancelAnimationFrame) {
+        this._forceSyncId = requestAnimationFrame(requestForceSync);
       } else {
-        setTimeout(requestForceSync, 1000 / 30);
+        this._forceSyncId = setTimeout(requestForceSync, 1000 / 30);
       }
       this._forceSync();
     };
@@ -576,7 +572,12 @@ export class GenericScrollBox extends React.Component {
   }
 
   componentWillUnmount() {
-    this.viewport = null;
+    if (window.cancelAnimationFrame) {
+      cancelAnimationFrame(this._forceSyncId);
+    } else {
+      clearTimeout(this._forceSyncId);
+    }
+    this._forceSyncId = 0;
     removeEventListener('mousemove', this.onCursorApproachingTrack);
   }
 

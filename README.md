@@ -30,9 +30,7 @@ Any help with improvement of this component would be greatly appreciated.
 - LESS styles with a mixin to simplify coloring.
 - Lots of other properties to customize scrolling behavior.
 
-## Components
-
-### `ScrollBox`
+## `ScrollBox`
 
 In most cases you should use `ScrollBox` to create a scrollable area, but in cause you need more control over viewport use `GenericScrollBox`.
 
@@ -48,31 +46,70 @@ import {ScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 </ScrollBox>
 ```
 
-#### Attributes
+### Attributes
 
-Name | Type | Default | Description
---- | --- | --- | --- 
-<a name="generic-scroll-box-native-scroll"></a>`nativeScroll` | boolean | | Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
-<a name="generic-scroll-box-axes"></a>`axes` | [`ScrollAxes`](#scroll-axes) | [`ScrollAxes.XY`](#scroll-axes-xy) | Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
-`hoverProximity` | integer | 50 | Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
-`disabled` | boolean | `false` | Disable scroll box.
-`outset` | boolean | `false` | Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
-`scrollMinX`<br/>`scrollMinY` | integer | 2 | Minimum difference in pixels in content and viewport sizes to enable scrolling.
-`captureKeyboard` | boolean | `true` | Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>PgUp</kbd> <kbd>PgDown</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgUp</kbd> and <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgDown</kbd> shortcuts.
-`keyboardStepX`<br/>`keyboardStepY` | integer | 30 | Distance in pixels to scroll by when arrow keys are pressed.
-`keyboardScrollDuration` | integer | 200 | Keyboard smooth scrolling animation duration in milliseconds. Set to 0 to disable smooth keyboard scrolling.
-`fastTrack` | [`FastTrack`](#fast-track) | [`FastTrack.GOTO`](#fast-track-goto) | Defines expected behavior when user clicks on scroll track. 
-`fastTrackDuration` | integer | 500 | Animation duration of fast track smooth scroll.
-`captureHandleDrag` | boolean | `true` | Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
-`captureWheel` | boolean | `true` | Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.
-`wheelStepX`<br/>`wheelStepY` | integer | 30 | Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
-`propagateWheelScroll` | boolean | `false` | Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
-`swapWheelAxes` | boolean | `false` | Swap wheel scrolling axes.
-`wheelScrollDuration` | integer | 100 | Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
-`className` | string | | Style class name to use.
-`style` | object | | Style to apply to root element of scroll box.
-`defaultEasing` | function | | Easing to use when none is provided.
-`onViewportScroll` | function | | Scroll event callback.
+#### <code><i>boolean</i> <a name="generic-scroll-box-native-scroll"></a> nativeScroll</code>
+Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
+
+#### <code><i>[ScrollAxes](#scroll-axes)</i> <a name="generic-scroll-box-axes"></a> axes = [ScrollAxes.XY](#scroll-axes-xy)</code>
+Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.
+
+#### <code><i>integer</i> hoverProximity = 50</code>
+Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
+
+#### <code><i>boolean</i> disabled = false</code>
+Disable scroll box.
+
+#### <code><i>boolean</i> outset = false</code>
+Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
+
+#### <code><i>integer</i> scrollMinX = 2</code> <code>scrollMinY = 2</code>
+Minimum difference in pixels in content and viewport sizes to enable scrolling.
+
+#### <code><i>boolean</i> captureKeyboard = true</code>
+Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>PgUp</kbd> <kbd>PgDown</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgUp</kbd> and <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgDown</kbd> shortcuts.
+
+#### <code><i>integer</i> keyboardStepX = 30</code> <code>keyboardStepY = 30</code>
+Distance in pixels to scroll by when arrow keys are pressed.
+
+#### <code><i>integer</i> keyboardScrollDuration = 200</code>
+Keyboard smooth scrolling animation duration in milliseconds. Set to 0 to disable smooth keyboard scrolling.
+
+#### <code><i>[FastTrack](#fast-track)</i> fastTrack = [FastTrack.GOTO](#fast-track-goto)</code>
+Defines expected behavior when user clicks on scroll track. 
+
+#### <code><i>integer</i> fastTrackDuration = 500</code>
+Animation duration of fast track smooth scroll.
+
+#### <code><i>boolean</i> captureHandleDrag = true</code>
+Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
+
+#### <code><i>boolean</i> captureWheel = true</code>
+Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.
+
+#### <code><i>integer</i> wheelStepX = 30</code> <code>wheelStepY = 30</code>
+Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
+
+#### <code><i>boolean</i> propagateWheelScroll = false</code>
+Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
+
+#### <code><i>boolean</i> swapWheelAxes = false</code>
+Swap wheel scrolling axes.
+
+#### <code><i>integer</i> wheelScrollDuration = 100</code>
+Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
+
+#### <code><i>string</i> className</code>
+Style class name to use.
+
+#### <code><i>object</i> style</code>
+Style to apply to root element of scroll box.
+
+#### <code><i>function</i> defaultEasing</code>
+Easing to use when none is provided.
+
+#### <code><i>function</i> onViewportScroll</code>
+Scroll event callback.
 
 ```javascript
 function defaultEasing(percent, elapsed, min, max, duration) {

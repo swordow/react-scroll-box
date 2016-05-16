@@ -12,6 +12,16 @@ Any help with improvement of this component would be greatly appreciated.
 
 [**API Playground and Live Demo**](http://smikhalevski.github.io/react-scroll-box/)
 
+## Contents
+
+1. [Motivation](#motivation)
+2. [`ScrollBox`](#scrollbox)
+  1. [Attributes](#attributes)
+3. [`GenericScrollBox`](#genericscrollbox)
+  1. [Properties](#properties)
+  2. [Methods](#methods)
+4. [License](#license)
+
 ## Motivation
 
 - Use custom or native scroll bars.
@@ -197,7 +207,8 @@ Actual scroll position that user observes. This changes repeatedly during scroll
 #### <code><i>integer</i> scrollMaxX</code> <code>scrollMaxY</code> 
 Maximum values for horizontal and vertical content scroll positions. See [MDN `window.scrollMaxX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollMaxX) for more info.
 
-#### <code><i>integer</i> trackMaxX</code> <code>trackMaxY</code> Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#genericscrollbox-nativescroll) is set to `true` these are constanly equal to 0.
+#### <code><i>integer</i> trackMaxX</code> <code>trackMaxY</code>
+Maximum values for horizontal and vertical track scroll positions. When [`nativeScroll`](#genericscrollbox-nativescroll) is set to `true` these are constanly equal to 0.
 
 #### <code><i>boolean</i> exposesX</code> <code>exposesY</code>
 Does scroll box require actual presence of horizontal or vertical scroll bars. If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax` is greater or equal to `scrollMin`.

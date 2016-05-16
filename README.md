@@ -115,7 +115,7 @@ Style class name to use.
 #### <code><i>object</i> style</code>
 Style to apply to root element of scroll box.
 
-#### <code><i>function</i> defaultEasing</code>
+#### <a name="defaulteasing"></a><code><i>function</i> defaultEasing</code>
 Easing to use when none is provided.
 
 ```javascript
@@ -215,23 +215,23 @@ Does scroll box require actual presence of horizontal or vertical scroll bars. I
 
 ### Methods
 
-#### `scrollBy(dx = 0, dy = 0, duration = 0, easing = defaultEasing, silent = false)`
+#### <code><i>void</i> scrollBy(dx, dy, duration, easing, silent)</code>
 
 Scroll by the given amount of pixels.
 
-- **`dx` `dy`** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration`** Duration of scrolling animation.
-- **`easing`** Scroll easing function.
-- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+- **`dx = 0` `dy = 0`** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **`duration = 0`** Duration of scrolling animation.
+- **<code>easing = <a href="#defaulteasing">defaultEasing</code>** Scroll easing function.
+- **`silent = false`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
-#### `scrollTo(x = undefined, y = undefined, duration = 0, easing = defaultEasing, silent = false)`
+#### <code><i>void</i> scrollTo(x, y, duration, easing, silent)</code>
 
 Scroll to arbitrary content position.
 
-- **`x` `y`** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration`** Duration of scrolling animation.
-- **`easing`** Scroll easing function.
-- **`silent`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+- **`x = undefined` `y = undefined`** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **`duration = 0`** Duration of scrolling animation.
+- **<code>easing = <a href="#defaulteasing">defaultEasing</code>** Scroll easing function.
+- **`silent = false`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
 ## License
 

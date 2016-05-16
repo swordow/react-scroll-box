@@ -180,7 +180,9 @@ Produced layout:
         scroll-box__handle--y">
     </div>
   </div>
-  <div class="scroll-box__viewport"></div>
+  <div class="scroll-box__viewport">
+    Place any content here.
+  </div>
 </div>
 ```
 

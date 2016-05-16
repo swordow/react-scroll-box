@@ -110,7 +110,7 @@ Swap wheel scrolling axes.
 #### <code><i>integer</i> wheelScrollDuration = 100</code>
 Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
 
-#### <code><i>string</i> className</code>
+#### <code><i>string</i> className = "scroll-box--wrapped"</code>
 Style class name to use.
 
 #### <code><i>object</i> style</code>
@@ -148,7 +148,7 @@ import {GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 ### Layout
 
 ```jsx
-<div class="scroll-box">
+<div class="scroll-box scroll-box--wrapped">
   <div class="scroll-box__track scroll-box__track--x">
     <div class="scroll-box__handle scroll-box__handle--x"></div>
   </div>
@@ -163,6 +163,7 @@ import {GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 
 Class Name | Description
 --- | ---
+`scroll-box--wrapped` | Causes scroll box to look like an actual scroll box. If omitted, then scrollbox behaves like a simple `div` element.
 `scroll-box--disabled` | Scroll box is disabled. By default, hides scrollbars and prevents scrolling.
 `scroll-box--native` | Display native scroll bars.
 `scroll-box--outset` | Show scroll bars ouside of scrollable area.
@@ -171,7 +172,17 @@ Class Name | Description
 `scroll-box--show-axis-x` | Content is wider than viewport.
 `scroll-box--show-axis-y` | Content is taller than viewport.
 `scroll-box__track--hover` | Tack is hovered.
-`scroll-box__track--dragged` | Track handle is dragged.
+<code>scroll-box__track&#8209;&#8209;dragged</code> | Track handle is dragged.
+
+Modifier `.scroll-box--wrapped-on-large-screens` would conditionally wrap scroll box on screens larger than 360 px. Content would be scrolled along with page itself on smaller screens.
+
+```less
+@media (min-width: 360px) {
+  .scroll-box--wrapped-on-large-screens {
+    .scroll-box-wrap();
+  }
+}
+```
 
 ### Properties
 

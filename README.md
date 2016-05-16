@@ -18,8 +18,9 @@ Any help with improvement of this component would be greatly appreciated.
 2. [`ScrollBox`](#scrollbox)
   1. [Attributes](#attributes)
 3. [`GenericScrollBox`](#genericscrollbox)
-  1. [Properties](#properties)
-  2. [Methods](#methods)
+  1. [Layout](#layout)
+  2. [Properties](#properties)
+  3. [Methods](#methods)
 4. [License](#license)
 
 ## Motivation
@@ -149,42 +150,33 @@ import {GenericScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 </GenericScrollBox>
 ```
 
-Produced layout:
+### Layout
+
 ```jsx
-<div class="
-    scroll-box
-    scroll-box--disabled
-    scroll-box--native
-    scroll-box--outset
-    scroll-box--has-axis-x
-    scroll-box--has-axis-y
-    scroll-box--show-axis-x
-    scroll-box--show-axis-y">
-  <div class="
-      scroll-box__track
-      scroll-box__track--x
-      scroll-box__track--hover
-      scroll-box__track--dragged">
-    <div class="
-        scroll-box__handle
-        scroll-box__handle--x">
-    </div>
+<div class="scroll-box">
+  <div class="scroll-box__track scroll-box__track--x">
+    <div class="scroll-box__handle scroll-box__handle--x"></div>
   </div>
-  <div class="
-      scroll-box__track
-      scroll-box__track--y
-      scroll-box__track--hover
-      scroll-box__track--dragged">
-    <div class="
-        scroll-box__handle
-        scroll-box__handle--y">
-    </div>
+  <div class="scroll-box__track scroll-box__track--y">
+    <div class="scroll-box__handle scroll-box__handle--y"></div>
   </div>
   <div class="scroll-box__viewport">
     Place any content here.
   </div>
 </div>
 ```
+
+Class Name | Description
+--- | ---
+`scroll-box--disabled` | Scroll box is disabled. By default, hides scrollbars and prevents scrolling.
+`scroll-box--native` | Display native scroll bars.
+`scroll-box--outset` | Show scroll bars ouside of scrollable area.
+`scroll-box--has-axis-x` | Scroll box can be scrolled horizintally if content is wider than viewport.
+`scroll-box--has-axis-y` | Scroll box can be scrolled vertically if content is taller than viewport.
+`scroll-box--show-axis-x` | Content is wider than viewport.
+`scroll-box--show-axis-y` | Content is taller than viewport.
+`scroll-box__track--hover` | Tack is hovered.
+`scroll-box__track--dragged` | Track handle is dragged.
 
 ### Properties
 

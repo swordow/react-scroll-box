@@ -116,23 +116,18 @@ Style class name to use.
 #### <code><i>object</i> style</code>
 Style to apply to root element of scroll box.
 
-#### <a name="defaulteasing"></a><code><i>function</i> defaultEasing</code>
+#### <a name="defaulteasing"></a><code><i>function</i> defaultEasing (percent, elapsed, min, max, duration)</code>
 Easing to use when none is provided.
 
-```javascript
-function defaultEasing(percent, elapsed, min, max, duration) {
-  return min + (max - min) * percent;
-}
-```
+- **<code><i>float</i> percent</code>** Scroll percentage in range [0, 1].
+- **<code><i>integer</i> elapsed</code>** Number of milliseconds passed since animation began.
+- **<code><i>integer</i> min</code> <code>max</code>** Output value range.
+- **<code><i>integer</i> duration</code>** Animation duration in milliseconds.
 
-#### <code><i>function</i> onViewportScroll</code>
+#### <code><i>function</i> onViewportScroll (genericScrollBox)</code>
 Scroll event callback.
 
-```javascript
-function onViewportScroll(genericScrollBox) {
-  console.log(genericScrollBox.scrollX, genericScrollBox.scrollY);
-}
-```
+- **<code><i>[GenericScrollBox](#genericscrollbox)</i> genericScrollBox</code>** Reference to [`GenericScrollBox`](#genericscrollbox) that is being scrolled.
 
 ## `GenericScrollBox`
 
@@ -213,19 +208,19 @@ Does scroll box require actual presence of horizontal or vertical scroll bars. I
 
 Scroll by the given amount of pixels.
 
-- **`dx = 0` `dy = 0`** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration = 0`** Duration of scrolling animation.
-- **<code>easing = <a href="#defaulteasing">defaultEasing</a></code>** Scroll easing function.
-- **`silent = false`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+- **<code><i>integer</i> dx = 0</code> <code>dy = 0</code>** Amount of pixels to scroll by. Positive coordinates will scroll to the right and down the content. Negative values will scroll to the left and up the content. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **<code><i>integer</i> duration = 0</code>** Duration of scrolling animation.
+- **<code><i>function</i> easing = <a href="#defaulteasing">defaultEasing</a></code>** Scroll easing function.
+- **<code><i>boolean</i> silent = false</code>** Set to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
 #### <code><i>void</i> scrollTo(x, y, duration, easing, silent)</code>
 
 Scroll to arbitrary content position.
 
-- **`x = undefined` `y = undefined`** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
-- **`duration = 0`** Duration of scrolling animation.
-- **<code>easing = <a href="#defaulteasing">defaultEasing</a></code>** Scroll easing function.
-- **`silent = false`** Set to `true` to prevent invocation of onViewportScroll until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
+- **<code><i>integer</i> x = undefined</code> <code>y = undefined</code>** Position to scroll to. If non-numeric value are provided then corresponding position of scroll bar coordinate is not changed.
+- **<code><i>integer</i> duration = 0</code>** Duration of scrolling animation.
+- **<code><i>function</i> easing = <a href="#defaulteasing">defaultEasing</a></code>** Scroll easing function.
+- **<code><i>boolean</i> silent = false</code>** Set to `true` to prevent invocation of `onViewportScroll` until requested scrolling is finished. Can be used for synchronization of multiple scroll areas.
 
 ## License
 

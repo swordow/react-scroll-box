@@ -172,7 +172,7 @@ Class Name | Description
 `scroll-box--show-axis-x` | Content is wider than viewport.
 `scroll-box--show-axis-y` | Content is taller than viewport.
 `scroll-box__track--hover` | Tack is hovered.
-<code>scroll-box__track&#8209;&#8209;dragged</code> | Track handle is dragged.
+<code>scroll&#8209;box__track&#8209;&#8209;dragged</code> | Track handle is dragged.
 
 Modifier `.scroll-box--wrapped-on-large-screens` would conditionally wrap scroll box on screens larger than 360 px. Content would be scrolled along with page itself on smaller screens.
 

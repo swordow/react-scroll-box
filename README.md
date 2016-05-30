@@ -60,7 +60,7 @@ import {ScrollBox, ScrollAxes, FastTrack} from 'react-scroll-box'; // ES6
 ### Attributes
 
 #### <code><i>boolean</i> <a name="genericscrollbox-nativescroll"></a> nativeScroll</code>
-Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`. If you are developing isomorphic application and want to render scroll box on server side then you shoud explicitly specify this property.
+Use native scrollbars. By default, this flag is set to `true` on mobile platforms and `false` on desktops. Paltforms are distinguished by presence of `window.orientation`.
 
 #### <code><i>[ScrollAxes](#scroll-axes)</i> <a name="genericscrollbox-axes"></a> axes = [ScrollAxes.XY](#scroll-axes-xy)</code>
 Scroll axes which are managed by the scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0 and any scrolling requests via API or from UI for that axes would be ignored.

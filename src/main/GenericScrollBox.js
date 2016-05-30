@@ -18,7 +18,6 @@ export const FastTrack = {
 export class GenericScrollBox extends React.Component {
 
   static defaultProps = {
-    nativeScroll: typeof window == 'undefined' || 'orientation' in window,
     className: 'scroll-box--wrapped',
     axes: ScrollAxes.XY,
     hoverProximity: 50,
@@ -247,9 +246,7 @@ export class GenericScrollBox extends React.Component {
         this._easing = null;
         this._silent = false;
       }
-      // Viewport did not change its scroll parameters, so invocation of `onViewportScroll` and
-      // further altering geometry of handles and tracks is not required.
-      return;
+      // TODO Viewport did not change its scroll parameters, so invocation of `onViewportScroll` and further altering geometry of handles and tracks may not be required.
     }
     this.scrollX = x;
     this.scrollY = y;
@@ -550,6 +547,15 @@ export class GenericScrollBox extends React.Component {
     }
     this.el = findDOMNode(this);
     this.viewport = this.el.lastChild;
+
+    const {nativeScroll} = this.props;
+    if (nativeScroll == null) {
+      if (typeof window != 'undefined' && 'orientation' in window) {
+        this.el.classList.add('scroll-box--native');
+      }
+    } else {
+      this.el.classList.toggle('scroll-box--native', nativeScroll);
+    }
   }
 
   componentDidMount() {
@@ -582,16 +588,13 @@ export class GenericScrollBox extends React.Component {
   }
 
   render() {
-    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, nativeScroll, outset, className, children, style} = this.props;
+    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, outset, className, children, style} = this.props;
     let classNames = ['scroll-box'];
     if (className) {
       classNames = classNames.concat(className);
     }
     if (disabled) {
       classNames.push('scroll-box--disabled');
-    }
-    if (nativeScroll) {
-      classNames.push('scroll-box--native');
     }
     if (outset) {
       classNames.push('scroll-box--outset');

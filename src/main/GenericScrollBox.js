@@ -546,7 +546,7 @@ export class GenericScrollBox extends React.Component {
       }
     }
     this.el = findDOMNode(this);
-    this.viewport = this.el.lastChild;
+    this.viewport = this.el.firstChild;
 
     const {nativeScroll} = this.props;
     if (nativeScroll == null) {
@@ -615,6 +615,7 @@ export class GenericScrollBox extends React.Component {
            onTouchEnd={this.onTouchEnd}
            onTouchCancel={this.onTouchEnd}
            tabIndex="-1">
+        {React.Children.only(children)}
         <div className="scroll-box__track scroll-box__track--x"
              onMouseDown={this.onFastTrackX}
              ref="trackX">
@@ -635,7 +636,6 @@ export class GenericScrollBox extends React.Component {
           </div>
           {trackYChildren}
         </div>
-        {React.Children.only(children)}
       </div>
     );
   }

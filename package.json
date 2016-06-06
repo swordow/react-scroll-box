@@ -2,7 +2,7 @@
   "name": "react-scroll-box",
   "version": "0.2.6",
   "author": "Savva Mikhalevski",
-  "description": "Powerful, cross-browser and cross-platform React ScrollBox component",
+  "description": "Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+",
   "license": "MIT",
   "repository": {
     "type": "git",

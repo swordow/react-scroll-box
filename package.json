@@ -1,6 +1,6 @@
 {
   "name": "react-scroll-box",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "author": "Savva Mikhalevski",
   "description": "Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+",
   "license": "MIT",
@@ -10,7 +10,6 @@
   },
   "homepage": "https://github.com/smikhalevski/react-scroll-box",
   "main": "target/out/index.js",
-  "webpack": "src/main/index.js",
   "files": [
     "src/main/",
     "target/out/",

@@ -49,7 +49,10 @@ export class GenericScrollBox extends React.Component {
     wheelStepY: 30,
     propagateWheelScroll: false,
     swapWheelAxes: false,
-    wheelScrollDuration: 100
+    wheelScrollDuration: 100,
+
+    // Touch
+    propagateTouchScroll: false
   };
 
   static propTypes = {
@@ -86,6 +89,9 @@ export class GenericScrollBox extends React.Component {
     propagateWheelScroll: bool,
     swapWheelAxes: bool,
     wheelScrollDuration: number,
+
+    // Touch
+    propagateTouchScroll: bool,
 
     // Layout
     trackXChildren: any,
@@ -289,13 +295,33 @@ export class GenericScrollBox extends React.Component {
   };
 
   onTouchMove = e => {
+    const {propagateTouchScroll} = this.props,
+          {targetX, targetY, scrollMaxX, scrollMaxY, exposesX, exposesY} = this;
+
     if (!this._touchStart) {
       return;
     }
-    e.preventDefault();
     let touch = e.touches[0],
         x = this._touchOffsetX - touch.screenX,
         y = this._touchOffsetY - touch.screenY;
+
+    let prevTouch = this._touchEnd || this._touchStart,
+        deltaX = prevTouch.x - x,
+        deltaY = prevTouch.y - y;
+
+    let dx = deltaX * exposesX,
+        dy = deltaY * exposesY;
+    if (
+      (deltaX && !exposesX) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (deltaY && !exposesY) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+    ) {
+      // Content is scrolled to its possible limit.
+      if (!propagateTouchScroll) {
+        e.preventDefault();
+      }
+      return;
+    }
+
     if (this._touchEnd) {
       let coords = this._touchStart;
       this._touchStart = this._touchEnd;

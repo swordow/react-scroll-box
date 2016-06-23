@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import './index.less';
 import packageJson from '../../package.json';
-import {GenericScrollBox, FastTrack, ScrollAxes} from '../main/GenericScrollBox';
+import {GenericScrollBox, FastTrack} from '../main/GenericScrollBox';
 
 function toPositiveInteger(val) {
   return Math.max(0, val / 1);
@@ -15,8 +15,14 @@ function toPositiveInteger(val) {
 class Demo extends Component {
 
   state = {
-    nativeScroll: null,
-    axes: ScrollAxes.XY,
+    nativeScroll: false,
+
+    scrollableX: true,
+    scrollableY: true,
+
+    hideScrollBarX: false,
+    hideScrollBarY: false,
+
     hoverProximity: 50,
     disabled: false,
     outset: false,
@@ -110,36 +116,46 @@ class Demo extends Component {
                     Platform-dependent scrollbars
                   </label>
                 </div>
-            </fieldset>
+              </fieldset>
 
               <fieldset className="form-group">
-                <p><code className="prop__type">{'{ScrollAxes}'}</code> <code className="prop__name">axes</code></p>
-                <p>Scroll axes which are managed by scroll box. If scroll axis is not listed then corresponding scroll offset would be constantly equal to 0.</p>
-                <div className="radio">
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">scrollableX</code> <code className="prop__name">scrollableY</code></p>
+                <p>Allows scroll of corresponding axis.</p>
+                <div className="checkbox">
                   <label>
-                    <input type="radio"
-                           name="axes"
-                           checked={this.state.axes === ScrollAxes.X}
-                           onChange={e => this.setState({axes: ScrollAxes.X})}/>
-                    <code>ScrollAxes.X</code>
+                    <input type="checkbox"
+                           checked={this.state.scrollableX}
+                           onChange={e => this.setState({scrollableX: e.target.checked})}/>
+                    X
                   </label>
                 </div>
-                <div className="radio">
+                <div className="checkbox">
                   <label>
-                    <input type="radio"
-                           name="axes"
-                           checked={this.state.axes === ScrollAxes.Y}
-                           onChange={e => this.setState({axes: ScrollAxes.Y})}/>
-                    <code>ScrollAxes.Y</code>
+                    <input type="checkbox"
+                           checked={this.state.scrollableY}
+                           onChange={e => this.setState({scrollableY: e.target.checked})}/>
+                    Y
                   </label>
                 </div>
-                <div className="radio">
+              </fieldset>
+
+              <fieldset className="form-group">
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">hideScrollBarX</code> <code className="prop__name">hideScrollBarY</code></p>
+                <p>Hide scroll bar but allow scrolling on corresponding axis</p>
+                <div className="checkbox">
                   <label>
-                    <input type="radio"
-                           name="axes"
-                           checked={this.state.axes === ScrollAxes.XY}
-                           onChange={e => this.setState({axes: ScrollAxes.XY})}/>
-                    <code>ScrollAxes.XY</code>
+                    <input type="checkbox"
+                           checked={this.state.hideScrollBarX}
+                           onChange={e => this.setState({hideScrollBarX: e.target.checked})}/>
+                    X
+                  </label>
+                </div>
+                <div className="checkbox">
+                  <label>
+                    <input type="checkbox"
+                           checked={this.state.hideScrollBarY}
+                           onChange={e => this.setState({hideScrollBarY: e.target.checked})}/>
+                    Y
                   </label>
                 </div>
               </fieldset>

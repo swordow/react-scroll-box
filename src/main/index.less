@@ -52,10 +52,10 @@
   // Used if fallback to native system scrolling should occur.
   &--native {
 
-    &.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y > .@{scroll-box}__viewport {
+    &.@{scroll-box}--allow-y.@{scroll-box}--requires-y > .@{scroll-box}__viewport {
       overflow-y: auto;
     }
-    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x > .@{scroll-box}__viewport {
+    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x > .@{scroll-box}__viewport {
       overflow-x: auto;
     }
     > .@{scroll-box}__viewport {
@@ -64,17 +64,17 @@
   }
 
   &:not(.@{scroll-box}--native) {
-    &.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y > .@{scroll-box}__track--y {
+    &.@{scroll-box}--allow-y.@{scroll-box}--requires-y > .@{scroll-box}__track--y {
       visibility: visible;
     }
-    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x > .@{scroll-box}__track--x {
+    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x > .@{scroll-box}__track--x {
       visibility: visible;
     }
 
     // Both non-native scrollbars are visible and they are inside
     // scrollable are, we should prevent their intersection in the
     // shared corner.
-    &.@{scroll-box}--has-axis-x.@{scroll-box}--show-axis-x.@{scroll-box}--has-axis-y.@{scroll-box}--show-axis-y:not(.@{scroll-box}--outset) {
+    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x.@{scroll-box}--allow-y.@{scroll-box}--requires-y:not(.@{scroll-box}--outset) {
       > .@{scroll-box}__track {
         &--y {
           margin-bottom: (2 * @scroll-bar-y-bottom + @scroll-bar-x-height);

@@ -3,11 +3,8 @@ import {findDOMNode} from 'react-dom';
 
 const {number, bool, func, oneOf, any} = React.PropTypes;
 
-export const ScrollAxes = {
-  X: 'x',
-  Y: 'y',
-  XY: 'xy'
-};
+const X = 'x',
+      Y = 'y';
 
 export const FastTrack = {
   PAGING: 'paging',
@@ -19,7 +16,15 @@ export class GenericScrollBox extends React.Component {
 
   static defaultProps = {
     className: 'scroll-box--wrapped',
-    axes: ScrollAxes.XY,
+    
+    // Can are be scrolled in corresponding direction.
+    scrollableX: true,
+    scrollableY: true,
+    
+    // Hide scrollbar from user.
+    hideScrollBarX: false,
+    hideScrollBarY: false,
+
     hoverProximity: 50,
     disabled: false,
     outset: false,
@@ -58,7 +63,10 @@ export class GenericScrollBox extends React.Component {
   static propTypes = {
     nativeScroll: bool,
     className: any,
-    axes: oneOf([ScrollAxes.X, ScrollAxes.Y, ScrollAxes.XY]),
+    scrollableX: bool,
+    scrollableY: bool,
+    hideScrollBarX: bool,
+    hideScrollBarY: bool,
     hoverProximity: number,
     disabled: bool,
     outset: bool,
@@ -137,9 +145,9 @@ export class GenericScrollBox extends React.Component {
   trackMaxY = 0;
 
   // Does scroll box require actual presence of horizontal or vertical scroll bars.
-  // If set to `true`, then axis is permitted via `props.axes` and corresponding `scrollMax >= scrollMin`.
-  exposesX = false;
-  exposesY = false;
+  // If set to `true`, then axis is allowed and corresponding `scrollMax >= scrollMin`.
+  scrollBarXExposed = false;
+  scrollBarYExposed = false;
 
   // Id of request animation frame that keeps scroll box in sync.
   _forceSyncId = 0;
@@ -185,17 +193,17 @@ export class GenericScrollBox extends React.Component {
   // Synchronize scrollbar positions immediately without waiting for animation frame.
   _forceSync() {
     const {handleX, handleY, viewport, scrollY, scrollX, previousX, previousY, _silent, _easingBeginTimestamp, _easing, _easingDuration} = this,
-          {axes, nativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
+          {scrollableX, scrollableY, nativeScroll, outset, onViewportScroll, scrollMinX, scrollMinY} = this.props,
           {clientWidth, clientHeight, offsetWidth, offsetHeight, scrollWidth, scrollHeight, scrollTop, scrollLeft} = viewport;
 
     const SCROLL_MAX_X = Math.max(0, scrollWidth - clientWidth),
           SCROLL_MAX_Y = Math.max(0, scrollHeight - clientHeight);
 
-    this.exposesX = axes.indexOf(ScrollAxes.X) > -1 && SCROLL_MAX_X >= scrollMinX;
-    this.exposesY = axes.indexOf(ScrollAxes.Y) > -1 && SCROLL_MAX_Y >= scrollMinY;
+    this.scrollBarXExposed = scrollableX && SCROLL_MAX_X >= scrollMinX;
+    this.scrollBarYExposed = scrollableY && SCROLL_MAX_Y >= scrollMinY;
 
-    this.el.classList.toggle('scroll-box--show-axis-x', this.exposesX);
-    this.el.classList.toggle('scroll-box--show-axis-y', this.exposesY);
+    this.el.classList.toggle('scroll-box--requires-x', this.scrollBarXExposed);
+    this.el.classList.toggle('scroll-box--requires-y', this.scrollBarYExposed);
 
     // Scrollbars may have non-zero thickness so in case of outset positioning
     // pixes cropped by scrollbar must be compensated.
@@ -214,8 +222,8 @@ export class GenericScrollBox extends React.Component {
     viewport.style.width = width;
     viewport.style.height = height;
 
-    let targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X)) * this.exposesX,
-        targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y)) * this.exposesY,
+    let targetX = Math.max(0, Math.min(Math.round(this.targetX), SCROLL_MAX_X)) * this.scrollBarXExposed,
+        targetY = Math.max(0, Math.min(Math.round(this.targetY), SCROLL_MAX_Y)) * this.scrollBarYExposed,
         x = targetX,
         y = targetY;
 
@@ -282,7 +290,7 @@ export class GenericScrollBox extends React.Component {
     if (this.props.nativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
       return;
     }
-    if (!this.exposesX && !this.exposesY) {
+    if (!this.scrollBarXExposed && !this.scrollBarYExposed) {
       return; // No scrolling is available.
     }
     e.stopPropagation();
@@ -296,7 +304,7 @@ export class GenericScrollBox extends React.Component {
 
   onTouchMove = e => {
     const {propagateTouchScroll} = this.props,
-          {targetX, targetY, scrollMaxX, scrollMaxY, exposesX, exposesY} = this;
+          {targetX, targetY, scrollMaxX, scrollMaxY, scrollBarXExposed, scrollBarYExposed} = this;
 
     if (!this._touchStart) {
       return;
@@ -309,11 +317,11 @@ export class GenericScrollBox extends React.Component {
         deltaX = prevTouch.x - x,
         deltaY = prevTouch.y - y;
 
-    let dx = deltaX * exposesX,
-        dy = deltaY * exposesY;
+    let dx = deltaX * scrollBarXExposed,
+        dy = deltaY * scrollBarYExposed;
     if (
-      (deltaX && !exposesX) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
-      (deltaY && !exposesY) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+      (deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
     ) {
       // Content is scrolled to its possible limit.
       if (!propagateTouchScroll) {
@@ -352,7 +360,7 @@ export class GenericScrollBox extends React.Component {
 
   onWheel = e => {
     const {wheelStepX, wheelStepY, disabled, nativeScroll, captureWheel, propagateWheelScroll, swapWheelAxes, wheelScrollDuration} = this.props,
-          {targetX, targetY, scrollMaxX, scrollMaxY, exposesX, exposesY} = this,
+          {targetX, targetY, scrollMaxX, scrollMaxY, scrollBarXExposed, scrollBarYExposed} = this,
           el = e.target;
     if (nativeScroll && !captureWheel) {
       e.preventDefault();
@@ -364,11 +372,11 @@ export class GenericScrollBox extends React.Component {
     ) {
       return;
     }
-    let dx = e.deltaX * exposesX,
-        dy = e.deltaY * exposesY;
+    let dx = e.deltaX * scrollBarXExposed,
+        dy = e.deltaY * scrollBarYExposed;
     if (
-      (e.deltaX && !exposesX) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
-      (e.deltaY && !exposesY) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+      (e.deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (e.deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
     ) {
       // Content is scrolled to its possible limit.
       if (!propagateWheelScroll) {
@@ -462,7 +470,7 @@ export class GenericScrollBox extends React.Component {
     e.stopPropagation();
 
     let track;
-    if (axis == ScrollAxes.X) {
+    if (axis == X) {
       track = this.trackX;
     } else {
       track = this.trackY;
@@ -474,7 +482,7 @@ export class GenericScrollBox extends React.Component {
       if (!this._forceSyncId || e.button != 0) {
         onDragEnd(); // Component was unmounted or button was released.
       }
-      if (axis == ScrollAxes.X) {
+      if (axis == X) {
         var x = this.scrollMaxX * (e.clientX - OFFSET_X) / this.trackMaxX;
       } else {
         var y = this.scrollMaxY * (e.clientY - OFFSET_Y) / this.trackMaxY;
@@ -496,9 +504,9 @@ export class GenericScrollBox extends React.Component {
     track.classList.add('scroll-box__track--dragged');
   };
 
-  onDragStartX = e => this.onDragStart(e, ScrollAxes.X);
+  onDragStartX = e => this.onDragStart(e, X);
 
-  onDragStartY = e => this.onDragStart(e, ScrollAxes.Y);
+  onDragStartY = e => this.onDragStart(e, Y);
 
   onFastTrack(e, axis) {
     const {disabled, fastTrack, fastTrackDuration} = this.props;
@@ -513,7 +521,7 @@ export class GenericScrollBox extends React.Component {
     switch (fastTrack) {
 
       case FastTrack.PAGING:
-        if (axis == ScrollAxes.X) {
+        if (axis == X) {
           x = this.targetX + (1 - 2 * (POINTER_X < this.handleX.offsetLeft)) * clientWidth;
         } else {
           y = this.targetY + (1 - 2 * (POINTER_Y < this.handleY.offsetTop)) * clientHeight;
@@ -521,7 +529,7 @@ export class GenericScrollBox extends React.Component {
         break;
 
       case FastTrack.GOTO:
-        if (axis == ScrollAxes.X) {
+        if (axis == X) {
           x = POINTER_X / this.trackX.clientWidth * scrollWidth - clientWidth / 2;
         } else {
           y = POINTER_Y / this.trackY.clientHeight * scrollHeight - clientHeight / 2;
@@ -533,9 +541,9 @@ export class GenericScrollBox extends React.Component {
     this.scrollTo(x, y, fastTrackDuration);
   };
 
-  onFastTrackX = e => this.onFastTrack(e, ScrollAxes.X);
+  onFastTrackX = e => this.onFastTrack(e, X);
 
-  onFastTrackY = e => this.onFastTrack(e, ScrollAxes.Y);
+  onFastTrackY = e => this.onFastTrack(e, Y);
 
   _updateTrackHoverStatus(e, track) {
     const {clientX, clientY} = e,
@@ -556,10 +564,10 @@ export class GenericScrollBox extends React.Component {
       return;
     }
     // Update track hover status only if it is actually in use.
-    if (this.exposesX) {
+    if (this.scrollBarXExposed) {
       this._updateTrackHoverStatus(e, this.trackX);
     }
-    if (this.exposesY) {
+    if (this.scrollBarYExposed) {
       this._updateTrackHoverStatus(e, this.trackY);
     }
   };
@@ -614,7 +622,7 @@ export class GenericScrollBox extends React.Component {
   }
 
   render() {
-    const {axes, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, outset, className, children, style} = this.props;
+    const {scrollableX, scrollableY, hideScrollBarX, hideScrollBarY, trackXChildren, trackYChildren, handleXChildren, handleYChildren, disabled, outset, className, children, style} = this.props;
     let classNames = ['scroll-box'];
     if (className) {
       classNames = classNames.concat(className);
@@ -625,11 +633,11 @@ export class GenericScrollBox extends React.Component {
     if (outset) {
       classNames.push('scroll-box--outset');
     }
-    if (axes.indexOf(ScrollAxes.X) > -1) {
-      classNames.push('scroll-box--has-axis-x');
+    if (scrollableX && !hideScrollBarX) {
+      classNames.push('scroll-box--allow-x');
     }
-    if (axes.indexOf(ScrollAxes.Y) > -1) {
-      classNames.push('scroll-box--has-axis-y');
+    if (scrollableY && !hideScrollBarY) {
+      classNames.push('scroll-box--allow-y');
     }
     return (
       <div style={style}

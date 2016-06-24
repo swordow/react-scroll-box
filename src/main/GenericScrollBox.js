@@ -15,6 +15,7 @@ export const FastTrack = {
 export class GenericScrollBox extends React.Component {
 
   static defaultProps = {
+    nativeScroll: false,
     className: 'scroll-box--wrapped',
     
     // Can are be scrolled in corresponding direction.
@@ -57,7 +58,8 @@ export class GenericScrollBox extends React.Component {
     wheelScrollDuration: 100,
 
     // Touch
-    propagateTouchScroll: false
+    captureTouch: true,
+    propagateTouchScroll: true
   };
 
   static propTypes = {
@@ -99,6 +101,7 @@ export class GenericScrollBox extends React.Component {
     wheelScrollDuration: number,
 
     // Touch
+    captureTouch: bool,
     propagateTouchScroll: bool,
 
     // Layout
@@ -164,9 +167,8 @@ export class GenericScrollBox extends React.Component {
   // Automatically reset to `false` then scroll animation finishes.
   _silent = false;
 
-  _touchOffsetX = 0;
-  _touchOffsetY = 0;
   _touchStart = null;
+  _touchPrev = null;
   _touchEnd = null;
 
   scrollBy(dx, dy, duration, easing, silent) {
@@ -287,75 +289,89 @@ export class GenericScrollBox extends React.Component {
   }
 
   onTouchStart = e => {
-    if (this.props.nativeScroll || this.props.disabled || e.touches.length > 1 || e.isDefaultPrevented()) {
+    const {disabled, captureTouch, propagateTouchScroll} = this.props,
+          {scrollBarXExposed, scrollBarYExposed} = this;
+    if (
+      disabled || e.isDefaultPrevented() || // Event prevented.
+      !captureTouch || // Touch events prevented.
+      e.touches.length > 1 || // Scroll only with one touch.
+      (!scrollBarXExposed && !scrollBarYExposed)
+    ) {
       return;
     }
-    if (!this.scrollBarXExposed && !this.scrollBarYExposed) {
-      return; // No scrolling is available.
+    if (!propagateTouchScroll) {
+      e.stopPropagation();
     }
-    e.stopPropagation();
-    let touch = e.touches[0],
-        x = this.viewport.scrollLeft,
-        y = this.viewport.scrollTop;
-    this._touchOffsetX = x + touch.screenX;
-    this._touchOffsetY = y + touch.screenY;
-    this._touchStart = {x, y};
+    const touch = e.touches[0],
+          {scrollLeft, scrollTop} = this.viewport;
+
+    this._touchInitialScrollLeft = scrollLeft;
+    this._touchInitialScrollTop = scrollTop;
+
+    this._touchStart = {x: touch.pageX, y: touch.pageY};
+    this._touchPrev = {...this._touchStart};
   };
 
   onTouchMove = e => {
-    const {propagateTouchScroll} = this.props,
-          {targetX, targetY, scrollMaxX, scrollMaxY, scrollBarXExposed, scrollBarYExposed} = this;
-
-    if (!this._touchStart) {
+    const {propagateTouchScroll, nativeScroll} = this.props,
+          {targetX, targetY, scrollMaxX, scrollMaxY, _touchStart, _touchEnd} = this;
+    if (!_touchStart) {
       return;
     }
-    let touch = e.touches[0],
-        x = this._touchOffsetX - touch.screenX,
-        y = this._touchOffsetY - touch.screenY;
-
-    let prevTouch = this._touchEnd || this._touchStart,
-        deltaX = prevTouch.x - x,
-        deltaY = prevTouch.y - y;
-
-    let dx = deltaX * scrollBarXExposed,
-        dy = deltaY * scrollBarYExposed;
-    if (
-      (deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
-      (deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
-    ) {
-      // Content is scrolled to its possible limit.
-      if (!propagateTouchScroll) {
-        e.preventDefault();
-      }
-      return;
-    }
-
-    if (this._touchEnd) {
-      let coords = this._touchStart;
-      this._touchStart = this._touchEnd;
-      this._touchEnd = coords;
-      coords.x = x;
-      coords.y = y;
+    const touch = e.touches[0];
+    if (_touchEnd) {
+      this._touchPrev.x = _touchEnd.x;
+      this._touchPrev.y = _touchEnd.y;
     } else {
-      this._touchEnd = {x, y};
+      this._touchEnd = {};
     }
-    this.scrollTo(x, y, 0);
+    this._touchEnd.x = touch.pageX;
+    this._touchEnd.y = touch.pageY;
+
+    const dx = this._touchPrev.x - this._touchEnd.x,
+          dy = this._touchPrev.y - this._touchEnd.y;
+    if (
+      !(
+        (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+        (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+      )
+    ) {
+      e.preventDefault();
+    }
+
+    // Content is scrolled to its possible limit.
+    if (!propagateTouchScroll) {
+      e.stopPropagation();
+    }
+    if (!nativeScroll) {
+      this.scrollTo(
+        _touchStart.x - this._touchEnd.x + this._touchInitialScrollLeft,
+        _touchStart.y - this._touchEnd.y + this._touchInitialScrollTop,
+        0
+      );
+    }
   };
 
   onTouchEnd = e => {
-    if (!this._touchEnd) {
-      return;
-    }
-    const {_touchStart, _touchEnd} = this;
-    let dt = Date.now() - this._easingBeginTimestamp,
-        dx = _touchStart.x - _touchEnd.x,
-        dy = _touchStart.y - _touchEnd.y,
-        distance = Math.sqrt(dx * dx + dy * dy),
-        velocity = distance / dt * 100;
+    // const {_touchPrev, _touchEnd} = this;
+    // if (!_touchEnd) {
+    //   return;
+    // }
+    // const {scrollLeft, scrollTop} = this.viewport;
+    //
+    // let dt = Date.now() - this._easingBeginTimestamp,
+    //     dx = _touchPrev.x - _touchEnd.x,
+    //     dy = _touchPrev.y - _touchEnd.y,
+    //     distance = Math.sqrt(dx * dx + dy * dy),
+    //     velocity = distance / dt * 100;
+    //
+    //
+    // console.log(dx, dy, dt)
 
     this._touchStart = null;
+    this._touchPrev = null;
     this._touchEnd = null;
-    this.scrollTo(_touchEnd.x - velocity * dx / distance, _touchEnd.y - velocity * dy / distance, velocity);
+    // this.scrollTo(scrollLeft - velocity * dx / distance, scrollTop - velocity * dy / distance, velocity);
   };
 
   onWheel = e => {
@@ -560,7 +576,7 @@ export class GenericScrollBox extends React.Component {
     // Do not track cursor proximity for native scroll bar, when handle is being dragged,
     // when selection is in progress or when another handle is being dragged (even on another
     // scroll box instance).
-    if (nativeScroll || disabled || (!captureHandleDrag && fastTrack == FastTrack.OFF) || e.buttons > 0) {
+    if (window.orientation || nativeScroll || disabled || (!captureHandleDrag && fastTrack == FastTrack.OFF) || e.buttons > 0) {
       return;
     }
     // Update track hover status only if it is actually in use.
@@ -584,7 +600,7 @@ export class GenericScrollBox extends React.Component {
 
     const {nativeScroll} = this.props;
     if (nativeScroll == null) {
-      if (typeof window != 'undefined' && 'orientation' in window) {
+      if (window.orientation) {
         this.el.classList.add('scroll-box--native');
       }
     } else {

@@ -47,7 +47,11 @@ class Demo extends Component {
     wheelStepY: 30,
     propagateWheelScroll: false,
     swapWheelAxes: false,
-    wheelScrollDuration: 100
+    wheelScrollDuration: 100,
+
+    // Touch
+    captureTouch: true,
+    propagateTouchScroll: true
   };
 
   onKeyPressNumbersOnly(e) {
@@ -141,7 +145,7 @@ class Demo extends Component {
 
               <fieldset className="form-group">
                 <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">hideScrollBarX</code> <code className="prop__name">hideScrollBarY</code></p>
-                <p>Hide scroll bar but allow scrolling on corresponding axis</p>
+                <p>Hide scroll bar but allow scrolling on corresponding axis.</p>
                 <div className="checkbox">
                   <label>
                     <input type="checkbox"
@@ -444,6 +448,39 @@ class Demo extends Component {
                   <div className="input-group-addon">msec</div>
                 </div>
               </fieldset>
+
+              <h3>Touch</h3>
+              <p>
+                <a className={classNames({hidden: !props.nativeScroll})}>
+                  <i className="fa fa-fw fa-warning fa--left"/>Requires custom scrollbars to be enabled
+                </a>
+              </p>
+
+              <fieldset className="form-group">
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">propagateTouchScroll</code></p>
+                <p>Propagate touch scroll event to parent if scrolling reached maximum or minimum value.</p>
+                <div className="checkbox">
+                  <label>
+                    <input type="checkbox"
+                           checked={this.state.propagateTouchScroll}
+                           onChange={e => this.setState({propagateTouchScroll: e.target.checked})}/>
+                    Propagate touch scroll
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset className="form-group">
+                <p><code className="prop__type">{'{boolean}'}</code> <code className="prop__name">captureTouch</code></p>
+                <div className="checkbox">
+                  <label>
+                    <input type="checkbox"
+                           checked={this.state.captureTouch}
+                           onChange={e => this.setState({captureTouch: e.target.checked})}/>
+                    Use touch for scrolling
+                  </label>
+                </div>
+              </fieldset>
+
             </div>
 
           </form>

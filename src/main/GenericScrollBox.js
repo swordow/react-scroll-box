@@ -390,6 +390,15 @@ export class GenericScrollBox extends React.Component {
     }
     let dx = e.deltaX * scrollBarXExposed,
         dy = e.deltaY * scrollBarYExposed;
+    // By default, Google Chrome changes scrolling orientation if shift key is pressed,
+    // so propagate this behavior to other browsers as well.
+    if (e.shiftKey && !dx) {
+      dx = dy;
+      dy = 0;
+    }
+    if (swapWheelAxes) {
+      [dx, dy] = [dy, dx];
+    }
     if (
       (e.deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
       (e.deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
@@ -399,15 +408,6 @@ export class GenericScrollBox extends React.Component {
         e.preventDefault();
       }
       return;
-    }
-    // By default, Google Chrome changes scrolling orientation if shift key is pressed,
-    // so propagate this behavior to other browsers as well.
-    if (e.shiftKey && !dx) {
-      dx = dy;
-      dy = 0;
-    }
-    if (swapWheelAxes) {
-      [dx, dy] = [dy, dx];
     }
     e.preventDefault();
     if (typeof InstallTrigger != 'undefined') {

@@ -388,20 +388,22 @@ export class GenericScrollBox extends React.Component {
     ) {
       return;
     }
-    let dx = e.deltaX * scrollBarXExposed,
-        dy = e.deltaY * scrollBarYExposed;
+    let {deltaX, deltaY} = e;
+    
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
-    if (e.shiftKey && !dx) {
-      dx = dy;
-      dy = 0;
+    if (e.shiftKey && !deltaX) {
+      deltaX = deltaY;
+      deltaY = 0;
     }
     if (swapWheelAxes) {
-      [dx, dy] = [dy, dx];
+      [deltaX, deltaY] = [deltaY, deltaX];
     }
+    let dx = deltaX * scrollBarXExposed,
+        dy = deltaY * scrollBarYExposed;
     if (
-      (e.deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
-      (e.deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
+      (deltaX && !scrollBarXExposed) || (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
+      (deltaY && !scrollBarYExposed) || (dy < 0 && !targetY) || (dy > 0 && targetY == scrollMaxY)
     ) {
       // Content is scrolled to its possible limit.
       if (!propagateWheelScroll) {

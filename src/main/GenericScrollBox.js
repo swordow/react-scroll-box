@@ -10,11 +10,11 @@ export const FastTrack = {
 };
 
 export const ScrollCause = {
-  KEYBOARD: 1,
-  HANDLE_DRAG: 2,
-  FAST_TRACK: 3,
-  WHEEL: 4,
-  TOUCH: 5
+  HANDLE_DRAG: 0,
+  MOUSE_WHEEL: 1,
+  FAST_TRACK:  2,
+  KEYBOARD:    3,
+  TOUCH:       4
 };
 
 export class GenericScrollBox extends React.Component {
@@ -591,10 +591,10 @@ export class GenericScrollBox extends React.Component {
     }
 
     if (dx) {
-      this._scrollCauseX = ScrollCause.WHEEL;
+      this._scrollCauseX = ScrollCause.MOUSE_WHEEL;
     }
     if (dy) {
-      this._scrollCauseY = ScrollCause.WHEEL;
+      this._scrollCauseY = ScrollCause.MOUSE_WHEEL;
     }
     this.scrollTo(nextTargetX, nextTargetY, wheelScrollDuration);
   };

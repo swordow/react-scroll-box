@@ -9,6 +9,14 @@ export const FastTrack = {
   OFF: null
 };
 
+export const ScrollCause = {
+  KEYBOARD: 1,
+  HANDLE_DRAG: 2,
+  FAST_TRACK: 3,
+  WHEEL: 4,
+  TOUCH: 5
+};
+
 export class GenericScrollBox extends React.Component {
 
   static propTypes = {
@@ -182,8 +190,9 @@ export class GenericScrollBox extends React.Component {
   _touchEnd = null;
 
 
-  _draggingX = false;
-  _draggingY = false;
+  _scrollCauseX = null;
+  _scrollCauseY = null;
+
 
   scrollBy(dx, dy, duration, easing, silent) {
     this.scrollTo(this.targetX + dx, this.targetY + dy, duration, easing, silent);
@@ -204,6 +213,14 @@ export class GenericScrollBox extends React.Component {
     this._easingFunction = easing;
     this._silent = Boolean(silent);
     this._forceSync();
+  }
+
+  scrollByPage(dx, dy, duration, easing, silent) {
+    this.scrollBy(dx * this.getPageWidth(), dy * this.getPageHeight(), duration, easing, silent);
+  }
+
+  scrollToPage(x, y, duration, easing, silent) {
+    this.scrollTo(x * this.getPageWidth(), y * this.getPageHeight(), duration, easing, silent);
   }
 
   getPageHeight() {
@@ -369,8 +386,20 @@ export class GenericScrollBox extends React.Component {
 
 
   onTouchStart = e => {
-    const {disabled, captureTouch, propagateTouchScroll} = this.props,
-          {scrollBarXShowed, scrollBarYShowed} = this;
+    const {
+      disabled,
+      captureTouch,
+      propagateTouchScroll
+    } = this.props;
+
+    const {
+      scrollBarXShowed,
+      scrollBarYShowed
+    } = this;
+
+
+
+
     if (
       disabled || e.isDefaultPrevented() || // Event prevented.
       !captureTouch || // Touch events prevented.
@@ -391,6 +420,10 @@ export class GenericScrollBox extends React.Component {
     this._touchStart = {x: touch.pageX, y: touch.pageY};
     this._touchPrev = {...this._touchStart};
   };
+
+
+
+
 
   onTouchMove = e => {
     const {propagateTouchScroll, nativeScroll} = this.props,
@@ -453,6 +486,7 @@ export class GenericScrollBox extends React.Component {
     this._touchEnd = null;
     // this.scrollTo(scrollLeft - velocity * dx / distance, scrollTop - velocity * dy / distance, velocity);
   };
+
 
 
 
@@ -555,6 +589,13 @@ export class GenericScrollBox extends React.Component {
       nextTargetX = scrollX + dx;
       nextTargetY = scrollY + dy;
     }
+
+    if (dx) {
+      this._scrollCauseX = ScrollCause.WHEEL;
+    }
+    if (dy) {
+      this._scrollCauseY = ScrollCause.WHEEL;
+    }
     this.scrollTo(nextTargetX, nextTargetY, wheelScrollDuration);
   };
 
@@ -586,11 +627,13 @@ export class GenericScrollBox extends React.Component {
 
       case 36: // Home
         event.preventDefault();
+        this._scrollCauseY = ScrollCause.KEYBOARD;
         this.scrollTo(undefined, 0, keyboardScrollDuration);
         break;
 
       case 35: // End
         event.preventDefault();
+        this._scrollCauseY = ScrollCause.KEYBOARD;
         this.scrollTo(undefined, this.scrollMaxY, keyboardScrollDuration);
         break;
 
@@ -605,29 +648,35 @@ export class GenericScrollBox extends React.Component {
           dx *= -1;
         }
         if (shiftKey) {
+          this._scrollCauseX = ScrollCause.KEYBOARD;
           this.scrollBy(dx, 0, keyboardScrollDuration);
         } else {
+          this._scrollCauseY = ScrollCause.KEYBOARD;
           this.scrollBy(0, dy, keyboardScrollDuration);
         }
         break;
 
       case 38: // Up
         event.preventDefault();
+        this._scrollCauseY = ScrollCause.KEYBOARD;
         this.scrollBy(0, -keyboardStepY, keyboardScrollDuration);
         break;
 
       case 40: // Down
         event.preventDefault();
+        this._scrollCauseY = ScrollCause.KEYBOARD;
         this.scrollBy(0, keyboardStepY, keyboardScrollDuration);
         break;
 
       case 37: // Left
         event.preventDefault();
+        this._scrollCauseX = ScrollCause.KEYBOARD;
         this.scrollBy(-keyboardStepX, 0, keyboardScrollDuration);
         break;
 
       case 39: // Right
         event.preventDefault();
+        this._scrollCauseX = ScrollCause.KEYBOARD;
         this.scrollBy(keyboardStepX, 0, keyboardScrollDuration);
         break;
     }
@@ -648,10 +697,10 @@ export class GenericScrollBox extends React.Component {
 
     let targetTrackElement;
     if (isHorizontal) {
-      this._draggingX = true;
+      this._scrollCauseX = ScrollCause.HANDLE_DRAG;
       targetTrackElement = this.trackXElement;
     } else {
-      this._draggingY = true;
+      this._scrollCauseY = ScrollCause.HANDLE_DRAG;
       targetTrackElement = this.trackYElement;
     }
 
@@ -661,19 +710,32 @@ export class GenericScrollBox extends React.Component {
     let onDrag = event => {
       if (this._disposed || event.button !== 0) {
         // Component was unmounted or button was released.
-        onDragEnd();
+        return onDragEnd();
       }
       if (isHorizontal) {
+        if (!this._isDraggingHandleX()) {
+          return onDragEnd();
+        }
         var nextTargetX = this.scrollMaxX * (event.clientX - offsetX) / this.trackMaxX;
       } else {
+        if (!this._isDraggingHandleY()) {
+          return onDragEnd();
+        }
         var nextTargetY = this.scrollMaxY * (event.clientY - offsetY) / this.trackMaxY;
       }
       this.scrollTo(nextTargetX, nextTargetY, 0);
     };
 
     let onDragEnd = () => {
-      this._draggingX = false;
-      this._draggingY = false;
+      if (isHorizontal) {
+        if (this._isDraggingHandleX()) {
+          this._scrollCauseX = null;
+        }
+      } else {
+        if (this._isDraggingHandleY()) {
+          this._scrollCauseY = null;
+        }
+      }
       removeEventListener('mousemove', onDrag);
       removeEventListener('mouseup', onDragEnd);
 
@@ -688,6 +750,14 @@ export class GenericScrollBox extends React.Component {
     targetTrackElement.classList.add('scroll-box__track--dragged');
   };
 
+  _isDraggingHandleX() {
+    return this._scrollCauseX === ScrollCause.HANDLE_DRAG;
+  }
+
+  _isDraggingHandleY() {
+    return this._scrollCauseY === ScrollCause.HANDLE_DRAG;
+  }
+
   _handleDragStartX = event => this._handleDragStart(event, true);
 
   _handleDragStartY = event => this._handleDragStart(event, false);
@@ -698,6 +768,8 @@ export class GenericScrollBox extends React.Component {
       fastTrack,
       fastTrackDuration
     } = this.props;
+
+    const {targetX, targetY} = this;
 
     if (disabled || event.button !== 0) {
       return; // Component is disabled or secondary mouse button is being pressed.
@@ -719,9 +791,9 @@ export class GenericScrollBox extends React.Component {
 
       case FastTrack.PAGING:
         if (isHorizontal) {
-          nextTargetX = this.targetX + (1 - 2 * (pointerX < this.handleXElement.offsetLeft)) * this.getPageWidth();
+          nextTargetX = targetX + (1 - 2 * (pointerX < this.handleXElement.offsetLeft)) * this.getPageWidth();
         } else {
-          nextTargetY = this.targetY + (1 - 2 * (pointerY < this.handleYElement.offsetTop)) * this.getPageHeight();
+          nextTargetY = targetY + (1 - 2 * (pointerY < this.handleYElement.offsetTop)) * this.getPageHeight();
         }
         break;
 
@@ -736,6 +808,11 @@ export class GenericScrollBox extends React.Component {
       default: return;
     }
 
+    if (isHorizontal) {
+      this._scrollCauseX = ScrollCause.FAST_TRACK;
+    } else {
+      this._scrollCauseY = ScrollCause.FAST_TRACK;
+    }
     this.scrollTo(nextTargetX, nextTargetY, fastTrackDuration);
   };
 

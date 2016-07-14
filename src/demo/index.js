@@ -43,8 +43,8 @@ class Demo extends Component {
 
     // Wheel
     captureWheel: true,
-    wheelStepX: 30,
-    wheelStepY: 30,
+    wheelStepX: 100,
+    wheelStepY: 100,
     propagateWheelScroll: false,
     swapWheelAxes: false,
     wheelScrollDuration: 100,

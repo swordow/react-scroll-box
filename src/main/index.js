@@ -1,2 +1,2 @@
 export {ScrollBox} from './ScrollBox';
-export {GenericScrollBox, FastTrack, ScrollCause} from './GenericScrollBox';
+export {GenericScrollBox, FastTrackMode, ScrollCause} from './GenericScrollBox';

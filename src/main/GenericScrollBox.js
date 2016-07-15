@@ -3,7 +3,7 @@ import {findDOMNode} from 'react-dom';
 
 const {element, number, bool, func, oneOf, any} = React.PropTypes;
 
-export const FastTrack = {
+export const FastTrackMode = {
   PAGING: 'paging',
   GOTO: 'goto',
   OFF: null
@@ -12,9 +12,9 @@ export const FastTrack = {
 export const ScrollCause = {
   HANDLE_DRAG: 0,
   MOUSE_WHEEL: 1,
-  FAST_TRACK:  2,
-  KEYBOARD:    3,
-  TOUCH:       4
+  FAST_TRACK: 2,
+  KEYBOARD: 3,
+  TOUCH: 4
 };
 
 export class GenericScrollBox extends React.Component {
@@ -43,12 +43,13 @@ export class GenericScrollBox extends React.Component {
 
     // Handle drag
     captureHandleDrag: bool,
+    handleDragCanBeInterrupted: bool,
 
     // Events
     onViewportScroll: func,
 
     // Fast tracking
-    fastTrack: oneOf([FastTrack.GOTO, FastTrack.PAGING, FastTrack.OFF]),
+    fastTrackMode: oneOf([FastTrackMode.GOTO, FastTrackMode.PAGING, FastTrackMode.OFF]),
     fastTrackDuration: number,
 
     // Keyboard
@@ -102,12 +103,13 @@ export class GenericScrollBox extends React.Component {
 
     // Handle drag
     captureHandleDrag: true,
+    handleDragCanBeInterrupted: true,
 
     // Events
     onViewportScroll: target => {},
 
     // Fast tracking
-    fastTrack: FastTrack.GOTO,
+    fastTrackMode: FastTrackMode.GOTO,
     fastTrackDuration: 500,
 
     // Keyboard
@@ -171,7 +173,7 @@ export class GenericScrollBox extends React.Component {
   _disposed = false;
 
   // Id of request animation frame that keeps scroll box in sync.
-  _forceSyncId = 0;
+  _forceSyncId = null;
 
   // Timestamp when scroll position started to change last time.
   _easingBeginTimestamp = 0;
@@ -204,10 +206,10 @@ export class GenericScrollBox extends React.Component {
     this._easingBeginTimestamp = Date.now();
     this.previousX = this.scrollX;
     this.previousY = this.scrollY;
-    if (!isNaN(x)) {
+    if (x != null && !isNaN(x)) {
       this.targetX = x;
     }
-    if (!isNaN(y)) {
+    if (y != null && !isNaN(y)) {
       this.targetY = y;
     }
     this._easingFunction = easing;
@@ -221,6 +223,10 @@ export class GenericScrollBox extends React.Component {
 
   scrollToPage(x, y, duration, easing, silent) {
     this.scrollTo(x * this.getPageWidth(), y * this.getPageHeight(), duration, easing, silent);
+  }
+
+  scrollToElement(element, duration, easing, silent) {
+
   }
 
   getPageHeight() {
@@ -243,16 +249,15 @@ export class GenericScrollBox extends React.Component {
   // Synchronize scrollbar positions immediately without waiting for animation frame.
   _forceSync() {
     const {
-      scrollableX,
-      scrollableY,
-      scrollMinX,
-      scrollMinY,
-      nativeScroll,
-      outset,
-      onViewportScroll
-    } = this.props;
-
-    const {
+      props: {
+        scrollableX,
+        scrollableY,
+        scrollMinX,
+        scrollMinY,
+        nativeScroll,
+        outset,
+        onViewportScroll
+      },
       handleXElement,
       handleYElement,
       viewportElement,
@@ -367,17 +372,6 @@ export class GenericScrollBox extends React.Component {
     }
   }
 
-  _requestForceSync = () => {
-    if (window.cancelAnimationFrame) {
-      this._forceSyncId = requestAnimationFrame(this._requestForceSync);
-    } else {
-      this._forceSyncId = setTimeout(this._requestForceSync, 1000 / 30);
-    }
-    this._forceSync();
-  };
-
-
-
 
 
 
@@ -387,12 +381,11 @@ export class GenericScrollBox extends React.Component {
 
   onTouchStart = e => {
     const {
-      disabled,
-      captureTouch,
-      propagateTouchScroll
-    } = this.props;
-
-    const {
+      props: {
+        disabled,
+        captureTouch,
+        propagateTouchScroll
+      },
       scrollBarXShowed,
       scrollBarYShowed
     } = this;
@@ -493,22 +486,36 @@ export class GenericScrollBox extends React.Component {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   _handleWheel = event => {
     let {target, deltaMode, deltaX, deltaY, shiftKey} = event;
 
     const {
-      wheelStepX,
-      wheelStepY,
-      disabled,
-      nativeScroll,
-      captureWheel,
-      lineHeight,
-      propagateWheelScroll,
-      swapWheelAxes,
-      wheelScrollDuration
-    } = this.props;
-
-    const {
+      props: {
+        wheelStepX,
+        wheelStepY,
+        disabled,
+        nativeScroll,
+        captureWheel,
+        lineHeight,
+        propagateWheelScroll,
+        swapWheelAxes,
+        wheelScrollDuration
+      },
       targetX,
       targetY,
       scrollX,
@@ -518,6 +525,7 @@ export class GenericScrollBox extends React.Component {
       scrollBarXShowed,
       scrollBarYShowed,
       viewportElement,
+
       _easingBeginTimestamp
     } = this;
 
@@ -527,14 +535,14 @@ export class GenericScrollBox extends React.Component {
     if (disabled || event.isDefaultPrevented()) {
       return;
     }
-    if (target !== viewportElement && target.tagName === 'TEXTAREA') {
+    if (target !== viewportElement && target.tagName == 'TEXTAREA') {
       // Nested textarea is focused and its is not a viewport.
       return;
     }
 
     // By default, Google Chrome changes scrolling orientation if shift key is pressed,
     // so propagate this behavior to other browsers as well.
-    if (shiftKey && deltaX === 0) {
+    if (shiftKey && deltaX == 0) {
       deltaX = deltaY;
       deltaY = 0;
     }
@@ -580,8 +588,8 @@ export class GenericScrollBox extends React.Component {
     dx *= wheelStepX / 100;
     dy *= wheelStepY / 100;
 
-    let nextTargetX = targetX + dx;
-    let nextTargetY = targetY + dy;
+    let nextTargetX = targetX + dx,
+        nextTargetY = targetY + dy;
 
     // Prevent jumping to target position when animated scrolling is in progress,
     // but preserve scroll speed when mouse wheel events arrive frequently.
@@ -599,12 +607,9 @@ export class GenericScrollBox extends React.Component {
     this.scrollTo(nextTargetX, nextTargetY, wheelScrollDuration);
   };
 
+
   _handleKeyDown = event => {
-    const {
-      target: {tagName},
-      keyCode,
-      shiftKey
-    } = event;
+    const {target: {tagName}, keyCode, shiftKey} = event;
 
     const {
       disabled,
@@ -618,7 +623,7 @@ export class GenericScrollBox extends React.Component {
       return;
     }
 
-    if (tagName === 'TEXTAREA' || tagName == 'INPUT') {
+    if (tagName == 'TEXTAREA' || tagName == 'INPUT') {
       // Do not handle any keyboard events when text-related controls are focused.
       return;
     }
@@ -682,96 +687,103 @@ export class GenericScrollBox extends React.Component {
     }
   };
 
-  _handleDragStart(event, isHorizontal) {
-    const {
-      disabled,
-      captureHandleDrag
-    } = this.props;
 
-    if (disabled || !captureHandleDrag || event.button !== 0) {
+  _handleDragStart(event, isHorizontal) {
+    const {disabled, captureHandleDrag} = this.props;
+
+    // Handle can be dragged with left mouse button only.
+    if (disabled || !captureHandleDrag || event.button != 0) {
       return;
     }
 
     event.preventDefault();
     event.stopPropagation();
 
-    let targetTrackElement;
+    let trackElement;
     if (isHorizontal) {
       this._scrollCauseX = ScrollCause.HANDLE_DRAG;
-      targetTrackElement = this.trackXElement;
+      trackElement = this.trackXElement;
     } else {
       this._scrollCauseY = ScrollCause.HANDLE_DRAG;
-      targetTrackElement = this.trackYElement;
+      trackElement = this.trackYElement;
     }
 
-    const offsetX = event.clientX - this.handleXElement.offsetLeft;
-    const offsetY = event.clientY - this.handleYElement.offsetTop;
+    const offsetX = event.clientX - this.handleXElement.offsetLeft,
+          offsetY = event.clientY - this.handleYElement.offsetTop;
 
-    let onDrag = event => {
-      if (this._disposed || event.button !== 0) {
-        // Component was unmounted or button was released.
-        return onDragEnd();
+    const handleDrag = event => {
+
+      // Detect that other scroll event has interrupted handle drag.
+      if (this.props.handleDragCanBeInterrupted &&
+        (isHorizontal
+            ? this._scrollCauseX != ScrollCause.HANDLE_DRAG
+            : this._scrollCauseY != ScrollCause.HANDLE_DRAG)
+      ) {
+        handleDragInterruption(event);
+        return;
       }
+
+      // Component was unmounted or button was released.
+      if (this._disposed || event.button != 0) {
+        handleDragEnd(event);
+        return;
+      }
+
       if (isHorizontal) {
-        if (!this._isDraggingHandleX()) {
-          return onDragEnd();
-        }
         var nextTargetX = this.scrollMaxX * (event.clientX - offsetX) / this.trackMaxX;
       } else {
-        if (!this._isDraggingHandleY()) {
-          return onDragEnd();
-        }
         var nextTargetY = this.scrollMaxY * (event.clientY - offsetY) / this.trackMaxY;
       }
       this.scrollTo(nextTargetX, nextTargetY, 0);
     };
 
-    let onDragEnd = () => {
+    const handleDragInterruption = event => {
+      disposeHandleDrag(event);
+    };
+
+    const handleDragEnd = event => {
       if (isHorizontal) {
-        if (this._isDraggingHandleX()) {
-          this._scrollCauseX = null;
-        }
+        this._scrollCauseX = null;
       } else {
-        if (this._isDraggingHandleY()) {
-          this._scrollCauseY = null;
-        }
+        this._scrollCauseY = null;
       }
-      removeEventListener('mousemove', onDrag);
-      removeEventListener('mouseup', onDragEnd);
+      disposeHandleDrag(event);
+    };
+
+    const disposeHandleDrag = () => {
+      removeEventListener('mousemove', handleDrag);
+      removeEventListener('mouseup', handleDragEnd);
 
       if (!this._disposed) {
-        targetTrackElement.classList.remove('scroll-box__track--dragged');
+        trackElement.classList.remove('scroll-box__track--dragged');
       }
     };
 
-    addEventListener('mousemove', onDrag);
-    addEventListener('mouseup', onDragEnd);
+    addEventListener('mousemove', handleDrag);
+    addEventListener('mouseup', handleDragEnd);
 
-    targetTrackElement.classList.add('scroll-box__track--dragged');
+    trackElement.classList.add('scroll-box__track--dragged');
   };
 
-  _isDraggingHandleX() {
-    return this._scrollCauseX === ScrollCause.HANDLE_DRAG;
-  }
-
-  _isDraggingHandleY() {
-    return this._scrollCauseY === ScrollCause.HANDLE_DRAG;
-  }
 
   _handleDragStartX = event => this._handleDragStart(event, true);
 
+
   _handleDragStartY = event => this._handleDragStart(event, false);
+
 
   _handleFastTrack(event, isHorizontal) {
     const {
-      disabled,
-      fastTrack,
-      fastTrackDuration
-    } = this.props;
+      props: {
+        disabled,
+        fastTrackMode,
+        fastTrackDuration
+      },
+      targetX,
+      targetY
+    } = this;
 
-    const {targetX, targetY} = this;
-
-    if (disabled || event.button !== 0) {
+    if (disabled || event.button != 0) {
       return; // Component is disabled or secondary mouse button is being pressed.
     }
 
@@ -782,14 +794,14 @@ export class GenericScrollBox extends React.Component {
       scrollHeight
     } = this.viewportElement;
 
-    const pointerX = event.clientX - this.trackXElement.getBoundingClientRect().left;
-    const pointerY = event.clientY - this.trackYElement.getBoundingClientRect().top;
+    const pointerX = event.clientX - this.trackXElement.getBoundingClientRect().left,
+          pointerY = event.clientY - this.trackYElement.getBoundingClientRect().top;
 
     let nextTargetX, nextTargetY;
 
-    switch (fastTrack) {
+    switch (fastTrackMode) {
 
-      case FastTrack.PAGING:
+      case FastTrackMode.PAGING:
         if (isHorizontal) {
           nextTargetX = targetX + (1 - 2 * (pointerX < this.handleXElement.offsetLeft)) * this.getPageWidth();
         } else {
@@ -797,7 +809,7 @@ export class GenericScrollBox extends React.Component {
         }
         break;
 
-      case FastTrack.GOTO:
+      case FastTrackMode.GOTO:
         if (isHorizontal) {
           nextTargetX = pointerX / this.trackXElement.clientWidth * scrollWidth - clientWidth / 2;
         } else {
@@ -816,9 +828,12 @@ export class GenericScrollBox extends React.Component {
     this.scrollTo(nextTargetX, nextTargetY, fastTrackDuration);
   };
 
+
   _handleFastTrackX = event => this._handleFastTrack(event, true);
 
+
   _handleFastTrackY = event => this._handleFastTrack(event, false);
+
 
   _updateTrackHoverStatus(event, trackElement, forceStatus) {
     let status = forceStatus;
@@ -827,61 +842,72 @@ export class GenericScrollBox extends React.Component {
       const {clientX, clientY} = event,
             {hoverProximity} = this.props,
             {width, left, top, height} = trackElement.getBoundingClientRect();
-      status = (
-        clientY - height - top < hoverProximity && top  - clientY < hoverProximity &&
-        clientX - width - left < hoverProximity && left - clientX < hoverProximity
-      );
+      status =
+        hoverProximity > clientY - height - top &&
+        hoverProximity > clientX - width - left &&
+        hoverProximity > left - clientX &&
+        hoverProximity > top  - clientY;
     }
     trackElement.classList.toggle('scroll-box__track--hover', status);
   }
 
+
   _handleCursorApproachingTrack = event => {
     const {
-      disabled,
-      nativeScroll,
-      captureHandleDrag,
-      fastTrack
-    } = this.props;
+      props: {
+        disabled,
+        nativeScroll,
+        captureHandleDrag,
+        fastTrackMode
+      },
+      trackXElement,
+      trackYElement
+    } = this;
 
-    const {trackXElement, trackYElement} = this;
-
-    if (window.orientation || nativeScroll || disabled || (!captureHandleDrag && fastTrack == FastTrack.OFF)) {
+    if (window.orientation || nativeScroll || disabled || (!captureHandleDrag && fastTrackMode == FastTrackMode.OFF)) {
       return;
     }
 
     if (event.buttons > 0) {
-      // Remove hover status mouse with pressed button is being dragged
-      // but no handle dragging is in progress.
-      if (!this._draggingX) {
-        this._updateTrackHoverStatus(event, trackXElement, false);
+      if (this._scrollCauseX != ScrollCause.HANDLE_DRAG) {
+        var forceStatusX = false;
       }
-      if (!this._draggingY) {
-        this._updateTrackHoverStatus(event, trackYElement, false);
+      if (this._scrollCauseY != ScrollCause.HANDLE_DRAG) {
+        var forceStatusY = false;
       }
-      return;
     }
 
     // Update track hover status only if it is actually in use.
     if (this.scrollBarXShowed) {
-      this._updateTrackHoverStatus(event, trackXElement);
+      this._updateTrackHoverStatus(event, trackXElement, forceStatusX);
     }
     if (this.scrollBarYShowed) {
-      this._updateTrackHoverStatus(event, trackYElement);
+      this._updateTrackHoverStatus(event, trackYElement, forceStatusY);
     }
   };
 
-  _updateReferences() {
+
+  _componentUpdate() {
     this._rootElement = findDOMNode(this);
     this.viewportElement = this._rootElement.firstChild;
 
-    const {trackX, trackY, handleX, handleY} = this.refs;
+    const {
+      refs: {
+        trackX,
+        trackY,
+        handleX,
+        handleY
+      },
+      props: {
+        nativeScroll
+      }
+    } = this;
+
     this.trackXElement  = findDOMNode(trackX);
     this.trackYElement  = findDOMNode(trackY);
     this.handleXElement = findDOMNode(handleX);
     this.handleYElement = findDOMNode(handleY);
 
-    // Detect native scroll status.
-    const {nativeScroll} = this.props;
     if (nativeScroll == null) {
       if (window.orientation) {
         this._rootElement.classList.add('scroll-box--native');
@@ -891,16 +917,28 @@ export class GenericScrollBox extends React.Component {
     }
   }
 
+
   componentDidMount() {
-    this._updateReferences();
-    this._requestForceSync();
+    const requestForceSync = () => {
+      if (window.cancelAnimationFrame) {
+        this._forceSyncId = requestAnimationFrame(requestForceSync);
+      } else {
+        this._forceSyncId = setTimeout(requestForceSync, 1000 / 30);
+      }
+      this._forceSync();
+    };
+
+    this._componentUpdate();
+    requestForceSync();
     addEventListener('mousemove', this._handleCursorApproachingTrack);
   }
 
+
   componentDidUpdate() {
-    this._updateReferences();
+    this._componentUpdate();
     this._forceSync();
   }
+
 
   componentWillUnmount() {
     if (window.cancelAnimationFrame) {
@@ -908,9 +946,9 @@ export class GenericScrollBox extends React.Component {
     } else {
       clearTimeout(this._forceSyncId);
     }
-    this._forceSyncId = undefined;
     removeEventListener('mousemove', this._handleCursorApproachingTrack);
   }
+
 
   render() {
     const {

@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import './index.less';
 import packageJson from '../../package.json';
-import {GenericScrollBox, FastTrack} from '../main/GenericScrollBox';
+import {GenericScrollBox, FastTrackMode} from '../main/GenericScrollBox';
 
 function toPositiveInteger(val) {
   return Math.max(0, val / 1);
@@ -32,7 +32,7 @@ class Demo extends Component {
     captureHandleDrag: true,
 
     // Fast tracking
-    fastTrack: FastTrack.GOTO,
+    fastTrack: FastTrackMode.GOTO,
     fastTrackDuration: 500,
 
     // Keyboard
@@ -298,16 +298,16 @@ class Demo extends Component {
               </p>
 
               <fieldset className={classNames('form-group', {'form-group--disabled': props.nativeScroll})}>
-                <p><a name="fast-track"/><code className="prop__type">{'{FastTrack}'}</code> <code className="prop__name">fastTrack</code></p>
+                <p><a name="fast-track"/><code className="prop__type">{'{FastTrackMode}'}</code> <code className="prop__name">fastTrack</code></p>
                 <p>Defines expected behavior when user clicks on scroll track.</p>
                 <div className="radio">
                   <label>
                     <input type="radio"
                            name="fast-track"
                            disabled={props.nativeScroll}
-                           checked={this.state.fastTrack === FastTrack.PAGING}
-                           onChange={e => this.setState({fastTrack: FastTrack.PAGING})}/>
-                    <code>FastTrack.PAGING</code>
+                           checked={this.state.fastTrack === FastTrackMode.PAGING}
+                           onChange={e => this.setState({fastTrack: FastTrackMode.PAGING})}/>
+                    <code>FastTrackMode.PAGING</code>
                     <p><small>Content is scrolled by one page.</small></p>
                   </label>
                 </div>
@@ -316,9 +316,9 @@ class Demo extends Component {
                     <input type="radio"
                            name="fast-track"
                            disabled={props.nativeScroll}
-                           checked={this.state.fastTrack === FastTrack.GOTO}
-                           onChange={e => this.setState({fastTrack: FastTrack.GOTO})}/>
-                    <code>FastTrack.GOTO</code>
+                           checked={this.state.fastTrack === FastTrackMode.GOTO}
+                           onChange={e => this.setState({fastTrack: FastTrackMode.GOTO})}/>
+                    <code>FastTrackMode.GOTO</code>
                     <p><small>Content is scrolled directly to the corresponding position.</small></p>
                   </label>
                 </div>
@@ -327,9 +327,9 @@ class Demo extends Component {
                     <input type="radio"
                            name="fast-track"
                            disabled={props.nativeScroll}
-                           checked={this.state.fastTrack === FastTrack.OFF}
-                           onChange={e => this.setState({fastTrack: FastTrack.OFF})}/>
-                    <code>FastTrack.OFF</code>
+                           checked={this.state.fastTrack === FastTrackMode.OFF}
+                           onChange={e => this.setState({fastTrack: FastTrackMode.OFF})}/>
+                    <code>FastTrackMode.OFF</code>
                     <p><small>Prevent fast tracking.</small></p>
                   </label>
                 </div>

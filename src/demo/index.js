@@ -33,7 +33,7 @@ class Demo extends Component {
 
     // Fast tracking
     fastTrack: FastTrackMode.GOTO,
-    fastTrackDuration: 500,
+    fastTrackDuration: 5000,
 
     // Keyboard
     captureKeyboard: true,
@@ -83,6 +83,18 @@ class Demo extends Component {
               </div>
             </div>
           </GenericScrollBox>
+
+
+
+
+
+
+
+          <GenericScrollBox x={{prohibit: false, outset: false, hidden: false, min: 0}}>
+            FOO
+          </GenericScrollBox>
+
+
 
         </div>
         <div className="row">

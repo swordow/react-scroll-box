@@ -621,6 +621,13 @@ export class GenericScrollBox extends React.Component {
         if (tickY == _tickY && !nextScrollingY && _scrollingY) {
           onScrollEndY(this);
         }
+
+        if (tickX == _tickX && _causeX != ScrollCause.TOUCH | _causeX != ScrollCause.HANDLE_DRAG) {
+          _causeX = null;
+        }
+        if (tickY == _tickY && _causeY != ScrollCause.TOUCH | _causeY != ScrollCause.HANDLE_DRAG) {
+          _causeY = null;
+        }
       }
 
       if (dx && tickX == _tickX) {

@@ -4,7 +4,7 @@ import {findDOMNode} from 'react-dom';
 const {element, number, bool, func, oneOf, any, object, node} = React.PropTypes;
 
 function isCoordinate(value) {
-  return !isNaN(value);
+  return value != null && !isNaN(value);
 }
 
 export const FastTrackMode = {
@@ -446,6 +446,31 @@ export class GenericScrollBox extends React.Component {
     this.getPageWidth = () => _viewport.clientWidth;
 
     this.getPageHeight = () => _viewport.clientHeight;
+
+    Object.defineProperties(this, {
+      targetX: {
+        get: () => _targetX,
+        set: x => this.scrollToX(x)
+      },
+      targetY: {
+        get: () => _targetY,
+        set: y => this.scrollToY(y)
+      },
+      scrollX: {
+        get: () => _scrollX,
+        set: x => this.scrollToX(x)
+      },
+      scrollY: {
+        get: () => _scrollY,
+        set: y => this.scrollToY(y)
+      },
+      scrollMaxX: {
+        get: () => _scrollMaxX
+      },
+      scrollMaxY: {
+        get: () => _scrollMaxY
+      },
+    });
 
     const propagateChanges = () => {
       const {

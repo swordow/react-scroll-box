@@ -17,13 +17,12 @@ export const ScrollCause = {
   MOUSE_WHEEL: 1,
   FAST_TRACK: 2,
   KEYBOARD: 3,
-  TOUCH: 4,
-  DEFAULT: 5
+  TOUCH: 4
 };
 
-const FastTrackModeShape = oneOf([FastTrackMode.GOTO, FastTrackMode.PAGING]);
+export const FastTrackModeShape = oneOf([FastTrackMode.GOTO, FastTrackMode.PAGING]);
 
-function easeQuadOut(percent, elapsed, min, max, duration) {
+export function easeQuadOut(percent, elapsed, min, max, duration) {
   percent -= 1;
   return min + max * Math.sqrt(1 - Math.pow(percent, 2));
 }
@@ -83,7 +82,7 @@ export class GenericScrollBox extends React.Component {
     // Handle drag
     captureHandleDragX: bool,
     captureHandleDragY: bool,
-    handleDragCanBeInterrupted: bool,
+    permitHandleDragInterruption: bool,
 
     // Fast tracking occurs when user clicks on scroll track.
     captureFastTrackX: bool,
@@ -164,7 +163,7 @@ export class GenericScrollBox extends React.Component {
     // Handle drag
     captureHandleDragX: true,
     captureHandleDragY: true,
-    handleDragCanBeInterrupted: false,
+    permitHandleDragInterruption: true,
 
     // Fast track
     captureFastTrackX: true,
@@ -796,7 +795,7 @@ export class GenericScrollBox extends React.Component {
           disabled,
           captureHandleDragX,
           captureHandleDragY,
-          handleDragCanBeInterrupted
+          permitHandleDragInterruption
       } = this.props;
 
       // Handle can be dragged with left mouse button only.
@@ -820,7 +819,7 @@ export class GenericScrollBox extends React.Component {
             offsetY = event.clientY - _handleY.offsetTop;
 
       const handleDrag = event => {
-        if (!_root | (isHorizontal ? _causeX : _causeY) != ScrollCause.HANDLE_DRAG | event.button) {
+        if (!_root | event.button | permitHandleDragInterruption && (isHorizontal ? _causeX : _causeY) != ScrollCause.HANDLE_DRAG) {
           stopDrag();
           return;
         }
@@ -903,12 +902,16 @@ export class GenericScrollBox extends React.Component {
 
       let dx = deltaX * _requiresScrollBarX,
           dy = deltaY * _requiresScrollBarY;
-      if (
-          (deltaX && !_requiresScrollBarX) || (dx < 0 && !_targetX) || (dx > 0 && _targetX == _scrollMaxX) ||
-          (deltaY && !_requiresScrollBarY) || (dy < 0 && !_targetY) || (dy > 0 && _targetY == _scrollMaxY)
-      ) {
+
+      if (deltaX && !_requiresScrollBarX | dx < 0 && !_targetX | dx > 0 && _targetX == _scrollMaxX) {
         // Content is scrolled to its possible limit.
-        if (!propagateWheelScroll) {
+        if (!propagateWheelScrollX) {
+          event.preventDefault();
+        }
+        return;
+      }
+      if (deltaY && !_requiresScrollBarY | dy < 0 && !_targetY | dy > 0 && _targetY == _scrollMaxY) {
+        if (!propagateWheelScrollY) {
           event.preventDefault();
         }
         return;
@@ -941,18 +944,21 @@ export class GenericScrollBox extends React.Component {
 
       // Prevent jumping to target position when animated scrolling is in progress,
       // but preserve scroll speed when mouse wheel events arrive frequently.
-      if (Date.now() - _easingBeginTimestamp > wheelScrollDuration) {
+      if (Date.now() - _timestampX > wheelScrollDurationX) {
         nextTargetX = _scrollX + dx;
+      }
+      if (Date.now() - _timestampX > wheelScrollDurationY) {
         nextTargetY = _scrollY + dy;
       }
 
       if (dx) {
-        this.scrollCauseX = ScrollCause.MOUSE_WHEEL;
+        _causeX = ScrollCause.MOUSE_WHEEL;
+        this.scrollToX(nextTargetX, {duration: wheelScrollDurationX});
       }
       if (dy) {
-        this.scrollCauseY = ScrollCause.MOUSE_WHEEL;
+        _causeY = ScrollCause.MOUSE_WHEEL;
+        this.scrollToY(nextTargetY, {duration: wheelScrollDurationY});
       }
-      this.scrollTo(nextTargetX, nextTargetY, wheelScrollDuration);
     };
 
     const updateTrackHoverStatus = (event, track, proximity, status) => {
@@ -1005,23 +1011,20 @@ export class GenericScrollBox extends React.Component {
       const {target, touches} = event;
 
       const {
-          props: {
-              disabled,
-              clientScrollBars,
-              captureTouch
-          },
-          scrollX,
-          scrollY,
-          viewportElement
-      } = this;
+          disabled,
+          clientScrollBars,
+          captureTouch,
+          propagateTouchScrollX,
+          propagateTouchScrollY,
+      } = this.props;
 
       if (clientScrollBars && !captureTouch) {
         event.preventDefault();
       }
-      if (clientScrollBars || disabled || touches.length > 1 || event.isDefaultPrevented()) {
+      if (clientScrollBars | disabled | touches.length > 1 | event.isDefaultPrevented()) {
         return;
       }
-      if (target != viewportElement && target.tagName == 'TEXTAREA') {
+      if (target != _viewport && target.tagName == 'TEXTAREA') {
         // Nested textarea is focused and its is not a viewport.
         return;
       }
@@ -1037,7 +1040,7 @@ export class GenericScrollBox extends React.Component {
         const {targetX, targetY, scrollMaxX, scrollMaxY} = this;
         const {clientX, clientY} = event.touches[0];
         const dx = initialClientX - clientX,
-            dy = initialClientY - clientY;
+              dy = initialClientY - clientY;
 
         if (
             (dx < 0 && !targetX) || (dx > 0 && targetX == scrollMaxX) ||
@@ -1051,7 +1054,7 @@ export class GenericScrollBox extends React.Component {
 
         scrolled = true;
         event.preventDefault();
-        this.scrollTo(scrollX + dx, scrollY + dy);
+        this.scrollTo({x: _scrollX + dx, y: _scrollY + dy});
       };
 
       const handleTouchEnd = event => {

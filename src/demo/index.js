@@ -12,7 +12,45 @@ function toPositiveInteger(val) {
   return Math.max(0, val / 1);
 }
 
-class Demo extends Component {
+
+class Demo extends React.Component {
+
+  handleClick = () => {
+    // this.refs.genericScrollBox.scrollByY(100, {duration: 3000});
+  };
+
+  render() {
+    return (
+        <div onClick={this.handleClick}>
+          <GenericScrollBox ref="genericScrollBox" style={{border: 'solid 1px red', height: '100px', width: '100px'}} className="scroll-box--wrapped">
+            <div className="scroll-box__viewport">
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO <br/>
+              FOOO
+            </div>
+          </GenericScrollBox>
+        </div>
+    );
+  }
+}
+
+
+class Demo_ extends Component {
 
   state = {
     nativeScroll: false,

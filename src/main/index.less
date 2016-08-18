@@ -35,7 +35,7 @@
 
   &--disabled {
     > .@{scroll-box}__viewport {
-      // Hide native scrollbars.
+      // Hide client scrollbars.
       overflow: hidden !important;
     }
     > .@{scroll-box}__track {
@@ -49,13 +49,13 @@
     .scroll-box-wrap();
   }
 
-  // Used if fallback to native system scrolling should occur.
-  &--native {
+  // Used if fallback to client system scrolling should occur.
+  &--client-scroll-bars {
 
-    &.@{scroll-box}--allow-y.@{scroll-box}--requires-y > .@{scroll-box}__viewport {
+    &.@{scroll-box}--enable-y.@{scroll-box}--requires-y > .@{scroll-box}__viewport {
       overflow-y: auto;
     }
-    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x > .@{scroll-box}__viewport {
+    &.@{scroll-box}--enable-x.@{scroll-box}--requires-x > .@{scroll-box}__viewport {
       overflow-x: auto;
     }
     > .@{scroll-box}__viewport {
@@ -63,18 +63,18 @@
     }
   }
 
-  &:not(.@{scroll-box}--native) {
-    &.@{scroll-box}--allow-y.@{scroll-box}--requires-y > .@{scroll-box}__track--y {
+  &:not(.@{scroll-box}--client-scroll-bars) {
+    &.@{scroll-box}--enable-y.@{scroll-box}--requires-y > .@{scroll-box}__track--y {
       visibility: visible;
     }
-    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x > .@{scroll-box}__track--x {
+    &.@{scroll-box}--enable-x.@{scroll-box}--requires-x > .@{scroll-box}__track--x {
       visibility: visible;
     }
 
-    // Both non-native scrollbars are visible and they are inside
+    // Both non-client scrollbars are visible and they are inside
     // scrollable are, we should prevent their intersection in the
     // shared corner.
-    &.@{scroll-box}--allow-x.@{scroll-box}--requires-x.@{scroll-box}--allow-y.@{scroll-box}--requires-y:not(.@{scroll-box}--outset) {
+    &.@{scroll-box}--enable-x.@{scroll-box}--requires-x.@{scroll-box}--enable-y.@{scroll-box}--requires-y:not(.@{scroll-box}--outset) {
       > .@{scroll-box}__track {
         &--y {
           margin-bottom: (2 * @scroll-bar-y-bottom + @scroll-bar-x-height);

@@ -130,17 +130,17 @@ export class GenericScrollBox extends React.Component {
 
     disabled: false,
 
-    onScroll: (target, dx, dy) => {},
-    onScrollX: (target, dx) => {},
-    onScrollY: (target, dy) => {},
+    onScroll: (target, dx, dy, causeX, causeY) => {},
+    onScrollX: (target, dx, causeX) => {},
+    onScrollY: (target, dy, causeY) => {},
 
-    onScrollStart: target => {},
-    onScrollStartX: target => {},
-    onScrollStartY: target => {},
+    onScrollStart: (target, causeX, causeY) => {},
+    onScrollStartX: (target, causeX) => {},
+    onScrollStartY: (target, causeY) => {},
 
-    onScrollEnd: target => {},
-    onScrollEndX: target => {},
-    onScrollEndY: target => {},
+    onScrollEnd: (target, causeX, causeY) => {},
+    onScrollEndX: (target, causeX) => {},
+    onScrollEndY: (target, causeY) => {},
 
     disableScrollX: false,
     disableScrollY: false,
@@ -468,7 +468,7 @@ export class GenericScrollBox extends React.Component {
       },
       scrollMaxY: {
         get: () => _scrollMaxY
-      },
+      }
     });
 
     const propagateChanges = () => {
@@ -586,26 +586,26 @@ export class GenericScrollBox extends React.Component {
             (nextScrollingX | nextScrollingY | clientScrollingX | clientScrollingY) &&
             !_scrollingX && !_scrollingY
         ) {
-          onScrollStart(this);
+          onScrollStart(this, _causeX, _causeY);
         }
         if (tickX == _tickX && nextScrollingX && !_scrollingX) {
-          onScrollStartX(this);
+          onScrollStartX(this, _causeX);
         }
         if (tickY == _tickY && nextScrollingY && !_scrollingY) {
-          onScrollStartY(this);
+          onScrollStartY(this, _causeY);
         }
 
         if (
             tickX == _tickX && tickY == _tickY &&
             (dx | dy)
         ) {
-          onScroll(this, dx, dy);
+          onScroll(this, dx, dy, _causeX, _causeY);
         }
         if (tickX == _tickX && dx) {
-          onScrollX(this, dx);
+          onScrollX(this, dx, _causeX);
         }
         if (tickY == _tickY && dy) {
-          onScrollY(this, dy);
+          onScrollY(this, dy, _causeY);
         }
 
         if (
@@ -613,13 +613,13 @@ export class GenericScrollBox extends React.Component {
             !nextScrollingX && !nextScrollingY &&
             (_scrollingX | _scrollingY | clientScrollingX | clientScrollingY)
         ) {
-          onScrollEnd(this);
+          onScrollEnd(this, _causeX, _causeY);
         }
         if (tickX == _tickX && !nextScrollingX && _scrollingX) {
-          onScrollEndX(this);
+          onScrollEndX(this, _causeX);
         }
         if (tickY == _tickY && !nextScrollingY && _scrollingY) {
-          onScrollEndY(this);
+          onScrollEndY(this, _causeY);
         }
 
         if (tickX == _tickX && _causeX != ScrollCause.TOUCH | _causeX != ScrollCause.HANDLE_DRAG) {

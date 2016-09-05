@@ -43,7 +43,7 @@ Any help with improvement of this component would be greatly appreciated.
 
 ## `ScrollBox`
 
-In most cases you should use `ScrollBox` to create a scrollable area, but in cause you need more control over viewport use [`GenericScrollBox`](#genericscrollbox).
+In most cases you should use `ScrollBox` to create a scrollable area, but in case you need more control over viewport use [`GenericScrollBox`](#genericscrollbox).
 
 By default, `ScrollBox` has no decoration and behaves as a regular `div` container. Specify height for scroll box in your styles, otherwise container would contract to zero height.
 

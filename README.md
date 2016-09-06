@@ -2,6 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/react-scroll-box.svg)](https://www.npmjs.com/package/react-scroll-box)
 
+_Note_ I'm currently working on `resct-scroll-box@0.3`. It would contain [50+ configurable paramters](https://github.com/smikhalevski/react-scroll-box/blob/master/src/main/GenericScrollBox.js#L32) and would provide fine grained tracking of scrolling events and [their causes](https://github.com/smikhalevski/react-scroll-box/blob/master/src/main/GenericScrollBox.js#L15).
+
 Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+.
 
 Requires [`classList` polyfill](https://www.npmjs.com/package/classlist-polyfill) to work properly in IE9+.

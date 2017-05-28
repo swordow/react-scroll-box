@@ -270,6 +270,9 @@ export class GenericScrollBox extends React.Component {
 
       requestPropagateChanges();
       addEventListener('mousemove', handleTrackHover);
+
+      // Fix https://github.com/facebook/react/issues/8968
+      _root.addEventListener('touchstart', handleTouchStart, {passive: false});
     };
 
     this.componentWillUnmount = () => {
@@ -339,7 +342,6 @@ export class GenericScrollBox extends React.Component {
                className={classNames.join(' ')}
                onWheel={handleWheel}
                onKeyDown={handleKeyDown}
-               onTouchStart={handleTouchStart}
                tabIndex="-1">
             {children}
             <div className="scroll-box__track scroll-box__track--x"
@@ -676,8 +678,8 @@ export class GenericScrollBox extends React.Component {
         return;
       }
 
-      const optionsX = {duration: keyboardScrollDurationX};
-      const optionsY = {duration: keyboardScrollDurationY};
+      const optionsX = {duration: keyboardScrollDurationX},
+            optionsY = {duration: keyboardScrollDurationY};
 
       switch (keyCode) {
 
@@ -899,10 +901,7 @@ export class GenericScrollBox extends React.Component {
       if (nativeScrollBars && !captureWheel) {
         event.preventDefault();
       }
-      if (disabled || event.isDefaultPrevented()) {
-        return;
-      }
-      if (target !== _viewport && isTargetIgnored(target)) {
+      if (disabled || nativeScrollBars || (target !== _viewport && isTargetIgnored(target))) {
         return;
       }
 
@@ -1040,11 +1039,7 @@ export class GenericScrollBox extends React.Component {
       if (nativeScrollBars && !captureTouch) {
         event.preventDefault();
       }
-      if (nativeScrollBars | disabled | touches.length > 1 | event.isDefaultPrevented()) {
-        return;
-      }
-      if (target !== _viewport && isTargetIgnored(target)) {
-        // Nested textarea is focused and its is not a viewport.
+      if (disabled || nativeScrollBars || touches.length > 1 || (target !== _viewport && isTargetIgnored(target))) {
         return;
       }
 
@@ -1053,32 +1048,32 @@ export class GenericScrollBox extends React.Component {
           clientY: initialClientY
       } = touches[0];
 
+      const initialScrollX = _scrollX,
+            initialScrollY = _scrollY;
+
       let scrolled = false;
 
       const handleTouchMove = event => {
-        const {targetX, targetY, scrollMaxX, scrollMaxY} = this;
         const {clientX, clientY} = event.touches[0];
         const dx = initialClientX - clientX,
               dy = initialClientY - clientY;
 
-        if (
-            (dx < 0 && !targetX) || (dx > 0 && targetX === scrollMaxX) ||
-            (dy < 0 && !targetY) || (dy > 0 && targetY === scrollMaxY)
-        ) {
-          if (!scrolled) {
-            disposeTouch();
-          }
-          return;
-        }
+        // if (
+        //     (dx < 0 && !_targetX) || (dx > 0 && _targetX === _scrollMaxX) ||
+        //     (dy < 0 && !_targetY) || (dy > 0 && _targetY === _scrollMaxY)
+        // ) {
+        //   if (!scrolled) {
+        //     disposeTouch();
+        //   }
+        //   return;
+        // }
 
         scrolled = true;
         event.preventDefault();
-        this.scrollTo({x: _scrollX + dx, y: _scrollY + dy});
+        this.scrollTo({x: initialScrollX + dx, y: initialScrollY + dy});
       };
 
-      const handleTouchEnd = event => {
-        disposeTouch();
-      };
+      const handleTouchEnd = () => disposeTouch();
 
       const disposeTouch = () => {
         removeEventListener('touchmove', handleTouchMove);
@@ -1086,7 +1081,7 @@ export class GenericScrollBox extends React.Component {
         removeEventListener('touchcancel', handleTouchEnd);
       };
 
-      addEventListener('touchmove', handleTouchMove);
+      addEventListener('touchmove', handleTouchMove, {passive: false});
       addEventListener('touchend', handleTouchEnd);
       addEventListener('touchcancel', handleTouchEnd);
     };

@@ -50,7 +50,7 @@
   }
 
   // Used if fallback to client system scrolling should occur.
-  &--client-scroll-bars {
+  &--native-scroll-bars {
 
     &.@{scroll-box}--enable-y.@{scroll-box}--requires-y > .@{scroll-box}__viewport {
       overflow-y: auto;
@@ -63,7 +63,7 @@
     }
   }
 
-  &:not(.@{scroll-box}--client-scroll-bars) {
+  &:not(.@{scroll-box}--native-scroll-bars) {
     &.@{scroll-box}--enable-y.@{scroll-box}--requires-y > .@{scroll-box}__track--y {
       visibility: visible;
     }

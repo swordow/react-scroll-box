@@ -1,57 +1,50 @@
 {
   "name": "react-scroll-box",
-  "version": "0.3.3-beta",
+  "version": "3.0.0",
   "author": "Savva Mikhalevski",
-  "description": "Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+",
+  "description": "Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 15+",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/smikhalevski/react-scroll-box.git"
   },
   "homepage": "https://github.com/smikhalevski/react-scroll-box",
-  "main": "target/out/index.js",
-  "files": [
-    "src/main/",
-    "target/out/",
-    ".babelrc"
-  ],
   "keywords": [
     "react",
-    "scroll",
     "component",
+    "scroll",
     "scrollbox",
-    "textarea",
-    "scrollbar",
-    "panel"
+    "scrollbar"
   ],
   "scripts": {
-    "package": "webpack --p",
-    "package-demo": "webpack --p --config webpack.demo.config.js",
-    "start": "webpack-dev-server --progress --d --config webpack.demo.config.js --content-base target/demo/ --host 0.0.0.0 --port 8080"
+    "start": "webpack-dev-server -d --progress --config webpack.gh-pages.config.js",
+    "build": "rm -rf target/out; webpack -p --devtool source-map",
+    "build:gh-pages": "rm -rf target/gh-pages; webpack -p --config webpack.gh-pages.config.js"
   },
   "devDependencies": {
-    "webpack": "1.12.9",
-    "webpack-dev-server": "1.12.0",
-    "babel-loader": "6.2.0",
-    "hson-loader": "~1.0.0",
-    "less-loader": "2.2.2",
-    "style-loader": "0.13.0",
-    "css-loader": "0.23.1",
-    "file-loader": "0.8.5",
-    "html-webpack-plugin": "1.6.1",
-    "extract-text-webpack-plugin": "0.8.2",
-    "babel-core": "6.3.26",
-    "babel-preset-es2015": "6.6.0",
-    "babel-preset-react": "6.5.0",
-    "babel-preset-stage-0": "6.5.0",
-    "babel-plugin-transform-runtime": "6.6.0",
-    "hanson": "~1.1.1",
-    "less": "2.6.1",
-    "classnames": "",
-    "classlist-polyfill": "1.0.2"
+    "webpack": "2.6.1",
+    "webpack-dev-server": "2.4.5",
+    "babel-loader": "^6.2.10",
+    "hson-loader": "^2.0.0",
+    "less-loader": "^4.0.3",
+    "style-loader": "^0.18.0",
+    "css-loader": "^0.28.3",
+    "file-loader": "^0.11.1",
+    "extract-text-webpack-plugin": "2.1.0",
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-plugin-transform-regenerator": "^6.24.1",
+    "less": "^2.7.2",
+    "classnames": "^2.2.5",
+    "lodash": "^4.17.4",
+    "classlist-polyfill": "^1.2.0"
   },
   "dependencies": {
-    "react": ">=0.13.0",
-    "react-dom": ">=0.13.0"
+    "react": "^15.0.0",
+    "prop-types": "^15.5.10",
+    "react-dom": "^15.0.0"
   }
 }

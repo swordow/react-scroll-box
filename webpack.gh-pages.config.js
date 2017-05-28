@@ -4,11 +4,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   target: 'web',
   entry: [
-    './src/main/index.less',
-    './src/main/index.js'
+    'file-loader?name=index.html!./src/gh-pages/index.html',
+    './src/gh-pages/index.less',
+    './src/gh-pages/index.js'
   ],
   output: {
-    path: path.resolve(__dirname, './target/out'),
+    path: path.resolve(__dirname, './target/gh-pages'),
     filename: 'index.js'
   },
   plugins: [
@@ -17,7 +18,8 @@ module.exports = {
   module: {
     rules: [
       {test: /\.js$/, use: 'babel-loader', exclude: /node_modules/},
-      {test: /\.less/, loader: ExtractTextPlugin.extract('css-loader!less-loader')}
+      {test: /\.json$/, use: 'hson-loader'},
+      {test: /\.less$/, loader: ExtractTextPlugin.extract('css-loader!less-loader')}
     ]
   }
 };

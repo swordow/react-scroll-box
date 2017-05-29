@@ -404,7 +404,7 @@ export class GenericScrollBox extends React.Component {
         dispatchPrevented = false
     } = {}) => {
 
-      if (!isNaN(x)) {
+      if (!isNaN(x) && x !== null) {
         _prevX = _scrollX;
         _targetX = x | 0;
         _easingX = easingX;
@@ -414,7 +414,7 @@ export class GenericScrollBox extends React.Component {
         _tickX++;
       }
 
-      if (!isNaN(y)) {
+      if (!isNaN(y) && y !== null) {
         _prevY = _scrollY;
         _targetY = y | 0;
         _easingY = easingY;
@@ -1162,14 +1162,14 @@ export class GenericScrollBox extends React.Component {
                 durationX = Math.abs(inertiaDurationX(dx, dt)),
                 durationY = Math.abs(inertiaDurationY(dy, dt));
 
-          const targetX = lastClientX + distanceX,
-                targetY = lastClientY + distanceY;
+          const targetX = _targetX + distanceX,
+                targetY = _targetY + distanceY;
 
           if (touchSingleAxis) {
             if (horizontal) {
               this.scrollToX(targetX, {easingX: inertiaEasingX, durationX});
             } else {
-              this.scrollToY(targetY, {easingY: inertiaEasingY, durationY});
+              this.scrollToY(targetY, {easingY: inertiaEasingY, durationY: 100});
             }
           } else {
             this.scrollTo({

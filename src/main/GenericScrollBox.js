@@ -112,6 +112,17 @@ export class GenericScrollBox extends React.Component {
     captureTouch: bool,
     propagateTouchScrollX: bool,
     propagateTouchScrollY: bool,
+    touchSingleAxis: bool,
+    touchStartDistance: number,
+    continuousTouchScrollX: bool,
+    continuousTouchScrollY: bool,
+
+    inertiaEasingX: func,
+    inertiaEasingY: func,
+    inertiaDistanceX: func,
+    inertiaDistanceY: func,
+    inertiaDurationX: func,
+    inertiaDurationY: func,
 
     // Layout
     trackChildrenX: node,
@@ -195,7 +206,18 @@ export class GenericScrollBox extends React.Component {
     // Touch
     captureTouch: true,
     propagateTouchScrollX: false,
-    propagateTouchScrollY: false,
+    propagateTouchScrollY: true,
+    touchSingleAxis: true,
+    touchStartDistance: 10,
+    continuousTouchScrollX: false,
+    continuousTouchScrollY: false,
+
+    inertiaEasingX: ScrollEasing.easeQuadOut,
+    inertiaEasingY: ScrollEasing.easeQuadOut,
+    inertiaDistanceX: (dx, dt) => dx / dt * 100,
+    inertiaDistanceY: (dy, dt) => dy / dt * 100,
+    inertiaDurationX: (dx, dt) => dx / dt * 100,
+    inertiaDurationY: (dy, dt) => dy / dt * 100,
 
     // Layout
     trackChildrenX: null,
@@ -209,8 +231,8 @@ export class GenericScrollBox extends React.Component {
 
     let _scrollX = 0,
         _scrollY = 0,
-        _previousX = 0,
-        _previousY = 0,
+        _prevX = 0,
+        _prevY = 0,
         _targetX = 0,
         _targetY = 0,
         _durationX = 0,
@@ -272,7 +294,7 @@ export class GenericScrollBox extends React.Component {
       addEventListener('mousemove', handleTrackHover);
 
       // Fix https://github.com/facebook/react/issues/8968
-      _root.addEventListener('touchstart', handleTouchStart, {passive: false});
+      _root.addEventListener('touchstart', handleTouchStart);
     };
 
     this.componentWillUnmount = () => {
@@ -383,7 +405,7 @@ export class GenericScrollBox extends React.Component {
     } = {}) => {
 
       if (!isNaN(x)) {
-        _previousX = _scrollX;
+        _prevX = _scrollX;
         _targetX = x | 0;
         _easingX = easingX;
         _durationX = durationX;
@@ -393,7 +415,7 @@ export class GenericScrollBox extends React.Component {
       }
 
       if (!isNaN(y)) {
-        _previousY = _scrollY;
+        _prevY = _scrollY;
         _targetY = y | 0;
         _easingY = easingY;
         _durationY = durationY;
@@ -555,7 +577,7 @@ export class GenericScrollBox extends React.Component {
         if (nextScrollX !== _targetX) {
           const elapsedX = Date.now() - _timestampX;
           if (elapsedX < _durationX) {
-            nextScrollX = _previousX + _easingX(elapsedX / _durationX, elapsedX, 0, 1, _durationX) * (_targetX - _previousX) | 0;
+            nextScrollX = _prevX + _easingX(elapsedX / _durationX, elapsedX, 0, 1, _durationX) * (_targetX - _prevX) | 0;
           } else {
             nextScrollX = _targetX;
           }
@@ -563,7 +585,7 @@ export class GenericScrollBox extends React.Component {
         if (nextScrollY !== _targetY) {
           const elapsedY = Date.now() - _timestampY;
           if (elapsedY < _durationY) {
-            nextScrollY = _previousY + _easingY(elapsedY / _durationY, elapsedY, 0, 1, _durationY) * (_targetY - _previousY) | 0;
+            nextScrollY = _prevY + _easingY(elapsedY / _durationY, elapsedY, 0, 1, _durationY) * (_targetY - _prevY) | 0;
           } else {
             nextScrollY = _targetY;
           }
@@ -1025,19 +1047,38 @@ export class GenericScrollBox extends React.Component {
       }
     };
 
+    const isIgnoredChangeX = dx => (dx < 0 && !_targetX) || (dx > 0 && _targetX === _scrollMaxX);
+
+    const isIgnoredChangeY = dy => (dy < 0 && !_targetY) || (dy > 0 && _targetY === _scrollMaxY);
+
+    const preventDefault = event => {
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+    };
+
     const handleTouchStart = event => {
       const {target, touches} = event;
-
       const {
           disabled,
           nativeScrollBars,
           captureTouch,
           propagateTouchScrollX,
           propagateTouchScrollY,
+          touchSingleAxis,
+          touchStartDistance,
+          continuousTouchScrollX,
+          continuousTouchScrollY,
+          inertiaEasingX,
+          inertiaEasingY,
+          inertiaDistanceX,
+          inertiaDistanceY,
+          inertiaDurationX,
+          inertiaDurationY
       } = this.props;
 
       if (nativeScrollBars && !captureTouch) {
-        event.preventDefault();
+        preventDefault(event);
       }
       if (disabled || nativeScrollBars || touches.length > 1 || (target !== _viewport && isTargetIgnored(target))) {
         return;
@@ -1047,35 +1088,92 @@ export class GenericScrollBox extends React.Component {
           clientX: initialClientX,
           clientY: initialClientY
       } = touches[0];
-
       const initialScrollX = _scrollX,
             initialScrollY = _scrollY;
 
-      let scrolled = false;
+      let prevClientX,
+          prevClientY,
+          lastClientX,
+          lastClientY,
+          prevTimestamp,
+          lastTimestamp,
+          horizontal,
+          stopPropagationX,
+          stopPropagationY;
 
       const handleTouchMove = event => {
         const {clientX, clientY} = event.touches[0];
         const dx = initialClientX - clientX,
-              dy = initialClientY - clientY;
+              dy = initialClientY - clientY,
+              pending = isNaN(lastClientX);
 
-        // if (
-        //     (dx < 0 && !_targetX) || (dx > 0 && _targetX === _scrollMaxX) ||
-        //     (dy < 0 && !_targetY) || (dy > 0 && _targetY === _scrollMaxY)
-        // ) {
-        //   if (!scrolled) {
-        //     disposeTouch();
-        //   }
-        //   return;
-        // }
+        if (pending && Math.sqrt(dx * dx + dy * dy) < touchStartDistance) {
+          preventDefault(event);
+          return;
+        }
+        if (pending && touchSingleAxis) {
+          horizontal = Math.abs(dx) > Math.abs(dy);
+        }
+        if (pending || continuousTouchScrollX) {
+          stopPropagationX = _requiresScrollBarX && !isIgnoredChangeX(dx);
+        }
+        if (pending || continuousTouchScrollY) {
+          stopPropagationY = _requiresScrollBarY && !isIgnoredChangeY(dy);
+        }
 
-        scrolled = true;
-        event.preventDefault();
-        this.scrollTo({x: initialScrollX + dx, y: initialScrollY + dy});
+        prevClientX = lastClientX;
+        prevClientY = lastClientY;
+        lastClientX = clientX;
+        lastClientY = clientY;
+        prevTimestamp = lastTimestamp;
+        lastTimestamp = Date.now();
+
+        const targetX = initialScrollX + dx,
+              targetY = initialScrollY + dy;
+
+        if (touchSingleAxis) {
+          if (horizontal) {
+            if (stopPropagationX || !propagateTouchScrollX) {
+              preventDefault(event);
+              this.scrollToX(targetX);
+            }
+          } else {
+            if (stopPropagationY || !propagateTouchScrollY) {
+              preventDefault(event);
+              this.scrollToY(targetY);
+            }
+          }
+        } else {
+          if (stopPropagationX || stopPropagationY || (!propagateTouchScrollX && !propagateTouchScrollY)) {
+            preventDefault(event);
+            this.scrollTo({x: targetX, y: targetY});
+          }
+        }
       };
 
-      const handleTouchEnd = () => disposeTouch();
-
-      const disposeTouch = () => {
+      const handleTouchEnd = () => {
+        // if (!isNaN(startClientX)) {
+        //   const dt = Date.now() - timestamp,
+        //         dx = startClientX - finishClientX,
+        //         dy = startClientY - finishClientY,
+        //         distanceX = inertiaDistanceX(dx, dt),
+        //         distanceY = inertiaDistanceY(dy, dt),
+        //         durationX = Math.abs(inertiaDurationX(dx, dt)),
+        //         durationY = Math.abs(inertiaDurationY(dy, dt));
+        //
+        //
+        //   console.log(durationY)
+        //
+        //
+        //   this.scrollTo({
+        //     x: finishClientX + distanceX,
+        //     y: finishClientY + distanceY,
+        //     easingX: inertiaEasingX,
+        //     easingY: inertiaEasingY,
+        //     durationX,
+        //     durationY
+        //   });
+        // }
         removeEventListener('touchmove', handleTouchMove);
         removeEventListener('touchend', handleTouchEnd);
         removeEventListener('touchcancel', handleTouchEnd);

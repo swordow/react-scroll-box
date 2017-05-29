@@ -205,7 +205,7 @@ export class GenericScrollBox extends React.Component {
 
     // Touch
     captureTouch: true,
-    propagateTouchScrollX: false,
+    propagateTouchScrollX: true,
     propagateTouchScrollY: true,
     touchSingleAxis: true,
     touchStartDistance: 10,
@@ -1069,6 +1069,7 @@ export class GenericScrollBox extends React.Component {
           touchStartDistance,
           continuousTouchScrollX,
           continuousTouchScrollY,
+
           inertiaEasingX,
           inertiaEasingY,
           inertiaDistanceX,
@@ -1152,28 +1153,35 @@ export class GenericScrollBox extends React.Component {
       };
 
       const handleTouchEnd = () => {
-        // if (!isNaN(startClientX)) {
-        //   const dt = Date.now() - timestamp,
-        //         dx = startClientX - finishClientX,
-        //         dy = startClientY - finishClientY,
-        //         distanceX = inertiaDistanceX(dx, dt),
-        //         distanceY = inertiaDistanceY(dy, dt),
-        //         durationX = Math.abs(inertiaDurationX(dx, dt)),
-        //         durationY = Math.abs(inertiaDurationY(dy, dt));
-        //
-        //
-        //   console.log(durationY)
-        //
-        //
-        //   this.scrollTo({
-        //     x: finishClientX + distanceX,
-        //     y: finishClientY + distanceY,
-        //     easingX: inertiaEasingX,
-        //     easingY: inertiaEasingY,
-        //     durationX,
-        //     durationY
-        //   });
-        // }
+        if (!isNaN(prevClientX)) {
+          const dt = lastTimestamp - prevTimestamp,
+                dx = prevClientX - lastClientX,
+                dy = prevClientY - lastClientY,
+                distanceX = inertiaDistanceX(dx, dt),
+                distanceY = inertiaDistanceY(dy, dt),
+                durationX = Math.abs(inertiaDurationX(dx, dt)),
+                durationY = Math.abs(inertiaDurationY(dy, dt));
+
+          const targetX = lastClientX + distanceX,
+                targetY = lastClientY + distanceY;
+
+          if (touchSingleAxis) {
+            if (horizontal) {
+              this.scrollToX(targetX, {easingX: inertiaEasingX, durationX});
+            } else {
+              this.scrollToY(targetY, {easingY: inertiaEasingY, durationY});
+            }
+          } else {
+            this.scrollTo({
+              x: targetX,
+              y: targetY,
+              easingX: inertiaEasingX,
+              easingY: inertiaEasingY,
+              durationX,
+              durationY
+            });
+          }
+        }
         removeEventListener('touchmove', handleTouchMove);
         removeEventListener('touchend', handleTouchEnd);
         removeEventListener('touchcancel', handleTouchEnd);

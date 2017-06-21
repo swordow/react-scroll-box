@@ -1,6 +1,6 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
-import {bool, element, func, node, number, object, oneOf, string} from 'prop-types';
+import {bool, element, func, node, number, object, oneOf, string, oneOfType, arrayOf} from 'prop-types';
 
 export const FastTrackMode = {
   PAGING: 'paging',
@@ -22,7 +22,7 @@ export const ScrollEasing = {
   }
 };
 
-export class GenericScrollBox extends React.Component {
+export class AbstractScrollBox extends React.Component {
 
   static propTypes = {
     // Viewport element.
@@ -125,10 +125,10 @@ export class GenericScrollBox extends React.Component {
     inertiaDurationY: func,
 
     // Layout
-    trackChildrenX: node,
-    trackChildrenY: node,
-    handleChildrenX: node,
-    handleChildrenY: node
+    trackChildrenX: oneOfType([node, arrayOf[node]]),
+    trackChildrenY: oneOfType([node, arrayOf[node]]),
+    handleChildrenX: oneOfType([node, arrayOf[node]]),
+    handleChildrenY: oneOfType([node, arrayOf[node]])
   };
 
   static defaultProps = {

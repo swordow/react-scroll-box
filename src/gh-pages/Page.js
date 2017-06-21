@@ -1,5 +1,5 @@
 import React from 'react';
-import {GenericScrollBox} from '../main/GenericScrollBox';
+import {AbstractScrollBox} from '../main/AbstractScrollBox';
 
 export class Page extends React.Component {
 
@@ -7,7 +7,7 @@ export class Page extends React.Component {
     return (
         <div>
 
-          <GenericScrollBox ref="genericScrollBox" style={{border: 'solid 1px red', height: '400px', width: '400px'}} className="scroll-box--wrapped">
+          <AbstractScrollBox ref="genericScrollBox" style={{border: 'solid 1px red', height: '400px', width: '400px'}} className="scroll-box--wrapped">
             <div className="scroll-box__viewport " style={{whiteSpace: 'nowrap'}}>
 
               FOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOO <br/>
@@ -68,7 +68,7 @@ export class Page extends React.Component {
               FOOO <br/>
               FOOO
             </div>
-          </GenericScrollBox>
+          </AbstractScrollBox>
 
           FOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOOFOOO <br/>
           FOOO <br/>

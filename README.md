@@ -110,11 +110,11 @@ _`func`_
 
 Default easing functions that are applied to scroll that has non-zero duration. This callbacks are compatible with jQuery easing functions and are invoked with following arguments:
 
-- _`float`_ `percent` Scroll percentage in range [0, 1].
-- _`integer`_ `elapsed` Number of milliseconds passed since animation began.
-- _`integer`_ `min` Minimum output value.
-- _`integer`_ `max` Maximum output value.
-- _`integer`_ `duration` Animation duration in milliseconds.
+- `percent` Scroll percentage in range [0, 1].
+- `elapsed` Number of milliseconds passed since animation began.
+- `min` Minimum output value.
+- `max` Maximum output value.
+- `duration` Animation duration in milliseconds.
 
 Easing can also be specified as an argument of [`scrollTo`](#abstract-scroll-box-scroll-to).
 
@@ -149,7 +149,6 @@ What should scrollbox do if user clicks on the track:
 - `FastTrackMode.PAGING` scroll one page in direction of user click.
 
 
-
 _`number`_
 <a name="abstract-scroll-box-fast-track-scroll-duration-x"></a> <code>**fastTrackScrollDurationX** = 500</code>
 <a name="abstract-scroll-box-fast-track-scroll-duration-Y"></a> <code>**fastTrackScrollDurationY** = 500</code>
@@ -161,7 +160,6 @@ _`bool`_
 <a name="abstract-scroll-box-capture-keyboard"></a> <code>**captureKeyboard** = true</code>
 
 Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>Page Up</kbd> <kbd>Page Down</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>Page Up</kbd> and <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>Page Down</kbd> shortcuts.
-<br><br>
 
 
 _`number`_
@@ -249,41 +247,36 @@ _`bool`_
 Should touch scroll be propagated to parent continiously or user would have to restart touch scroll.
 
 
-_`func`_  **`inertiaEasingX`** `ScrollEasing.easeQuadOut`
-
-_`func`_  **`inertiaEasingY`** `ScrollEasing.easeQuadOut`
+_`func`_
+<a name="abstract-scroll-box-inertia-easing-x"></a> <code>**inertiaEasingX** = ScrollEasing.easeQuadOut</code>
+<a name="abstract-scroll-box-inertia-easing-y"></a> <code>**inertiaEasingY** = ScrollEasing.easeQuadOut</code>
 
 Inertial easing functions.
-<br><br>
 
 
-_`func`_  **`inertiaDistanceX`** `(dx, dt) => dx / dt * 100`
+_`func`_
+<a name="abstract-scroll-box-inertia-distance-x"></a> <code>**inertiaDistanceX**(dx, dt)</code>
+<a name="abstract-scroll-box-inertia-distance-Y"></a> <code>**inertiaDistanceY**(dx, dt)</code>
 
-_`func`_  **`inertiaDistanceY`** `(dy, dt) => dy / dt * 100`
-
-Returns distance in pixels that inertial scrolling shold travel.
-<br><br>
+Returns distance in pixels that inertial scrolling should travel.
 
 
-_`func`_  **`inertiaDurationX`** `(dx, dt) => dx / dt * 100`
-
-_`func`_  **`inertiaDurationY`** `(dy, dt) => dy / dt * 100`
+_`func`_
+<a name="abstract-scroll-box-inertia-duration-x"></a> <code>**inertiaDurationX**(dx, dt)</code>
+<a name="abstract-scroll-box-inertia-duration-y"></a> <code>**inertiaDurationY**(dx, dt)</code>
 
 Returns duration of inertial scrolling.
-<br><br>
 
 
-_`node | arrayOf(node)`_  **`trackChildrenX`** `null`
-
-_`node | arrayOf(node)`_  **`trackChildrenY`** `null`
+_`node`_
+<a name="abstract-scroll-box-track-children-x"></a> **`trackChildrenX`**
+<a name="abstract-scroll-box-track-children-y"></a> **`trackChildrenY`**
 
 Children appended to track elements.
-<br><br>
 
-
-_`node`_  **`handleChildrenX`** `null`
-
-_`node`_  **`handleChildrenY`** `null`
+_`node`_
+<a name="abstract-scroll-box-handle-children-x"></a> **`handleChildrenX`**
+<a name="abstract-scroll-box-handle-children-y"></a> **`handleChildrenY`**
 
 Children appended to handle elements.
 

@@ -1,8 +1,7 @@
 ### Attributes
 
 
-_`string`_
-<a name="abstract-scroll-box-class-name"></a> <code>**className** = 'scroll-box--wrapped'</code>
+<a name="abstract-scroll-box-class-name"></a> <code>**className**: _string_ = 'scroll-box--wrapped'</code>
 
 Style class name of the root element of scroll box. Several class names are available out of the box:
 

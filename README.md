@@ -287,6 +287,11 @@ Children appended to handle elements.
 
 
 
+
+
+
+
+
 ---
 
 
@@ -308,11 +313,11 @@ Any help with improvement of this component would be greatly appreciated.
 
 1. [Motivation](#motivation)
 2. [`ScrollBox`](#scrollbox)
-  1. [Attributes](#attributes)
+    1. [Attributes](#attributes)
 3. [`AbstractScrollBox`](#abstract-scroll-box)
-  1. [Layout](#layout)
-  2. [Properties](#properties)
-  3. [Methods](#methods)
+    1. [Layout](#layout)
+    2. [Properties](#properties)
+    3. [Methods](#methods)
 4. [License](#license)
 
 ## Motivation
@@ -414,9 +419,7 @@ Modifier `.scroll-box--wrapped-on-large-screens` would conditionally wrap scroll
 ### Properties
 
 <code>**scrollTo**(options = {})</code>
-
 <code>**scrollToX**(x, options = {})</code>
-
 <code>**scrollToY**(y, options = {})</code>
 
 Scroll to particular position. Following options are available:

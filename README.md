@@ -1,3 +1,302 @@
+### Attributes
+
+
+_`string`_
+<a name="abstract-scroll-box-class-name"></a> <code>**className** = 'scroll-box--wrapped'</code>
+
+Style class name of the root element of scroll box. Several class names are available out of the box:
+
+- `.scroll-box--disabled` is added when scroll box is disabled with <code>[disabled](#abstract-scroll-box-disabled)={true}</code>. Hides scrollbars and prevents scrolling for both native and non-native scroll bars.
+
+- `.scroll-box--wrapped` makes scroll box behave like an actual scroll box. If omitted, then scrollbox behaves like a plane `div` element and expands its height to a maximum possible value.
+
+- `.scroll-box--native-scroll-bars` is a stylesheet analogue of <code>[nativeScrollBars](#abstract-scroll-box-native-scroll-bars)={true}</code> setting and causes scroll box to display native scroll bars. This class is very handy if you want to enable native scrollbars for specific media query.
+
+- `.scroll-box--outset-x`, `.scroll-box--outset-y` show corresponding scroll bars ouside of a scrollable area without changing scroll box size.
+
+- `.scroll-box__track` and `.scroll-box__handle` are class names placed on both scroll tracks and handles respectively. You can reffer to a particular track or handle with `.scroll-box__track--x` or `.scroll-box__handle--y`.
+
+- `.scroll-box__track--hover` is added when track is being hovered or cursor is in close proximity. See [`trackHoverProximityX`](#abstract-scroll-box-track-hover-proximity-x) and [`trackHoverProximityY`](#abstract-scroll-box-track-hover-proximity-y) for more details.
+
+- `.scroll-box__track--dragged` is added when handle of this track is being dragged by user.
+
+
+_`object`_
+<a name="abstract-scroll-box-style"></a> <code>**style** = null</code>
+
+Style of the root element of the scroll box.
+
+
+_`bool`_
+<a name="abstract-scroll-box-native-scroll-bars"></a> <code>**nativeScrollBars** = false</code>
+
+Use native client scroll bars instead of custom scroll bars. Handle- and track-related features do not have any effect when native scrollbars are enabled.
+
+
+_`bool`_
+<a name="abstract-scroll-box-disabled"></a> <code>**disabled** = false</code>
+
+Disable scroll box entirely. When disabled any scrolling is prevented, including prorgammatic scroll with [`sctollTo`](#abstract-scroll-box-scroll-to). If you want to disable or hide scrollbars of particular axis reffer to [`disableScrollX`](#abstract-scroll-box-disable-scroll-x) [`disableScrollY`](#abstract-scroll-box-disable-scroll-y) and [`hideScrollBarX`](#abstract-scroll-box-hide-scroll-bar-x) [`hideScrollBarY`](#abstract-scroll-box-hide-scroll-bar-y) respectively.
+
+
+_`func`_ 
+<a name="abstract-scroll-box-scroll-start"></a>   <code>**onScrollStart**(scrollBox, causeX, causeY)</code>
+<a name="abstract-scroll-box-scroll-start-x"></a> <code>**onScrollStartX**(scrollBox, causeX)</code>
+<a name="abstract-scroll-box-scroll-start-y"></a> <code>**onScrollStartY**(scrollBox, causeY)</code>
+
+Listeners that are invoked when scroll position change was requested, ex. [`scrollTo`](#abstract-scroll-box-scroll-to) was called or user pressed <kbd>Page Down</kbd>. You can check requested scroll position via inspecting [`targetX`](#abstract-scroll-box-target-x) and [`targetY`](#abstract-scroll-box-target-y) and interrupt scroll via calling [`scrollTo`](#abstract-scroll-box-scroll-to) or setting new values directly to [`targetX`](#abstract-scroll-box-target-x) or [`targetY`](#abstract-scroll-box-target-y).
+
+`causeX` and `causeY` are [`ScrollCause`](#scroll-cause) values or `null` if scrolling on corresponding axis was not requested.
+
+
+_`func`_
+<a name="abstract-scroll-box-on-scroll"></a>   <code>**onScroll**(scrollBox, dx, dy, causeX, causeY)</code>
+<a name="abstract-scroll-box-on-scroll-x"></a> <code>**onScrollX**(scrollBox, dx, causeX)</code>
+<a name="abstract-scroll-box-on-scroll-y"></a> <code>**onScrollY**(scrollBox, dy, causeY)</code>
+
+Listeners that are invoked on every change of [`scrollX`](#abstract-scroll-box-scroll-x) and [`scrollY`](#abstract-scroll-box-scroll-y).
+
+`dx` and `dy` are scroll distance since last invocation.
+
+`causeX` and `causeY` are [`ScrollCause`](#scroll-cause) values or `null` if scrolling on correspondin axis was did not occur.
+
+
+_`func`_
+<a name="abstract-scroll-box-scroll-end"></a>   <code>**onScrollEnd**(scrollBox, causeX, causeY)</code>
+<a name="abstract-scroll-box-scroll-end-x"></a> <code>**onScrollEndX**(scrollBox, causeX)</code>
+<a name="abstract-scroll-box-scroll-end-y"></a> <code>**onScrollEndY**(scrollBox, causeY)</code>
+
+Listeners that are invoked when scroll completes, ex. user releases dragged handle, inertial scroll reached its finish position. Scroll is considered to end when cause has changed or new target scroll coordinates were set.
+
+
+_`bool`_
+<a name="abstract-scroll-box-disable-scroll-x"></a> <code>**disableScrollX** = false</code>
+<a name="abstract-scroll-box-disable-scroll-y"></a> <code>**disableScrollY** = false</code>
+
+Prevent scroll in corresponding axis. Prohibits scrolling on disabled axis event with [`scrollTo`](#abstract-scroll-box-scroll-to).
+
+
+_`bool`_
+<a name="abstract-scroll-box-hide-scroll-bar-x"></a> <code>**hideScrollBarX** = false</code>
+<a name="abstract-scroll-box-hide-scroll-bar-y"></a> <code>**hideScrollBarY** = false</code>
+
+Hides scrollbar but still allow to scroll programmatically.
+
+
+_`bool`_ 
+<a name="abstract-scroll-box-outset-scroll-bar-x"></a> <code>**outsetScrollBarX** = false</code>
+<a name="abstract-scroll-box-outset-scroll-bar-y"></a> <code>**outsetScrollBarY** = false</code>
+
+Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
+
+
+_`number`_
+<a name="abstract-scroll-box-scroll-min-x"></a> <code>**scrollMinX** = 2</code>
+<a name="abstract-scroll-box-scroll-min-y"></a> <code>**scrollMinY** = 2</code>
+
+Minimum difference in pixels in content and viewport sizes to enable scrolling.
+
+
+_`number`_
+<a name="abstract-scroll-box-scroll-min-x"></a> <code>**trackHoverProximityX** = 50</code>
+<a name="abstract-scroll-box-scroll-min-y"></a> <code>**trackHoverProximityY** = 50</code>
+
+Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
+
+
+_`func`_
+<a name="abstract-scroll-box-easing-x"></a> <code>**easingX** = ScrollEasing.easeQuadOut</code>
+<a name="abstract-scroll-box-easing-y"></a> <code>**easingY** = ScrollEasing.easeQuadOut</code>
+
+Default easing functions that are applied to scroll that has non-zero duration. This callbacks are compatible with jQuery easing functions and are invoked with following arguments:
+
+- _`float`_ `percent` Scroll percentage in range [0, 1].
+- _`integer`_ `elapsed` Number of milliseconds passed since animation began.
+- _`integer`_ `min` Minimum output value.
+- _`integer`_ `max` Maximum output value.
+- _`integer`_ `duration` Animation duration in milliseconds.
+
+Easing can also be specified as an argument of [`scrollTo`](#abstract-scroll-box-scroll-to).
+
+
+_`bool`_
+<a name="abstract-scroll-box-outset-capture-handle-drag-x"></a> <code>**captureHandleDragX** = true</code>
+<a name="abstract-scroll-box-outset-capture-handle-drag-x"></a> <code>**captureHandleDragY** = true</code>
+
+Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
+
+
+_`bool`_
+<a name="abstract-scroll-box-interruptible-handle-drag"></a> <code>**interruptibleHandleDrag** = true</code>
+
+Can handle drag be programmatically interrupted or not.
+
+
+_`bool`_
+<a name="abstract-scroll-box-capture-fast-track-x"></a> <code>**captureFastTrackX** = true</code>
+<a name="abstract-scroll-box-capture-fast-track-y"></a> <code>**captureFastTrackY** = true</code>
+
+Can use scroll via clicking on the track.
+
+
+_`FastTrackMode`_
+<a name="abstract-scroll-box-capture-fast-track-x"></a> <code>**fastTrackModeX** = FastTrackMode.GOTO</code>
+<a name="abstract-scroll-box-capture-fast-track-y"></a> <code>**fastTrackModeY** = FastTrackMode.GOTO</code>
+
+What should scrollbox do if user clicks on the track:
+
+- `FastTrackMode.GOTO` scroll to poition where user clicked.
+- `FastTrackMode.PAGING` scroll one page in direction of user click.
+
+
+
+_`number`_
+<a name="abstract-scroll-box-fast-track-scroll-duration-x"></a> <code>**fastTrackScrollDurationX** = 500</code>
+<a name="abstract-scroll-box-fast-track-scroll-duration-Y"></a> <code>**fastTrackScrollDurationY** = 500</code>
+
+Animation duration of fast track smooth scroll.
+
+
+_`bool`_
+<a name="abstract-scroll-box-capture-keyboard"></a> <code>**captureKeyboard** = true</code>
+
+Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>Page Up</kbd> <kbd>Page Down</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>Page Up</kbd> and <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>Page Down</kbd> shortcuts.
+<br><br>
+
+
+_`number`_
+<a name="abstract-scroll-box-keyboard-step-x"></a> <code>**keyboardStepX** = 30</code>
+<a name="abstract-scroll-box-keyboard-step-y"></a> <code>**keyboardStepY** = 30</code>
+
+Distance in pixels to scroll by when arrow keys are pressed.
+
+
+_`number`_
+<a name="abstract-scroll-box-keyboard-scroll-duration-x"></a> <code>**keyboardScrollDurationX** = 200</code>
+<a name="abstract-scroll-box-keyboard-scroll-duration-y"></a> <code>**keyboardScrollDurationY** = 200</code>
+
+Keyboard smooth scrolling animation duration in milliseconds. Set to 0 to disable smooth keyboard scrolling.
+
+
+_`bool`_
+<a name="abstract-scroll-box-capture-wheel"></a> <code>**captureWheel** = true</code>
+
+Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.
+
+
+_`number`_
+<a name="abstract-scroll-box-wheel-line-height"></a> <code>**wheelLineHeight** = 24</code>
+
+Height of line used if scroll by line was requested.
+
+
+_`number`_
+<a name="abstract-scroll-box-wheel-step-x"></a> <code>**wheelStepX** = 100</code>
+<a name="abstract-scroll-box-wheel-step-y"></a> <code>**wheelStepY** = 100</code>
+
+Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
+
+
+_`bool`_
+<a name="abstract-scroll-box-propagate-wheel-scroll-x"></a> <code>**propagateWheelScrollX** = true</code>
+<a name="abstract-scroll-box-propagate-wheel-scroll-Y"></a> <code>**propagateWheelScrollY** = true</code>
+
+Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
+
+
+_`bool`_
+<a name="abstract-scroll-box-swap-wheel-axes"></a> <code>**swapWheelAxes** = false</code>
+
+Swap wheel scrolling axes.
+
+
+_`number`_
+<a name="abstract-scroll-box-wheel-scroll-duration-x"></a> <code>**wheelScrollDurationX** = 100</code>
+<a name="abstract-scroll-box-wheel-scroll-duration-y"></a> <code>**wheelScrollDurationY** = 100</code>
+
+Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
+
+
+_`bool`_
+<a name="abstract-scroll-box-capture-touch"></a> <code>**captureTouch** = true</code>
+
+Enable capture of touch events.
+
+
+_`bool`_
+<a name="abstract-scroll-box-propagate-touch-scroll-x"></a> <code>**propagateTouchScrollX** = true</code>
+<a name="abstract-scroll-box-propagate-touch-scroll-y"></a> <code>**propagateTouchScrollY** = true</code>
+
+Propagate touch scroll event to parent if scrolling reached maximum or minimum value.
+
+
+_`bool`_
+<a name="abstract-scroll-box-touch-single-axis"></a> <code>**touchSingleAxis** = true</code>
+
+Prevent user from scrolling on two axis simultaneously.
+
+
+_`number`_
+<a name="abstract-scroll-box-touch-start-distance"></a> <code>**touchStartDistance** = 10</code>
+
+Distance in pixels that finger should pass to detect actual scrolling axis.
+
+
+_`bool`_
+<a name="abstract-scroll-box-continuous-touch-scroll-x"></a> <code>**continuousTouchScrollX** = false</code>
+<a name="abstract-scroll-box-continuous-touch-scroll-y"></a> <code>**continuousTouchScrollY** = false</code>
+
+Should touch scroll be propagated to parent continiously or user would have to restart touch scroll.
+
+
+_`func`_  **`inertiaEasingX`** `ScrollEasing.easeQuadOut`
+
+_`func`_  **`inertiaEasingY`** `ScrollEasing.easeQuadOut`
+
+Inertial easing functions.
+<br><br>
+
+
+_`func`_  **`inertiaDistanceX`** `(dx, dt) => dx / dt * 100`
+
+_`func`_  **`inertiaDistanceY`** `(dy, dt) => dy / dt * 100`
+
+Returns distance in pixels that inertial scrolling shold travel.
+<br><br>
+
+
+_`func`_  **`inertiaDurationX`** `(dx, dt) => dx / dt * 100`
+
+_`func`_  **`inertiaDurationY`** `(dy, dt) => dy / dt * 100`
+
+Returns duration of inertial scrolling.
+<br><br>
+
+
+_`node | arrayOf(node)`_  **`trackChildrenX`** `null`
+
+_`node | arrayOf(node)`_  **`trackChildrenY`** `null`
+
+Children appended to track elements.
+<br><br>
+
+
+_`node`_  **`handleChildrenX`** `null`
+
+_`node`_  **`handleChildrenY`** `null`
+
+Children appended to handle elements.
+
+
+
+
+
+
+
+
+---
+
+
 # React Scroll Box
 
 [![npm version](https://badge.fury.io/js/react-scroll-box.svg)](https://www.npmjs.com/package/react-scroll-box)
@@ -57,301 +356,11 @@ import {ScrollBox} from 'react-scroll-box'; // ES6
 </ScrollBox>
 ```
 
-### Attributes
 
-_`bool`_ **`nativeScrollBars`** `false`
 
-Should component use native scrollbars or not.
-<br><br>
 
+### asdasd
 
-_`string`_ **`className`** `'scroll-box--wrapped'`
-
-Style class name of the root element of scroll box.
-<br><br>
-
-
-_`object`_ **`style`** `null`
-
-Style of the root element of scroll box.
-<br><br>
-
-
-**`disabled`** _`bool`_ `false`
-
-Disable scroll box.
-<br><br>
-
-
-_`func`_ <code>**onScrollStart**(scrollBox, causeX, causeY) {}</code>
-
-_`func`_  <code>**onScrollStartX**(scrollBox, causeX) {}</code>
-
-_`func`_  <code>**onScrollStartY**(scrollBox, causeY) {}</code>
-
-Listeners that are invoked when scroll position change was requested, ex. [`scrollTo`](#abstract-scroll-scroll-to) was called. You can check requested scroll position via inspecting [`targetX`](#abstract-scroll-box-target-x) and [`targetY`](#abstract-scroll-box-target-y) and interrupt scroll via calling [`scrollTo`](#abstract-scroll-box-scroll-to) or setting new values directly to [`targetX`](#abstract-scroll-box-target-x) or [`targetY`](#abstract-scroll-box-target-y).
-
-`caseX` and `causeY` are [`ScrollCause`](#scroll-cause) values or `null` if scrolling on correspondin axis was not requested.
-<br><br>
-
-
-_`func`_ <code>**onScroll**(scrollBox, dx, dy, causeX, causeY)</code>  
-
-_`func`_ <code>**onScrollX**(scrollBox, dx, causeX) {}</code>
-
-_`func`_ <code>**onScrollY**(scrollBox, dy, causeY) {}</code>
-
-Listeners that are invoked on every change of [`scrollX`](#abstract-scroll-box-scroll-x) and [`scrollY`](#abstract-scroll-box-scroll-y).
-
-`dx` and `dy` and scroll distance since last invocation.
-
-`caseX` and `causeY` are [`ScrollCause`](#scroll-cause) values or `null` if scrolling on correspondin axis was did not occur.
-<br><br>
-
-
-_`func`_  <code>**onScrollEnd**(scrollBox, causeX, causeY) {}</code>
-
-_`func`_  <code>**onScrollEndX**(scrollBox, causeX) {}</code>
-
-_`func`_  <code>**onScrollEndY**(scrollBox, causeY) {}</code>
-
-Listeners that are invoked when scroll completes, ex. user releases dragged handle, inertial scroll reached its finish position.
-<br><br>
-
-
-_`bool`_ **`disableScrollX`** `false`
-
-_`bool`_ **`disableScrollY`** `false`
-
-Prevent scroll in corresponding axis. Prohibits scrolling on disabled axis event with [`scrollTo`](#abstract-scroll-box-scroll-to).
-<br><br>
-
-
-_`bool`_ **`hideScrollBarX`** `false`
-
-_`bool`_ **`hideScrollBarY`** `false`
-
-Hides scrollbar but still allow to scroll programmatically.
-<br><br>
-
-
-_`bool`_ **`outsetScrollBarX`** `false`
-
-_`bool`_ **`outsetScrollBarY`** `false`
-
-Display scrollbars outside of scrollable area. Outset scrllbars don't require additional space and don't affect surrounding layout. On mobile devices when native scrollbars are used this property has no effect because scrollbars have zero width and thus don't crop any space from viewport.
-<br><br>
-
-
-_`number`_ **`scrollMinX`** `2`
-
-_`number`_ **`scrollMinY`** `2`
-
-Minimum difference in pixels in content and viewport sizes to enable scrolling.
-<br><br>
-
-
-_`number`_ **`trackHoverProximityX`** `50`
-
-_`number`_ **`trackHoverProximityY`** `50`
-
-Maximum distance in pixels between cursor and scroll track edge when track is considered to be hovered. Useful when you want to have thin scrollbars and increase theit thickness when cursor aproaches them so user don't have to aim precisely. Set to 0 to disable hover proximity detection.
-<br><br>
-
-
-_`func`_ **`easingX`** `ScrollEasing.easeQuadOut`
-
-_`func`_ **`easingY`** `ScrollEasing.easeQuadOut`
-
-Default easing functions for scroll that has non-zero duration.
-
-This callbacks are compatible with jQuery easing functions and are invoked with following arguments:
-
-- _`float`_ `percent` Scroll percentage in range [0, 1].
-- _`integer`_ `elapsed` Number of milliseconds passed since animation began.
-- _`integer`_ `min` `max` Output value range.
-- _`integer`_ `duration` Animation duration in milliseconds.
-
-Easing can also be specified as an argument of [`scrollTo`](#abstract-scroll-box-scroll-to).
-<br><br>
-
-
-_`bool`_ **`captureHandleDragX`** `true`
-
-_`bool`_ **`captureHandleDragY`** `true`
-
-Allow user to drag scroll handles. If handle drag is disabled along with enabled fast track then clicking on a handle would cause fast tracking.
-<br><br>
-
-
-_`bool`_ **`interruptibleHandleDrag`** `true`
-
-Can handle drag be programmatically interrupted or not.
-<br><br>
-
-
-_`bool`_ **`captureFastTrackX`** `true`
-
-_`bool`_ **`captureFastTrackY`** `true`
-
-Can use scroll via clicking on the track.
-<br><br>
-
-
-_`FastTrackMode`_ **`fastTrackModeX`** `FastTrackMode.GOTO`
-
-_`FastTrackMode`_ **`fastTrackModeY`** `FastTrackMode.GOTO`
-
-What should scrollbox do if user click on track:
-
-- `FastTrackMode.GOTO` scroll to poition where user clicked.
-- `FastTrackMode.PAGING` scroll one page in direction of user click.
-<br><br>
-
-
-_`number`_ **`fastTrackScrollDurationX`** `500`
-
-_`number`_ **`fastTrackScrollDurationY`** `500`
-
-Animation duration of fast track smooth scroll.
-<br><br>
-
-
-_`bool`_ **`captureKeyboard`** `true`
-
-Use keyboard for scrolling when scroll box viewport or its nested content is focused. Keyboard is not captured for `<input type="text"/>` and `<textarea/>` elements placed inside scroll box. <kbd>PgUp</kbd> <kbd>PgDown</kbd> <kbd>Home</kbd> <kbd>End</kbd> and arrow keys are captured. You can page-scroll alternate axis with <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgUp</kbd> and <kbd>Shift</kbd>&nbsp;+&nbsp;<kbd>PgDown</kbd> shortcuts.
-<br><br>
-
-
-_`number`_ **`keyboardStepX`** `30`
-
-_`number`_ **`keyboardStepY`** `30`
-
-Distance in pixels to scroll by when arrow keys are pressed.
-<br><br>
-
-
-_`number`_ **`keyboardScrollDurationX`** `200`
-
-_`number`_ **`keyboardScrollDurationY`** `200`
-
-Keyboard smooth scrolling animation duration in milliseconds. Set to 0 to disable smooth keyboard scrolling.
-<br><br>
-
-
-_`bool`_ **`captureWheel`** `true`
-
-Use mouse wheel for scrolling. You can scroll alternate axis with <kbd>Shift</kbd> key is pressed.
-<br><br>
-
-
-_`number`_ **`wheelLineHeight`** `24`
-
-Height of line used if scroll by line was requested.
-<br><br>
-
-
-_`number`_ **`wheelStepX`** `100`
-
-_`number`_ **`wheelStepY`** `100`
-
-Wheel scrolling distance in pixels. Scroll box heavily relies on native wheel implementation, so this speed can vary a bit depending on browser, platform and scrolling device (trackpad or mouse wheel).
-<br><br>
-
-
-_`bool`_ **`propagateWheelScrollX`** `false`
-
-_`bool`_ **`propagateWheelScrollY`** `true`
-
-Propagate wheel scroll event to parent if scrolling reached maximum or minimum value.
-<br><br>
-
-
-_`bool`_ **`swapWheelAxes`** `false`
-
-Swap wheel scrolling axes.
-<br><br>
-
-
-_`number`_ **`wheelScrollDurationX`** `100`
-
-_`number`_ **`wheelScrollDurationY`** `100`
-
-Wheel smooth scrolling animation duration. Set to 0 to disable smooth wheel scrolling.
-<br><br>
-
-
-_`bool`_  **`captureTouch`** `true`
-
-Capture touch events.
-<br><br>
-
-
-_`bool`_  **`propagateTouchScrollX`** `true`
-
-_`bool`_  **`propagateTouchScrollY`** `true`
-
-Propagate touch scroll event to parent if scrolling reached maximum or minimum value.
-<br><br>
-
-
-_`bool`_  **`touchSingleAxis`** `true`
-
-Prevent user from scrolling on two axis simultaneously.
-<br><br>
-
-
-_`number`_  **`touchStartDistance`** `10`
-
-Distance in pixels that finger should pass to detect actual scrolling axis.
-<br><br>
-
-
-_`bool`_  **`continuousTouchScrollX`** `false`
-
-_`bool`_  **`continuousTouchScrollY`** `false`
-
-Should touch scroll be propagated to parent continiously or user would have to restart touch scroll.
-<br><br>
-
-
-_`func`_  **`inertiaEasingX`** `ScrollEasing.easeQuadOut`
-
-_`func`_  **`inertiaEasingY`** `ScrollEasing.easeQuadOut`
-
-Inertial easing functions.
-<br><br>
-
-
-_`func`_  **`inertiaDistanceX`** `(dx, dt) => dx / dt * 100`
-
-_`func`_  **`inertiaDistanceY`** `(dy, dt) => dy / dt * 100`
-
-Returns distance in pixels that inertial scrolling shold travel.
-<br><br>
-
-
-_`func`_  **`inertiaDurationX`** `(dx, dt) => dx / dt * 100`
-
-_`func`_  **`inertiaDurationY`** `(dy, dt) => dy / dt * 100`
-
-Returns duration of inertial scrolling.
-<br><br>
-
-
-_`node | arrayOf(node)`_  **`trackChildrenX`** `null`
-
-_`node | arrayOf(node)`_  **`trackChildrenY`** `null`
-
-Children appended to track elements.
-<br><br>
-
-
-_`node`_  **`handleChildrenX`** `null`
-
-_`node`_  **`handleChildrenY`** `null`
-
-Children appended to handle elements.
 
 
 ## `AbstractScrollBox`

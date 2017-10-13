@@ -1,6 +1,6 @@
 import React from 'react';
 import {findDOMNode} from 'react-dom';
-import {bool, element, func, node, number, object, oneOf, string} from 'prop-types';
+import {any, bool, element, func, node, number, object, oneOf, string} from 'prop-types';
 
 function isCoordinate(value) {
   return value != null && !isNaN(value);

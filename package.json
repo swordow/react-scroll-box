@@ -50,7 +50,7 @@
     "classnames": "",
     "classlist-polyfill": "1.0.2"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": ">=0.13.0",
     "react-dom": ">=0.13.0",
     "prop-types": ">=15.5.10"

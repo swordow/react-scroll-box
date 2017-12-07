@@ -1,6 +1,6 @@
 {
   "name": "react-scroll-box",
-  "version": "0.3.3-beta",
+  "version": "0.3.4",
   "author": "Savva Mikhalevski",
   "description": "Charged cross-browser and cross-platform scrollable container implementation with no external dependencies but React 0.13+",
   "license": "MIT",
@@ -50,8 +50,9 @@
     "classnames": "",
     "classlist-polyfill": "1.0.2"
   },
-  "dependencies": {
+  "peerDependencies": {
     "react": ">=0.13.0",
-    "react-dom": ">=0.13.0"
+    "react-dom": ">=0.13.0",
+    "prop-types": ">=15.5.10"
   }
 }

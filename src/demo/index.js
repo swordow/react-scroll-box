@@ -13,7 +13,7 @@ function toPositiveInteger(val) {
 }
 
 
-class Demo extends React.Component {
+class Demo_ extends React.Component {
 
   handleClick = () => {
     // this.refs.genericScrollBox.scrollByY(100, {duration: 3000});
@@ -50,7 +50,7 @@ class Demo extends React.Component {
 }
 
 
-class Demo_ extends Component {
+class Demo extends Component {
 
   state = {
     nativeScroll: false,
@@ -128,9 +128,9 @@ class Demo_ extends Component {
 
 
 
-          <GenericScrollBox x={{prohibit: false, outset: false, hidden: false, min: 0}}>
+          {/* <GenericScrollBox x={{prohibit: false, outset: false, hidden: false, min: 0}}>
             FOO
-          </GenericScrollBox>
+          </GenericScrollBox> */}
 
 
 
